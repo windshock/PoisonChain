@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC4: 🟡 MEDIUM — semver위험 + npm install + 빌드이력 없음 -->
+<project>
+  <description>SC4: MEDIUM — ADP/public-web (^1.4.0) + npm install + 빌드이력 없음</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.skplanet.com/scm/ADP/public-web.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>npm install &amp;&amp; npm start</command></hudson.tasks.Shell>
+  </builders>
+</project>

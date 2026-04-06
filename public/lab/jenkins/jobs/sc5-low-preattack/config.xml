@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC5: 🟢 LOW — semver위험이나 공격 전 빌드 (1.14.1 미존재) -->
+<project>
+  <description>SC5: LOW — ADREPORT/adecs-fe (^1.10.0) + npm install + 공격 전(3월 1일) 빌드</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.skplanet.com/scm/ADREPORT/adecs-fe.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>npm install &amp;&amp; npm run build</command></hudson.tasks.Shell>
+  </builders>
+</project>

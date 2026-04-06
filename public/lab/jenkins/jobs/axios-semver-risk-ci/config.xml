@@ -1,0 +1,36 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  테스트 케이스: 🟡 MEDIUM
+  - axios@^1.14.0 (semver 위험)
+  - npm ci 사용 (lockfile 고정 → 현재 안전하나 lockfile 갱신 시 위험)
+  - SCM: AIDEV2/test-frontend-2
+-->
+<project>
+  <description>axios@^1.14.0 + npm ci — semver 위험이나 lockfile 고정 → MEDIUM</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.skplanet.com/scm/AIDEV2/test-frontend-2.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+# package.json: "axios": "^1.14.0"
+npm ci
+npm run build
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

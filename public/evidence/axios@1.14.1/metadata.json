@@ -1,0 +1,10 @@
+{
+  "name": "axios",
+  "version": "1.14.1",
+  "source": "datadog_github",
+  "acquired_at": "2026-04-02T01:24:03.265640+00:00",
+  "file": "axios-1.14.1.tgz",
+  "sha256": "1b5d13dcb825751a72f7b557325809e4823c57163d9e400565108f2ad0a469d1",
+  "sha1": "f3340a78b80f82e8cb41c8c31c4701f26826300d",
+  "file_size_bytes": 634913
+}
