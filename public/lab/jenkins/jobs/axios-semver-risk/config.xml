@@ -1,0 +1,37 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  테스트 케이스: 🔴 CRITICAL 후보
+  - axios@^1.14.0 (semver: 1.14.1 포함)
+  - npm install 사용 (lockfile 미고정)
+  - SCM: AIDEV2/test-frontend (bitbucket-full-scan-result.json의 실제 semver 위험 프로젝트 키)
+-->
+<project>
+  <description>⚠️ axios@^1.14.0 + npm install — semver 위험 + lockfile 미고정 → CRITICAL 후보</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-E/test-frontend.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+# package.json snippet (참고용 — 실제 체크아웃 없음)
+# "axios": "^1.14.0"   ← semver 위험: 1.14.1 허용
+npm install
+npm run build
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

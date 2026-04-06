@@ -1,0 +1,86 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description>SC10: GuardDog 악성 패키지 탐지 데모 - npm install 전 자동 스캔</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
+    <script>
+pipeline {
+    agent any
+    environment {
+        PACKAGE_LOCK = 'package-lock.json'
+    }
+    stages {
+        stage('Prepare') {
+            steps {
+                // 데모용 package-lock.json 생성 (실제 프로젝트에서는 checkout으로 대체)
+                writeFile file: 'package-lock.json', text: '''{
+  "name": "demo-app",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "dependencies": {
+        "axios": "1.14.1",
+        "plain-crypto-js": "4.2.1"
+      }
+    },
+    "node_modules/axios": {
+      "version": "1.14.1",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-1.14.1.tgz"
+    },
+    "node_modules/plain-crypto-js": {
+      "version": "4.2.1",
+      "resolved": "https://registry.npmjs.org/plain-crypto-js/-/plain-crypto-js-4.2.1.tgz"
+    }
+  }
+}'''
+            }
+        }
+        stage('GuardDog Security Scan') {
+            steps {
+                script {
+                    echo "=== GuardDog npm 패키지 보안 스캔 시작 ==="
+                    def scanResult = sh(
+                        script: 'guarddog npm verify package-lock.json --output-format json 2>/dev/null || true',
+                        returnStdout: true
+                    ).trim()
+
+                    if (scanResult) {
+                        def json = readJSON text: scanResult
+                        def issues = json.collect { pkg, data ->
+                            data.get('issues', []).collect { issue ->
+                                "[${issue.severity}] ${pkg}: ${issue.name}"
+                            }
+                        }.flatten()
+
+                        if (issues) {
+                            echo "⚠️  GuardDog 경고 발견:"
+                            issues.each { echo "  ${it}" }
+                            // 정책에 따라 빌드 중단 또는 경고만
+                            // error "보안 취약점 발견 - 빌드 중단"  // 강제 차단 시 활성화
+                            unstable("GuardDog 보안 경고가 발견되었습니다. 패키지를 확인하세요.")
+                        } else {
+                            echo "✅ GuardDog: 악성 지표 없음"
+                        }
+                    }
+                }
+            }
+        }
+        stage('npm install') {
+            steps {
+                echo "GuardDog 통과 후 npm install 진행 (실제 환경에서는 여기서 npm ci 실행)"
+            }
+        }
+    }
+    post {
+        always {
+            echo "GuardDog 스캔 완료"
+        }
+    }
+}
+    </script>
+    <sandbox>true</sandbox>
+  </definition>
+</flow-definition>

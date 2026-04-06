@@ -1,0 +1,33 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  테스트 케이스: 🟢 LOW
+  - axios 미사용 (Java/Maven 프로젝트)
+  - SCM: VASDEV/backend-service
+-->
+<project>
+  <description>Java Maven 프로젝트 — axios 미사용 → LOW</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-D/backend-service.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+mvn clean package -DskipTests
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

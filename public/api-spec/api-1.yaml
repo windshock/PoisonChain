@@ -1,0 +1,3481 @@
+openapi: 3.1.0
+info:
+  title: Xeize Security Open-API
+  description: >-
+    Open API for comprehensive security analysis and management platform.
+
+
+    Xeize provides enterprise-grade security scanning, vulnerability management,
+
+    and compliance reporting across your entire development lifecycle.
+
+
+    ## Authentication
+
+    This API uses API key authentication. You can authenticate by:
+
+    - Using the `Authorization: Bearer {your-api-key}` header
+
+
+    ## Support
+
+    Contact support@xeize.dev
+
+
+    ## Endpoints
+
+    All Open-API(V1) endpoints are prefixed with `/open-api/v1/` and are
+    designed for
+
+    third-party integrations and automated workflows.
+  termsOfService: https://xeize.dev/terms
+  contact:
+    name: Xeize Open-API Support
+    url: https://xeize.dev/support
+    email: support@xeize.dev
+  license:
+    name: XEIZE OPEN-API LICENSE, VERSION 1.0.0
+    url: https://xeize.dev/licenses/OPEN-API-LICENSE-1.0.0
+  version: 1.0.0
+servers: []
+security:
+  - bearerAuth: []
+tags:
+  - name: LLM Token Management
+    description: APIs for retrieving LLM authentication tokens for vulnerability analysis
+  - name: False Positive Management
+    description: APIs for managing false positive vulnerabilities, fix suggestions,
+      and project prioritization
+  - name: Health & Monitoring
+    description: Health check and API monitoring endpoints for external integrations
+  - name: CVE Information
+    description: APIs for retrieving Common Vulnerabilities and Exposures (CVE)
+      information including details, CVSS/EPSS scores, and vulnerability status
+  - name: Project Management
+    description: APIs for registering and managing Git repository projects
+  - name: Git Repository Access
+    description: APIs for accessing git repository information and credentials
+  - name: Vulnerability Management
+    description: APIs for querying vulnerability data
+  - name: Integration Management
+    description: APIs for managing Git platform integrations (GitHub, GitLab, etc.)
+paths:
+  /open-api/v1/locks/{lockKey}/heartbeat:
+    put:
+      tags:
+        - False Positive Management
+      summary: Send heartbeat for issue lock
+      description: >-
+        Send heartbeat to maintain the lock timeout for locked issues (false
+        positive or fix suggestion processing).
+
+        This endpoint extends the lock duration to prevent it from expiring
+        while processing is ongoing.
+
+
+        This endpoint works for both:
+
+        - False positive review locks
+
+        - Fix suggestion processing locks
+
+
+        Use this endpoint to:
+
+        - Maintain lock on issues during long-running analysis
+
+        - Prevent lock expiration during manual review
+
+        - Ensure exclusive access to locked issues
+      operationId: heartbeat
+      parameters:
+        - name: lockKey
+          in: path
+          description: Lock key to send heartbeat for
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        "200":
+          description: Successfully sent heartbeat and extended lock timeout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HeartbeatResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/projects:
+    get:
+      tags:
+        - Project Management
+      summary: Get all projects
+      description: Retrieve all registered Git repository projects for the
+        authenticated user.
+      operationId: getAllProjects
+      responses:
+        "200":
+          description: List of all projects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenApiProjectResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+    post:
+      tags:
+        - Project Management
+      summary: Register a new project
+      description: >-
+        Register a new Git repository project for security analysis and
+        vulnerability scanning.
+
+
+        Repository Identifier Format:
+
+        - GitHub: 'owner/repository' (e.g., 'group/project')
+
+        - GitLab: 'group/project' or 'group/subgroup/project'
+
+        - Must match exact repository path on the Git platform
+
+
+        Validation Requirements:
+
+        - Repository must exist and be accessible via integration credentials
+
+        - Branch specification is optional (defaults to repository's default
+        branch)
+
+        - Integration credentials are validated before project creation
+      operationId: registerProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiProjectRegistrationRequest"
+        required: true
+      responses:
+        "201":
+          description: Project successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiProjectResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/fix-suggestions/issues/lock:
+    post:
+      tags:
+        - False Positive Management
+      summary: Lock issues for fix suggestion processing
+      description: >-
+        Locks and retrieves issues requiring fix suggestions for a specific
+        project.
+
+        This endpoint creates a lock on available issues that are marked as true
+        positives or inconclusive and returns them to prevent concurrent
+        processing by other systems.
+
+
+        Important:
+
+        - Issues are locked for a limited time and require heartbeat to maintain
+        the lock
+
+        - Use PUT /locks/{lockKey}/heartbeat to extend the lock duration
+
+        - The lock_key in the response must be used for subsequent operations
+
+        - Locked issues will not appear in other lock requests until the lock
+        expires or is released
+
+        - If no issues are available, an empty list will be returned with a
+        valid lock
+      operationId: lockFixSuggestionIssues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LockIssuesRequest"
+        required: true
+      responses:
+        "201":
+          description: Successfully created lock and retrieved issues for fix suggestions
+            (may be empty if no issues available)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FixSuggestionIssuesResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/false-positives/issues/lock:
+    post:
+      tags:
+        - False Positive Management
+      summary: Lock pending false positive issues
+      description: >-
+        Locks and retrieves pending false positive issues for a specific project
+        for processing.
+
+        This endpoint creates a lock on available issues that are marked as
+        potential false positives and returns them to prevent concurrent
+        processing by other systems.
+
+
+        Important:
+
+        - Issues are locked for a limited time and require heartbeat to maintain
+        the lock
+
+        - Use PUT /locks/{lockKey}/heartbeat to extend the lock duration
+
+        - The lock_key in the response must be used for subsequent operations
+
+        - Locked issues will not appear in other lock requests until the lock
+        expires or is released
+
+        - If no issues are available, an empty list will be returned with a
+        valid lock
+      operationId: lockPendingIssues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LockIssuesRequest"
+        required: true
+      responses:
+        "201":
+          description: Successfully created lock and retrieved pending issues (may be
+            empty if no issues available)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingIssuesResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/fix-suggestions/issues:
+    patch:
+      tags:
+        - False Positive Management
+      summary: Update fix suggestions for issues
+      description: >-
+        Update fix suggestions and status for specific vulnerability issues.
+
+        This endpoint allows you to provide automated fix suggestions for
+        vulnerabilities that have been triaged as true positives or inconclusive
+        during false positive analysis.
+
+
+        Important: This operation requires the lock key obtained from the lock
+        request and will only update issues that are currently locked with the
+        provided lock key. This ensures exclusive access and prevents concurrent
+        modifications.
+
+
+        The operation will automatically release the lock on all successfully
+        processed issues, making them available for other processes to access.
+
+
+        Fix Suggestion Task Status options:
+
+        - PENDING: Fix suggestion generation is still in progress
+
+        - DELAYED: Fix suggestion generation delayed due to constraints (e.g.,
+        LLM rate limits)
+
+        - COMPLETED: Fix suggestion has been successfully generated
+
+        - FAILED: Fix suggestion generation failed
+
+        - SKIPPED: Fix suggestion generation was skipped
+      operationId: updateFixSuggestions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFixSuggestionRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully updated fix suggestions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateIssueResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/false-positives/issues:
+    patch:
+      tags:
+        - False Positive Management
+      summary: Update false positive issue status and triage
+      description: >-
+        Update the false positive task status, triage result, and review details
+        for specific vulnerability issues.
+
+        This endpoint allows you to mark the processing status (pending,
+        completed, etc.) and classify issues as false positives, true positives,
+        or inconclusive after review and analysis.
+
+
+        Important: This operation requires the lock key obtained from the lock
+        request and will only update issues that are currently locked with the
+        provided lock key. This ensures exclusive access and prevents concurrent
+        modifications.
+
+
+        The operation will automatically release the lock on all successfully
+        processed issues, making them available for other processes to access.
+
+
+        Task Status options:
+
+        - PENDING: Issue is still under review
+
+        - DELAYED: Issue review delayed due to constraints (e.g., LLM rate
+        limits, resource limitations)
+
+        - COMPLETED: Issue review has been completed
+
+        - FAILED: Review process failed
+
+        - SKIPPED: Issue was skipped during review
+
+
+        Triage options:
+
+        - FALSE_POSITIVE: Issue is confirmed as a false positive
+
+        - TRUE_POSITIVE: Issue is a valid vulnerability, not a false positive
+
+        - INCONCLUSIVE: Issue could not be determined
+      operationId: updateIssueStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIssueRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully updated issue false positive status and triage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateIssueResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/vulnerabilities:
+    get:
+      tags:
+        - Vulnerability Management
+      summary: Get vulnerabilities with paging
+      description: >-
+        Retrieve vulnerabilities with paging and optional filtering.
+
+        This endpoint returns a paginated list of vulnerabilities that can be
+        filtered by project, status, severity, and priority score.
+
+
+        Use this endpoint to:
+
+        - Get all vulnerabilities across projects or for a specific project
+
+        - Filter vulnerabilities by status (e.g., OPEN, RESOLVED)
+
+        - Filter vulnerabilities by severity (e.g., CRITICAL, HIGH)
+
+        - Filter vulnerabilities by priority score range (minScore, maxScore)
+
+        - Filter vulnerabilities by detection date range (detectedFrom,
+        detectedTo)
+      operationId: getVulnerabilities
+      parameters:
+        - name: projectId
+          in: query
+          description: Filter by project ID. If not provided, returns vulnerabilities
+            across all projects.
+          required: false
+          schema:
+            type: string
+            format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        - name: pageSize
+          in: query
+          description: Number of vulnerabilities per page (1-100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            maximum: 100
+            minimum: 1
+          example: 10
+        - name: page
+          in: query
+          description: Page number (1-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+            minimum: 1
+          example: 1
+        - name: status
+          in: query
+          description: Filter by vulnerability status
+          required: false
+          schema:
+            type: string
+            enum:
+              - IGNORE
+              - OPEN
+              - PENDING
+              - RESOLVED
+          example: OPEN
+        - name: severity
+          in: query
+          description: Filter by vulnerability severity
+          required: false
+          schema:
+            type: string
+            enum:
+              - CRITICAL
+              - HIGH
+              - MEDIUM
+              - LOW
+              - INFO
+          example: HIGH
+        - name: minScore
+          in: query
+          description: Filter by minimum priority score (inclusive)
+          required: false
+          schema:
+            type: integer
+            format: int32
+          example: 70
+        - name: maxScore
+          in: query
+          description: Filter by maximum priority score (inclusive)
+          required: false
+          schema:
+            type: integer
+            format: int32
+          example: 100
+        - name: detectedFrom
+          in: query
+          description: Filter by detection start date (createdAt >=), ISO 8601 format
+          required: false
+          schema:
+            type: string
+            format: date-time
+          example: 2025-01-01T00:00:00Z
+        - name: detectedTo
+          in: query
+          description: Filter by detection end date (createdAt <=), ISO 8601 format
+          required: false
+          schema:
+            type: string
+            format: date-time
+          example: 2025-12-31T23:59:59Z
+      responses:
+        "200":
+          description: Successfully retrieved vulnerabilities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VulnerabilitiesResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/projects/{projectId}/download:
+    get:
+      tags:
+        - Project Management
+      summary: Download manual project
+      description: Download the file of a manually uploaded project. Only projects
+        that were uploaded manually (not from Git integrations) can be
+        downloaded.
+      operationId: downloadProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Project file downloaded successfully
+          content:
+            application/octet-stream: {}
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/llm/tokens/{purpose}:
+    get:
+      tags:
+        - LLM Token Management
+      summary: Get LLM token by purpose
+      description: >-
+        Retrieve an LLM authentication token for the specified purpose.
+
+        This endpoint returns the configured LLM token that should be used for
+        the requested purpose.
+
+
+        Available purposes:
+
+        - VULNERABILITY_ANALYSIS: Token for analyzing and processing
+        vulnerability data
+
+        - CODE_REVIEW: Token for code review and analysis tasks
+
+
+        If no token is configured for the specified purpose, a 404 Not Found
+        response will be returned.
+
+
+        The returned token includes all necessary information to authenticate
+        with the LLM provider, including the provider type, endpoint URL, and
+        authentication token value.
+      operationId: getTokenByPurpose
+      parameters:
+        - name: purpose
+          in: path
+          description: Purpose for which to retrieve the LLM token
+          required: true
+          schema:
+            type: string
+            enum:
+              - CODE_REVIEW
+              - VULNERABILITY_ANALYSIS
+              - MCP_ANALYSIS
+          example: VULNERABILITY_ANALYSIS
+      responses:
+        "200":
+          description: Successfully retrieved LLM token for the specified purpose
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiLlmTokenResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/integrations:
+    get:
+      tags:
+        - Integration Management
+      summary: Get registered integrations
+      description: >-
+        Retrieve all currently registered Git platform integrations.
+
+        This endpoint returns a list of all active integrations configured in
+        the system, including GitHub and GitLab integrations.
+
+
+        The response includes integration details such as:
+
+        - Integration ID for referencing in other operations
+
+        - Integration name and Git platform type (GITHUB/GITLAB)
+
+        - Server URL
+
+        Use cases:
+
+        - Retrieve integration IDs for project registration
+
+
+        Security Note:
+
+        - Only active integrations are returned in the response
+      operationId: getIntegrations
+      responses:
+        "200":
+          description: Successfully retrieved integrations list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiIntegrationsResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/health:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Health check endpoint
+      description: >-
+        Check the health status of the API and verify your authentication.
+
+        This endpoint can be used to:
+
+        - Verify your API key is valid
+
+        - Check if the API service is available
+
+        - Monitor your API key permissions
+
+
+        This is typically the first endpoint you should call when integrating
+        with our API.
+      operationId: health
+      responses:
+        "200":
+          description: API is healthy and authentication is successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/git/credentials:
+    get:
+      tags:
+        - Git Repository Access
+      summary: Get git repository credentials
+      description: >-
+        Retrieve git repository URL and Personal Access Token (PAT) for
+        repository access.
+
+        This endpoint provides the necessary credentials to access the git
+        repository for code analysis, false positive verification, and security
+        scanning.
+
+
+        Security Note:
+
+        - PAT tokens are sensitive and should be handled securely
+
+        - Tokens may have limited permissions and expiration dates
+
+        - Use HTTPS for all git operations with the provided credentials
+
+        - Store credentials securely and never log them in plain text
+
+
+        Use cases:
+
+        - Clone repository for local analysis
+
+        - Access specific commits for vulnerability verification
+
+        - Perform git blame analysis for false positive investigation
+      operationId: getGitCredentials
+      parameters:
+        - name: project_id
+          in: query
+          description: Project ID to get git credentials for
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        "200":
+          description: Successfully retrieved git credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GitCredentialsResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/fix-suggestions/projects/pending:
+    get:
+      tags:
+        - False Positive Management
+      summary: Get projects pending fix suggestions
+      description: >-
+        Retrieve projects with true positive or inconclusive vulnerabilities
+        requiring fix suggestions.
+
+        This endpoint returns the top N projects that contain vulnerabilities
+        marked as true positives or inconclusive and require automated fix
+        suggestions. Projects are automatically prioritized based on internal
+        algorithms considering factors like issue count, severity, and project
+        importance.
+
+
+        Use this endpoint to:
+
+        - Get a prioritized list of projects requiring fix suggestions
+
+        - Understand workload distribution across projects
+
+        - Plan fix suggestion generation activities
+      operationId: getPendingFixSuggestionProjects
+      parameters:
+        - name: top
+          in: query
+          description: Maximum number of projects to return (1-100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            maximum: 100
+            minimum: 1
+          example: 10
+      responses:
+        "200":
+          description: Successfully retrieved projects pending fix suggestions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingProjectsResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/false-positives/projects/pending:
+    get:
+      tags:
+        - False Positive Management
+      summary: Get pending false positive projects
+      description: >-
+        Retrieve projects with pending false positive issues, ordered by
+        internal priority.
+
+        This endpoint returns the top N projects that contain vulnerabilities
+        marked as potential false positives but are still in pending status
+        awaiting review. Projects are automatically prioritized based on
+        internal algorithms considering factors like issue count, severity, and
+        project importance.
+
+
+        Use this endpoint to:
+
+        - Get a prioritized list of projects requiring false positive review
+
+        - Understand workload distribution across projects
+
+        - Plan false positive review activities
+      operationId: getPendingProjects
+      parameters:
+        - name: top
+          in: query
+          description: Maximum number of projects to return (1-100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            maximum: 100
+            minimum: 1
+          example: 10
+      responses:
+        "200":
+          description: Successfully retrieved pending false positive projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingProjectsResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+  /open-api/v1/cves/{cveId}:
+    get:
+      tags:
+        - CVE Information
+      summary: Get CVE information by ID
+      description: >-
+        Retrieve detailed information about a specific Common Vulnerability and
+        Exposure (CVE) by its identifier.
+
+        This endpoint returns comprehensive CVE details including:
+
+        - CVE status and publication information
+
+        - Multilingual vulnerability descriptions
+
+        - CVSS v3/v4 scoring with severity ratings
+
+        - EPSS (Exploit Prediction Scoring System) metrics
+
+
+        CVE IDs follow the format: CVE-YYYY-NNNNN or CVE-YYYY-NNNNNNN
+
+        Examples: CVE-2021-44228, CVE-2022-22965
+      operationId: getCveById
+      parameters:
+        - name: cveId
+          in: path
+          description: CVE identifier (e.g., CVE-2021-44228)
+          required: true
+          schema:
+            type: string
+          example: CVE-2021-44228
+      responses:
+        "200":
+          description: Successfully retrieved CVE information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CveResponse"
+        "400":
+          description: Bad request - Invalid input data or request format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error example
+                  description: validation_error
+                  value:
+                    errors:
+                      - code: BAD_REQUEST
+                        message: Invalid input data
+                        field: id
+                        details:
+                          expectedFormat: UUID
+        "401":
+          description: Unauthorized - Authentication required or invalid
+        "403":
+          description: Forbidden - Insufficient permissions to access the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden_error:
+                  summary: Forbidden error example
+                  description: forbidden_error
+                  value:
+                    errors:
+                      - code: FORBIDDEN
+                        message: Do not have permission to access this resource
+        "404":
+          description: Not found - Resource does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                resource_not_found:
+                  summary: Resource not found example
+                  description: resource_not_found
+                  value:
+                    errors:
+                      - code: RESOURCE_NOT_FOUND
+                        message: The requested resource was not found
+        "409":
+          description: Conflict - Resource already exists or operation cannot be completed
+            due to a conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict_error:
+                  summary: Conflict error example
+                  description: conflict_error
+                  value:
+                    errors:
+                      - code: CONFLICT
+                        message: Resource already exists
+        "500":
+          description: Internal server error - Unexpected condition encountered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                internal_error:
+                  summary: Internal server error example
+                  description: internal_error
+                  value:
+                    errors:
+                      - code: INTERNAL_ERROR
+                        message: An unexpected error occurred
+        "503":
+          description: Service unavailable - Temporary overload or maintenance
+          headers:
+            Retry-After:
+              description: Indicates how long the service is expected to be unavailable to the
+                client
+              style: simple
+              schema:
+                type: integer
+                format: int32
+                example: 120
+            X-Service-Maintenance:
+              description: Indicates if the service is under maintenance
+              style: simple
+              schema:
+                type: boolean
+                example: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: Service unavailable example
+                  description: service_unavailable
+                  value:
+                    errors:
+                      - code: MAINTENANCE_MODE
+                        message: The service is temporarily unavailable due to maintenance
+components:
+  schemas:
+    HeartbeatResponse:
+      type: object
+      description: Response for lock heartbeat
+      properties:
+        lockKey:
+          type: string
+          format: uuid
+          description: Lock key that received the heartbeat
+          example: 123e4567-e89b-12d3-a456-426614174000
+        newExpiresAt:
+          type: string
+          format: date-time
+          description: New lock expiration timestamp in ISO 8601 format. Only present when
+            heartbeat is successful. Null when heartbeat fails.
+          examples:
+            - 2025-07-14T13:00:00.123456Z
+            - 2025-07-14T13:00:00+09:00
+        successful:
+          type: boolean
+          description: Whether heartbeat was successful. When false, the lock may have
+            expired or been invalid.
+          example: true
+      required:
+        - lockKey
+        - successful
+    ErrorDetail:
+      type: object
+      description: Detailed error information
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          example: BAD_REQUEST
+        message:
+          type: string
+          description: Human-readable error message
+          example: The provided API key is invalid or expired
+        field:
+          type: string
+          description: Field name for validation errors
+          example: name
+        details:
+          type: object
+          additionalProperties: {}
+          description: Additional context information
+      required:
+        - code
+        - message
+    ErrorResponse:
+      type: object
+      description: Standard error response format
+      properties:
+        errors:
+          type: array
+          description: List of error details
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+      required:
+        - errors
+    OpenApiProjectRegistrationRequest:
+      type: object
+      description: Request to register a new Git repository project for security analysis
+      properties:
+        integrationId:
+          type: string
+          format: uuid
+          description: Integration ID to associate this project with a specific Git
+            platform integration
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Human-readable project name for identification and organization
+            purposes.
+          example: Xeize Engine
+          maxLength: 100
+          minLength: 0
+        description:
+          type: string
+          description: Optional detailed description of the project.
+          example: Project for Xeize core engine
+          maxLength: 1000
+          minLength: 0
+        repository:
+          type: string
+          description: "Git repository identifier in platform-specific format. GitHub
+            format: 'owner/repository' (e.g., 'SNebulaX/xeize'). GitLab format:
+            'group/project' or 'namespace/group/project' (e.g.,
+            'gitlab-org/gitlab')"
+          example: owner/repository
+          maxLength: 100
+          minLength: 0
+        branch:
+          type: string
+          description: Specific Git branch to analyze. If not provided, the repository's
+            default branch will be used. Use this to analyze specific
+            development branches or release branches.
+          example: main
+          maxLength: 100
+          minLength: 0
+      required:
+        - integrationId
+        - name
+        - repository
+    OpenApiProjectResponse:
+      type: object
+      description: Project information response
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique project identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        integrationId:
+          type: string
+          format: uuid
+          description: Integration ID associated with this project. Null if the project
+            was uploaded manually
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Project name
+          example: Xeize Engine
+        description:
+          type: string
+          description: Project description
+          example: Project for Xeize core engine
+        repository:
+          type: string
+          description: "Git repository identifier. Null if the project was uploaded
+            manually. "
+          example: SNebulaX/xeize
+        branch:
+          type: string
+          description: Git branch being analyzed (defaults to repository's default branch
+            if not specified)
+          example: main
+      required:
+        - id
+        - name
+    LockIssuesRequest:
+      type: object
+      description: Request to lock pending issues
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: Project ID to get issues from
+          example: 123e4567-e89b-12d3-a456-426614174000
+        count:
+          type: integer
+          format: int32
+          description: Maximum number of issues to return and lock (1-100)
+          example: 10
+          maximum: 100
+          minimum: 1
+      required:
+        - count
+        - projectId
+    FixSuggestionIssue:
+      type: object
+      description: Issue requiring fix suggestion
+      properties:
+        issueId:
+          type: string
+          format: uuid
+          description: Issue unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        issueName:
+          type: string
+          description: Issue name
+          example: SQL Injection in user login
+        severity:
+          type: string
+          description: Issue severity
+          example: HIGH
+        scannerType:
+          type: string
+          description: Type of security scanner that identified the issue
+          example: SAST
+        scannerResult:
+          type: object
+          additionalProperties: {}
+          description: Scanner result details
+          example:
+            file: ""
+            text: ""
+            range: {}
+            ruleId: ""
+            source: []
+        falsePositiveStatus:
+          type: string
+          description: Current false positive task status
+          enum:
+            - PENDING
+            - DELAYED
+            - COMPLETED
+            - FAILED
+            - SKIPPED
+          example: COMPLETED
+        falsePositiveTriage:
+          type: string
+          description: False positive triage result
+          enum:
+            - FALSE_POSITIVE
+            - TRUE_POSITIVE
+            - INCONCLUSIVE
+          example: TRUE_POSITIVE
+        result:
+          type: string
+          description: Review result or reason for the current status
+          example: Confirmed SQL injection vulnerability
+        meta:
+          type: string
+          description: Additional metadata for the issue
+          example: '{"confidence": 0.95, "reviewer": "automated"}'
+        learnings:
+          type: array
+          description: List of learnings associated with this issue
+          example:
+            - >-
+              - The project uses parameterized queries in most places but missed
+              this specific endpoint.
+
+              - User input validation is implemented at the API gateway level.
+
+              - Database access follows strict patterns except for dynamic
+              reporting queries.
+          items:
+            type: string
+      required:
+        - falsePositiveStatus
+        - falsePositiveTriage
+        - issueId
+        - issueName
+        - scannerResult
+        - scannerType
+        - severity
+    FixSuggestionIssuesResponse:
+      type: object
+      description: Response containing locked issues for fix suggestions
+      properties:
+        issues:
+          type: array
+          description: List of locked issues requiring fix suggestions
+          items:
+            $ref: "#/components/schemas/FixSuggestionIssue"
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of issues available for fix suggestions
+          example: 50
+        requestedCount:
+          type: integer
+          format: int32
+          description: Number of issues requested in the lock
+          example: 10
+        lockKey:
+          type: string
+          format: uuid
+          description: Lock key for subsequent operations
+          example: 123e4567-e89b-12d3-a456-426614174000
+        lockExpiresAt:
+          type: string
+          format: date-time
+          description: Lock expiration timestamp in ISO 8601 format
+          examples:
+            - 2025-07-14T12:30:00.123456Z
+            - 2025-07-14T12:30:00+09:00
+      required:
+        - issues
+        - lockExpiresAt
+        - lockKey
+        - requestedCount
+        - totalCount
+    PendingIssue:
+      type: object
+      description: Pending false positive issue
+      properties:
+        issueId:
+          type: string
+          format: uuid
+          description: Issue unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        issueName:
+          type: string
+          description: Issue name
+          example: SQL Injection in user login
+        severity:
+          type: string
+          description: Issue severity
+          example: HIGH
+        scannerType:
+          type: string
+          description: Type of security scanner that identified the issue
+          example: SAST
+        scannerResult:
+          type: object
+          additionalProperties: {}
+          description: Scanner result details
+          example:
+            file: ""
+            text: ""
+            range: {}
+            ruleId: ""
+            source: []
+      required:
+        - issueId
+        - issueName
+        - scannerResult
+        - scannerType
+        - severity
+    PendingIssuesResponse:
+      type: object
+      description: Response containing locked pending issues
+      properties:
+        issues:
+          type: array
+          description: List of locked pending issues
+          items:
+            $ref: "#/components/schemas/PendingIssue"
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of pending issues available
+          example: 50
+        requestedCount:
+          type: integer
+          format: int32
+          description: Number of issues requested in the lock
+          example: 10
+        lockKey:
+          type: string
+          format: uuid
+          description: Lock key for subsequent operations
+          example: 123e4567-e89b-12d3-a456-426614174000
+        lockExpiresAt:
+          type: string
+          format: date-time
+          description: Lock expiration timestamp in ISO 8601 format
+          examples:
+            - 2025-07-14T12:30:00.123456Z
+            - 2025-07-14T12:30:00+09:00
+      required:
+        - issues
+        - lockExpiresAt
+        - lockKey
+        - requestedCount
+        - totalCount
+    FixSuggestionIssueUpdate:
+      type: object
+      description: Fix suggestion update for an issue
+      properties:
+        issueId:
+          type: string
+          format: uuid
+          description: Issue unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        fixSuggestionStatus:
+          type: string
+          description: Fix suggestion task status
+          enum:
+            - PENDING
+            - DELAYED
+            - COMPLETED
+            - FAILED
+            - SKIPPED
+          example: COMPLETED
+        fixSuggestion:
+          type: string
+          description: Generated fix suggestion for the vulnerability
+          example: Use parameterized queries instead of string concatenation. Replace
+            'SELECT * FROM users WHERE id = ' + userId with prepared statements
+            using placeholders.
+        fixCode:
+          type: string
+          description: Generated fix code for the vulnerability
+          example: >-
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM
+            users WHERE id = ?");
+
+            stmt.setInt(1, userId);
+
+            ResultSet rs = stmt.executeQuery();
+      required:
+        - fixSuggestionStatus
+        - issueId
+    UpdateFixSuggestionRequest:
+      type: object
+      description: Request to update fix suggestions for issues
+      properties:
+        lockKey:
+          type: string
+          format: uuid
+          description: Lock key from the original lock request
+          example: 123e4567-e89b-12d3-a456-426614174000
+        issues:
+          type: array
+          description: List of issues to update with fix suggestions
+          items:
+            $ref: "#/components/schemas/FixSuggestionIssueUpdate"
+          minItems: 1
+      required:
+        - issues
+        - lockKey
+    UpdateIssueResponse:
+      type: object
+      description: Response for issue update operation
+      properties:
+        updatedCount:
+          type: integer
+          format: int32
+          description: Number of issues successfully updated
+          example: 5
+        failedCount:
+          type: integer
+          format: int32
+          description: Number of issues that failed to update
+          example: 0
+        failedIssues:
+          type: array
+          description: List of issue IDs that failed to update
+          items:
+            type: string
+            format: uuid
+        updatedAt:
+          type: string
+          format: date-time
+          description: Update operation timestamp in ISO 8601 format
+          examples:
+            - 2025-07-14T12:00:00.123456Z
+            - 2025-07-14T12:00:00+09:00
+      required:
+        - failedCount
+        - failedIssues
+        - updatedAt
+        - updatedCount
+    IssueUpdate:
+      type: object
+      description: Issue status update
+      properties:
+        issueId:
+          type: string
+          format: uuid
+          description: Issue unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        falsePositiveStatus:
+          type: string
+          description: New false positive task status
+          enum:
+            - PENDING
+            - DELAYED
+            - COMPLETED
+            - FAILED
+            - SKIPPED
+          example: COMPLETED
+        falsePositiveTriage:
+          type: string
+          description: False positive triage result
+          enum:
+            - FALSE_POSITIVE
+            - TRUE_POSITIVE
+            - INCONCLUSIVE
+          example: FALSE_POSITIVE
+        result:
+          type: string
+          description: Review result or reason
+          example: Safe dynamic query construction
+        meta:
+          type: string
+          description: Additional metadata for the issue update
+          example: '{"confidence": 0.95, "reviewer": "automated"}'
+        learnings:
+          type: array
+          description: List of learnings for the issue update
+          example: >-
+            ["- The project uses a `TemporaryFile` abstraction to consistently
+            handle files and their MIME types, centrally enforcing safe output
+            in API views.
+
+            - No custom or user-tainted MIME type setting logic was found for
+            exported Excel files; all are set to the Microsoft Excel xlsx MIME
+            string.
+
+            - This structure robustly prevents HTTP header injection in the
+            reflected section of code.
+
+            - Business logic for salary contract export templates enforces
+            strong typing and prohibits dynamic MIME or filename generation from
+            tainted/client sources.
+
+            - Sanitizer or validation logic for fileType is unnecessary due to
+            use of constants."]
+          items:
+            type: string
+      required:
+        - falsePositiveStatus
+        - issueId
+    UpdateIssueRequest:
+      type: object
+      description: Request to update false positive issue status
+      properties:
+        lockKey:
+          type: string
+          format: uuid
+          description: Lock key from the original lock request
+          example: 123e4567-e89b-12d3-a456-426614174000
+        issues:
+          type: array
+          description: List of issues to update
+          items:
+            $ref: "#/components/schemas/IssueUpdate"
+          minItems: 1
+      required:
+        - issues
+        - lockKey
+    VulnerabilitiesResponse:
+      type: object
+      description: Response containing vulnerabilities with paging information
+      properties:
+        vulnerabilities:
+          type: array
+          description: List of vulnerabilities
+          items:
+            $ref: "#/components/schemas/VulnerabilityDto"
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of vulnerabilities matching the filter
+          example: 150
+        pageSize:
+          type: integer
+          format: int32
+          description: Number of vulnerabilities per page
+          example: 10
+        page:
+          type: integer
+          format: int32
+          description: Current page number (1-based)
+          example: 1
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages available
+          example: 15
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - totalPages
+        - vulnerabilities
+    VulnerabilityDto:
+      type: object
+      description: Vulnerability information
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Vulnerability unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        projectId:
+          type: string
+          format: uuid
+          description: Project unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Vulnerability name
+          example: SQL Injection in user login
+        category:
+          type: string
+          description: Vulnerability category
+          example: SQL_INJECTION
+        source:
+          type: string
+          description: Source technology where the vulnerability was found
+          example: Java
+        scannerType:
+          type: string
+          description: Type of security scanner that identified the vulnerability
+          example: SAST
+        ruleId:
+          type: string
+          description: Rule ID from the scanner
+          example: java.lang.security.audit.sqli
+        ruleName:
+          type: string
+          description: Rule name from the scanner
+          example: SQL Injection
+        description:
+          type: string
+          description: Vulnerability description
+          example: User input is directly concatenated into SQL query
+        severity:
+          type: string
+          description: Vulnerability severity
+          example: HIGH
+        status:
+          type: string
+          description: Vulnerability status
+          example: OPEN
+        priorityScore:
+          type: integer
+          format: int32
+          description: Priority score for vulnerability triage
+          example: 85
+        cweIds:
+          type: array
+          description: List of CWE identifiers
+          example:
+            - CWE-89
+            - CWE-564
+          items:
+            type: string
+        detectedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the vulnerability was detected in ISO 8601 format
+          examples:
+            - 2025-07-14T12:00:00.123456Z
+            - 2025-07-14T12:00:00+09:00
+        remediatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the vulnerability was remediated in ISO 8601 format
+          examples:
+            - 2025-07-14T12:00:00.123456Z
+            - 2025-07-14T12:00:00+09:00
+      required:
+        - category
+        - cweIds
+        - detectedAt
+        - id
+        - name
+        - priorityScore
+        - projectId
+        - scannerType
+        - severity
+        - source
+        - status
+    OpenApiLlmTokenResponse:
+      type: object
+      description: LLM authentication token information
+      properties:
+        tokenName:
+          type: string
+          description: Human-readable name of the token
+          example: GPT-4 Analysis Token
+        tokenValue:
+          type: string
+          description: Authentication token value
+          example: sk-1234567890abcdef
+        llmProvider:
+          type: string
+          description: LLM provider type
+          enum:
+            - OPENAI
+            - ANTHROPIC
+            - AZURE
+            - GEMINI
+            - VERTEX_AI
+          example: OPENAI
+        baseUrl:
+          type: string
+          description: API base URL for the LLM provider. If null, use the provider's
+            default URL.
+          example: https://api.openai.com/v1
+        purpose:
+          type: string
+          description: Purpose for which this token is configured
+          enum:
+            - CODE_REVIEW
+            - VULNERABILITY_ANALYSIS
+            - MCP_ANALYSIS
+          example: VULNERABILITY_ANALYSIS
+        customModel:
+          type: string
+          description: Custom model identifier
+          example: gpt-4-turbo
+        apiVersion:
+          type: string
+          description: API version
+          example: v1
+        project:
+          type: string
+          description: Google Cloud project ID
+          example: my-gcp-project
+        location:
+          type: string
+          description: Google Cloud region for Vertex AI
+          example: us-central1
+      required:
+        - llmProvider
+        - purpose
+        - tokenName
+        - tokenValue
+    OpenApiIntegrationInfo:
+      type: object
+      description: Git platform integration information
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique integration identifier used for referencing this integration
+            in other API calls
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: User-defined name for the integration
+          example: Company GitHub Enterprise
+        service:
+          type: string
+          description: Git platform service type
+          enum:
+            - GITHUB
+            - GITLAB
+            - BITBUCKET
+          example: GITHUB
+        server:
+          type: string
+          description: Base URL of the Git platform server
+          example: https://github.com
+      required:
+        - id
+        - name
+        - server
+        - service
+    OpenApiIntegrationsResponse:
+      type: object
+      description: List of registered Git platform integrations
+      properties:
+        integrations:
+          type: array
+          description: List of active integration details. Only active integrations are
+            included for security purposes.
+          items:
+            $ref: "#/components/schemas/OpenApiIntegrationInfo"
+      required:
+        - integrations
+    AuthenticationInfo:
+      type: object
+      description: Authentication information
+      properties:
+        keyName:
+          type: string
+          description: Human-readable key name
+          example: Integration Key
+        permissions:
+          type: array
+          description: List of permissions granted to this API key
+          example:
+            - HEALTH_READ
+          items:
+            type: string
+        expiresAt:
+          type: string
+          format: date-time
+          description: Expiration date of the API key in ISO 8601 format. Null if the key
+            does not expire.
+          examples:
+            - 2025-07-12T12:00:00.123456Z
+            - 2025-07-12T12:00:00+09:00
+      required:
+        - keyName
+        - permissions
+    HealthResponse:
+      type: object
+      description: Health check response
+      properties:
+        status:
+          type: string
+          description: Service health status
+          example: healthy
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp in ISO 8601 format
+          examples:
+            - 2025-07-10T12:00:00.123456Z
+            - 2025-07-10T12:00:00+09:00
+        authentication:
+          $ref: "#/components/schemas/AuthenticationInfo"
+          description: Authentication information
+      required:
+        - authentication
+        - status
+        - timestamp
+    GitCredentialsResponse:
+      type: object
+      description: Git repository credentials
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: Project ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+        gitUrl:
+          type: string
+          description: Git repository URL
+          example: https://github.com/example/repo.git
+        personalAccessToken:
+          type: string
+          description: Personal Access Token for repository access
+          example: "***"
+      required:
+        - gitUrl
+        - personalAccessToken
+        - projectId
+    PendingProject:
+      type: object
+      description: Project with pending false positive issues
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: Project unique identifier
+          example: 123e4567-e89b-12d3-a456-426614174000
+        projectName:
+          type: string
+          description: Project name
+          example: security-scanner
+        repository:
+          type: string
+          description: Project repository in the format 'owner/repo'
+          example: my-org/security-scanner
+        branch:
+          type: string
+          description: Branch name where issues were found. Only present if not the main
+            branch.
+          example: develop
+        pendingCount:
+          type: integer
+          format: int32
+          description: Number of pending false positive issues
+          example: 15
+        manualUpload:
+          type: boolean
+          description: Indicates if the project was uploaded manually
+          example: false
+        gitPlatform:
+          type: string
+          description: Git platform of the repository. Null if manual upload.
+          enum:
+            - GITHUB
+            - GITLAB
+            - BITBUCKET
+          example: GITHUB
+      required:
+        - manualUpload
+        - pendingCount
+        - projectId
+        - projectName
+    PendingProjectsResponse:
+      type: object
+      description: Response containing pending false positive projects
+      properties:
+        projects:
+          type: array
+          description: List of projects with pending false positives
+          items:
+            $ref: "#/components/schemas/PendingProject"
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of projects available
+          example: 25
+        requestedCount:
+          type: integer
+          format: int32
+          description: Number of projects requested
+          example: 10
+      required:
+        - projects
+        - requestedCount
+        - totalCount
+    CveResponse:
+      type: object
+      description: Detailed CVE information
+      properties:
+        cveId:
+          type: string
+          description: CVE identifier
+          example: CVE-2021-44228
+        status:
+          type: string
+          description: CVE analysis status
+          enum:
+            - RECEIVED
+            - AWAITING_ANALYSIS
+            - UNDERGOING_ANALYSIS
+            - ANALYZED
+            - MODIFIED
+            - DEFERRED
+            - REJECTED
+          example: ANALYZED
+        published:
+          type: string
+          format: date-time
+          description: CVE publication date in ISO 8601 format
+          example: 2021-12-10T10:15:09Z
+        lastModified:
+          type: string
+          format: date-time
+          description: CVE last modification date in ISO 8601 format
+          example: 2025-04-03T22:44:52.956158Z
+        description:
+          $ref: "#/components/schemas/I18nMessage"
+          description: CVE description in multiple languages
+        cvss:
+          $ref: "#/components/schemas/CvssInfo"
+          description: CVSS (Common Vulnerability Scoring System) information for v3 and v4
+        epss:
+          $ref: "#/components/schemas/EpssInfo"
+          description: EPSS (Exploit Prediction Scoring System) information - probability
+            of exploitation in the next 30 days
+      required:
+        - cveId
+        - cvss
+        - description
+        - lastModified
+        - published
+        - status
+    CvssDetails:
+      type: object
+      description: CVSS scoring details for a specific version
+      properties:
+        score:
+          type: number
+          description: CVSS base score (0.0-10.0)
+          example: 9.5
+          maximum: 10
+          minimum: 0
+        vector:
+          type: string
+          description: CVSS vector string representing attack complexity and impact
+          example: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+        severity:
+          type: string
+          description: Qualitative severity rating based on CVSS score
+          enum:
+            - NONE
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+          example: CRITICAL
+      required:
+        - score
+        - severity
+        - vector
+    CvssInfo:
+      type: object
+      description: CVSS (Common Vulnerability Scoring System) scoring information
+      properties:
+        v3:
+          $ref: "#/components/schemas/CvssDetails"
+          description: CVSS version 3.x scoring details
+        v4:
+          $ref: "#/components/schemas/CvssDetails"
+          description: CVSS version 4.0 scoring details
+    EpssInfo:
+      type: object
+      description: EPSS (Exploit Prediction Scoring System) information
+      properties:
+        score:
+          type: number
+          description: EPSS score - probability of exploitation in the next 30 days
+            (0.0-1.0)
+          example: 0.94358
+          maximum: 1
+          minimum: 0
+        percentile:
+          type: number
+          description: EPSS percentile - percentage of vulnerabilities with lower EPSS
+            scores (0.0-1.0)
+          example: 0.99951
+          maximum: 1
+          minimum: 0
+      required:
+        - percentile
+        - score
+    I18nMessage:
+      type: object
+      description: Internationalized vulnerability description
+      properties:
+        en:
+          type: string
+          description: English vulnerability description
+          example: Apache Log4j2 2.0-beta9 through 2.15.0 (excluding security releases
+            2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log
+            messages, and parameters do not protect against attacker controlled
+            LDAP and other JNDI related endpoints. An attacker who can control
+            log messages or log message parameters can execute arbitrary code
+            loaded from LDAP servers when message lookup substitution is
+            enabled. From log4j 2.15.0, this behavior has been disabled by
+            default. From version 2.16.0 (along with 2.12.2, 2.12.3, and 2.3.1),
+            this functionality has been completely removed. Note that this
+            vulnerability is specific to log4j-core and does not affect log4net,
+            log4cxx, or other Apache Logging Services projects.
+        ko:
+          type: string
+          description: Korean vulnerability description (optional)
+          example: Apache Log4j2 2.0-beta9부터 2.15.0까지 버전(보안 릴리스인 2.12.2, 2.12.3, 2.3.1
+            제외)에서는 설정(configuration), 로그 메시지, 파라미터에 사용되는 JNDI 기능이 공격자가 조작하는 LDAP
+            및 기타 JNDI 관련 엔드포인트에 대해 충분한 보호를 제공하지 않습니다. 공격자가 로그 메시지나 메시지 파라미터를 조작할
+            수 있는 경우, 메시지 조회 치환(message lookup substitution)이 활성화되어 있을 때 LDAP
+            서버에서 로드된 임의의 코드를 실행할 수 있습니다. Log4j 2.15.0 버전부터는 기본 설정으로 이 동작이
+            비활성화되었으며, 2.16.0 버전(및 2.12.2, 2.12.3, 2.3.1 보안 릴리스)부터는 이 기능이 완전히
+            제거되었습니다. 이 취약점은 log4j-core에만 해당하며, log4net, log4cxx 또는 기타 Apache
+            Logging Services 프로젝트에는 영향을 주지 않습니다.
+      required:
+        - en
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: "Bearer token authentication using Authorization header. Example:
+        `Authorization: Bearer your-api-key-here`"
+      scheme: bearer

@@ -1,0 +1,36 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  테스트 케이스: 🟢 LOW
+  - axios@1.7.7 (고정 버전, semver 위험 없음)
+  - npm install 사용
+  - SCM: OCBDEV/safe-app
+-->
+<project>
+  <description>axios@1.7.7 고정 버전 + npm install — semver 위험 없음 → LOW</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-F/safe-app.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+# package.json: "axios": "1.7.7"  ← 고정, semver 위험 없음
+npm install
+npm test
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

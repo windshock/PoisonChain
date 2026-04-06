@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC3: �� MEDIUM — semver위험 + npm ci + 공격기간 내 빌드 -->
+<project>
+  <description>SC3: MEDIUM — AI/ocb-ai-chatbot-web (^1.4.0) + npm ci (lockfile 고정)</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-B/chatbot-web.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>npm ci &amp;&amp; npm run build</command></hudson.tasks.Shell>
+  </builders>
+</project>

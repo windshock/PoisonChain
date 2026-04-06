@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC1: 🔴 CRITICAL — semver위험 + 공격기간 내 빌드 + npm install -->
+<project>
+  <description>SC1: CRITICAL — ADP/cs-admin-web (^1.4.0 → 1.14.1 허용) + npm install</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-A/admin-web.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>npm install &amp;&amp; npm run build</command></hudson.tasks.Shell>
+  </builders>
+</project>

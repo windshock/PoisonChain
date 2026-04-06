@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC2: 🟠 HIGH — semver위험 + 공격기간 이후 빌드 + npm install -->
+<project>
+  <description>SC2: HIGH — ADP/dash-api-gateway (^1.6.0) + npm install + 공격 후 빌드</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-A/api-gateway.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>npm install &amp;&amp; npm run build</command></hudson.tasks.Shell>
+  </builders>
+</project>

@@ -1,0 +1,25 @@
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: admin123
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Read:anonymous"
+        - "Job/Read:anonymous"
+        - "View/Read:anonymous"
+        - "Overall/Administer:admin"
+  numExecutors: 0
+  systemMessage: "PoisonChain Jenkins Lab — jenkins_scan.py 테스트 환경"
+  nodes:
+    - permanent:
+        name: "docker-agent"
+        remoteFS: "/home/jenkins/agent"
+        numExecutors: 2
+        labelString: "agent"
+        launcher:
+          inbound: {}
+        retentionStrategy: "always"

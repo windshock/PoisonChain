@@ -1,0 +1,8 @@
+.env
+.DS_Store
+internal/
+
+__pycache__/
+*.pyc
+public/lab/node_modules/
+public/lab/**/node_modules/

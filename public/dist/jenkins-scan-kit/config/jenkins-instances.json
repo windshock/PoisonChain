@@ -1,0 +1,8 @@
+{
+  "_comment": "사내 Jenkins 인스턴스 목록 샘플. 실제 IP/URL로 교체하여 사용하세요.",
+  "_note": "토큰은 .env 에 JENKINS_TOKEN_{id} 형식으로 관리 (예: JENKINS_TOKEN_1). 미설정 시 익명 읽기 시도.",
+  "instances": [
+    {"id": 1, "ip": "192.168.1.10",  "protocol": "http", "port": 8080, "url": "http://192.168.1.10:8080",  "version": "2.479.3"},
+    {"id": 2, "ip": "192.168.1.11",  "protocol": "http", "port": 8080, "url": "http://192.168.1.11:8080",  "version": "2.516.1"}
+  ]
+}

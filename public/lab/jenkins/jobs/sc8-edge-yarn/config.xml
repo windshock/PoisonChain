@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC8: 🔴 CRITICAL — semver위험 + yarn install + 공격기간 내 빌드 -->
+<project>
+  <description>SC8: CRITICAL — AI/ocb-user-web-with-react (^1.4.0) + yarn install</description>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>http://bitbucket.example.com/scm/TEAM-B/user-web-react.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+  </scm>
+  <builders>
+    <hudson.tasks.Shell><command>yarn install &amp;&amp; yarn build</command></hudson.tasks.Shell>
+  </builders>
+</project>

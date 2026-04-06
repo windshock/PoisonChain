@@ -1,0 +1,38 @@
+services:
+  jenkins:
+    build: .
+    container_name: poisonchain-jenkins-lab
+    ports:
+      - "18080:8080"
+      - "18050:50000"   # JNLP agent port
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./casc/casc.yaml:/var/jenkins_home/casc.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: "0:0"
+    cap_add:
+      - NET_ADMIN   # iptables 테스트용
+    networks:
+      - jenkins-net
+
+  agent:
+    build: ./agent
+    container_name: poisonchain-jenkins-agent
+    depends_on:
+      - jenkins
+    environment:
+      - MASTER_URL=http://jenkins:8080
+      - AGENT_NAME=docker-agent
+    cap_add:
+      - NET_ADMIN   # iptables 테스트용
+    networks:
+      - jenkins-net
+
+networks:
+  jenkins-net:
+
+volumes:
+  jenkins_home:

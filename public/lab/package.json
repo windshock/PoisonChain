@@ -1,0 +1,9 @@
+{
+  "name": "axios-semver-lab",
+  "private": true,
+  "description": "로컬 확인: ~0.27.2 + @pm2/js-api(^0.21.0 transitive) 해석",
+  "dependencies": {
+    "axios": "~0.27.2",
+    "@pm2/js-api": "0.6.7"
+  }
+}

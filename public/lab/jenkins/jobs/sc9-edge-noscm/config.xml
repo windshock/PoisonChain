@@ -1,0 +1,9 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- SC9: 엣지 — SCM 없는 잡 (오류없이 skip 확인) -->
+<project>
+  <description>SC9: Edge — SCM 없음 (graceful skip 테스트)</description>
+  <scm class="hudson.scm.NullSCM"/>
+  <builders>
+    <hudson.tasks.Shell><command>npm install &amp;&amp; node deploy.js</command></hudson.tasks.Shell>
+  </builders>
+</project>

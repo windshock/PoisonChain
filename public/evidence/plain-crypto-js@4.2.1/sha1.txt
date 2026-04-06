@@ -1,0 +1,1 @@
+a90c74985b14a65d5384c3f0f9b8939ff5fd0335  plain-crypto-js-4.2.1.tgz
