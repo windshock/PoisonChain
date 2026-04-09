@@ -3,6 +3,6 @@
   "private": true,
   "description": "루트만 axios ^0.21.0 → 0.30.x 미도달 확인",
   "dependencies": {
-    "axios": "^0.21.0"
+    "axios": "^1.13.5"
   }
 }
