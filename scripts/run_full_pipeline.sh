@@ -6,7 +6,7 @@
 #   ./scripts/run_full_pipeline.sh --with-hr   # 위 + 재직 조회 후 fetch_committers 재실행
 #   ./scripts/run_full_pipeline.sh --hr-refresh  # hr_portal만: 재직·부서 JSON 반영 + axios-repos-by-team.md만 (짧음)
 #   ./scripts/run_full_pipeline.sh --with-lockfile # 위 + canisterworm_lockfile_scan (/tmp/npm_projects.json 필요)
-#   ./scripts/run_full_pipeline.sh --with-jenkins  # 위 + jenkins_scan.py (Jenkins 인스턴스 스캔)
+#   ./scripts/run_full_pipeline.sh --with-jenkins  # 위 + jenkins_scan.py (선택 단계; Jenkins 토큰/접근권 필요, 부분 수집 가능)
 #
 # 환경: 저장소 루트의 .env (XEIZE_* 등). PY=python3.12 처럼 인터프리터 덮어쓰기 가능.
 
@@ -77,7 +77,7 @@ echo "==> [8] report_axios_by_team.py"
 $PY scripts/report_axios_by_team.py
 
 if [[ "$WITH_JENKINS" == "1" ]]; then
-  echo "==> [9] jenkins_scan.py (Jenkins 인스턴스 스캔)"
+  echo "==> [9] jenkins_scan.py (선택 단계; Jenkins 토큰/접근권 필요, 부분 수집 가능)"
   $PY scripts/jenkins_scan.py
 fi
 

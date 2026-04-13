@@ -403,6 +403,37 @@ def extract_team(repo: dict) -> str | None:
             return dept
     return None
 
+
+def summarize_jobs(all_jobs: list[dict]) -> dict:
+    """Build stable aggregate counts from per-job entries."""
+    matched_repo_names = sorted(
+        {j["bitbucket_repo"] for j in all_jobs if j.get("bitbucket_repo")}
+    )
+    risk_counts: dict[str, int] = {}
+    for job in all_jobs:
+        risk = job.get("risk_level", "LOW")
+        risk_counts[risk] = risk_counts.get(risk, 0) + 1
+
+    return {
+        "matched_jobs": sum(1 for j in all_jobs if j.get("bitbucket_repo")),
+        "matched_repos": len(matched_repo_names),
+        "matched_repo_names": matched_repo_names,
+        "risk_counts": risk_counts,
+        "jobs_with_npm_install": sum(1 for j in all_jobs if j.get("uses_npm_install") is True),
+        "jobs_with_npm_ci": sum(1 for j in all_jobs if j.get("uses_npm_ci") is True),
+        "jobs_in_attack_window": sum(
+            1 for j in all_jobs if j.get("last_build_in_attack_window") is True
+        ),
+        "jobs_missing_build_history": sum(
+            1 for j in all_jobs if j.get("last_build_timestamp") is None
+        ),
+        "pipeline_jobs_without_inline_command_visibility": sum(
+            1
+            for j in all_jobs
+            if j.get("uses_npm_install") is None or j.get("uses_npm_ci") is None
+        ),
+    }
+
 # ---------------------------------------------------------------------------
 # Scan a single instance
 # ---------------------------------------------------------------------------
@@ -517,14 +548,19 @@ def main() -> None:
 
     # Load instances
     with open(INSTANCES_JSON, encoding="utf-8") as f:
-        instances: list[dict] = json.load(f)["instances"]
+        inventory_instances: list[dict] = json.load(f)["instances"]
+    inventory_count = len(inventory_instances)
+    instances = list(inventory_instances)
+    scan_mode = "batch"
 
     if lab:
         instances = [{"id": 0, "url": "http://localhost:18080", "ip": "localhost", "protocol": "http", "port": 18080, "version": "lab"}]
         print("🧪 Lab 모드: http://localhost:18080 (admin:admin123)")
+        scan_mode = "lab"
     elif instance_url:
         instances = [{"id": 0, "url": instance_url, "ip": "", "protocol": "http", "port": 80, "version": "unknown"}]
         print(f"🔍 단일 인스턴스: {instance_url}")
+        scan_mode = "single-instance"
 
     if dry_run:
         print(f"[dry-run] 스캔 대상 인스턴스 {len(instances)}개:")
@@ -566,13 +602,32 @@ def main() -> None:
                 print(f"✅ [{inst['id']}] {inst['url']} — 잡 {job_count}개, 매칭 {matched}개")
                 all_jobs.extend(res["jobs"])
 
-    matched_repos = sum(1 for j in all_jobs if j["bitbucket_repo"])
+    summary = summarize_jobs(all_jobs)
+    partial_scan_reasons: list[str] = []
+    if scan_mode == "lab":
+        partial_scan_reasons.append("lab 모드")
+    elif scan_mode == "single-instance":
+        partial_scan_reasons.append("단일 인스턴스 모드")
+    if scan_mode == "batch" and (scanned + skipped) < inventory_count:
+        partial_scan_reasons.append("현재 결과가 전체 인벤토리보다 적은 인스턴스만 포함")
+    if skipped:
+        partial_scan_reasons.append("일부 대상 인스턴스가 인증 실패 또는 미접속")
+    partial_scan_reasons = list(dict.fromkeys(partial_scan_reasons))
+    partial_scan = bool(partial_scan_reasons)
+
     output = {
         "scan_time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "scan_mode": scan_mode,
+        "inventory_instance_count": inventory_count,
+        "instances_targeted": len(instances),
         "instances_scanned": scanned,
         "instances_skipped": skipped,
+        "partial_scan": partial_scan,
+        "partial_scan_reasons": partial_scan_reasons,
         "total_jobs_found": len(all_jobs),
-        "matched_repos": matched_repos,
+        "matched_jobs": summary["matched_jobs"],
+        "matched_repos": summary["matched_repos"],
+        "summary": summary,
         "results": all_jobs,
     }
 
@@ -581,16 +636,20 @@ def main() -> None:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\n📄 결과: {OUTPUT_JSON}")
+    print(f"   인벤토리: {inventory_count}, 이번 대상: {len(instances)}")
     print(f"   인스턴스 스캔: {scanned}, 건너뜀: {skipped}")
-    print(f"   전체 잡: {len(all_jobs)}, 매칭된 리포: {matched_repos}")
+    print(
+        f"   전체 잡: {len(all_jobs)}, 매칭 잡: {summary['matched_jobs']}, "
+        f"매칭된 리포: {summary['matched_repos']}"
+    )
+    if partial_scan_reasons:
+        print("   부분 수집:", "; ".join(partial_scan_reasons))
 
-    # Risk summary
-    risk_counts: dict[str, int] = {}
-    for j in all_jobs:
-        r = j["risk_level"]
-        risk_counts[r] = risk_counts.get(r, 0) + 1
-    if risk_counts:
-        print("   위험도 분포:", ", ".join(f"{k}:{v}" for k, v in sorted(risk_counts.items())))
+    if summary["risk_counts"]:
+        print(
+            "   위험도 분포:",
+            ", ".join(f"{k}:{v}" for k, v in sorted(summary["risk_counts"].items())),
+        )
 
 
 if __name__ == "__main__":

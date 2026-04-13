@@ -2,7 +2,7 @@
 
 > **대상:** Jenkins 담당자, DevSecOps 팀  
 > **작성 배경:** 2026년 3월 axios@1.14.1 공급망 공격 대응  
-> **관련 파일:** `public/lab/jenkins/` (PoisonChain 테스트 랩), `internal/reports/`
+> **관련 파일:** `public/lab/jenkins/` (PoisonChain 테스트 랩), `public/dist/jenkins-scan-kit/`
 
 ---
 
@@ -14,7 +14,7 @@
 4. [Pipeline 잡 통합 (Declarative)](#4-pipeline-잡-통합-declarative)
 5. [Shared Library 방식](#5-shared-library-방식)
 6. [실패 처리 정책](#6-실패-처리-정책)
-7. [회사 Jenkins 45개 인스턴스 적용 고려사항](#7-회사-jenkins-45개-인스턴스-적용-고려사항)
+7. [다중 Jenkins 인스턴스 적용 고려사항](#7-다중-jenkins-인스턴스-적용-고려사항)
 8. [FAQ](#8-faq)
 
 ---
@@ -236,9 +236,9 @@ pipeline {
 
 ## 5. Shared Library 방식
 
-45개 Jenkins 인스턴스에 각각 설정하는 대신, 중앙 Shared Library로 관리하면 정책 변경 시 한 곳에서 일괄 적용된다.
+여러 Jenkins 인스턴스에 각각 설정하는 대신, 중앙 Shared Library로 관리하면 정책 변경 시 한 곳에서 일괄 적용된다.
 
-### 5.1 Shared Library 구조 (Bitbucket)
+### 5.1 Shared Library 구조 (Git/SCM)
 
 ```
 jenkins-shared-library/
@@ -359,7 +359,7 @@ pipeline {
 | Name | `company-shared-lib` |
 | Default version | `main` |
 | Retrieval method | Modern SCM → Git |
-| Repository URL | `https://bitbucket.example.com/scm/devops/jenkins-shared-library.git` |
+| Repository URL | `https://git.example.com/devops/jenkins-shared-library.git` |
 
 ---
 
@@ -397,11 +397,11 @@ def DEFAULT_EXCLUDE_RULES = [
 
 ---
 
-## 7. 회사 Jenkins 45개 인스턴스 적용 고려사항
+## 7. 다중 Jenkins 인스턴스 적용 고려사항
 
 ### 7.1 적용 우선순위
 
-**PoisonChain 분석 결과** (`internal/reports/data/jenkins-scan-result.json` 기준):
+**PoisonChain Jenkins 스캔 결과** (`reports/jenkins-scan-result.json` 또는 중앙 수집 JSON 기준):
 
 1. **즉시 (CRITICAL/HIGH):** semver 위험 81개 리포의 Jenkins 잡
 2. **1-2주 내:** npm/yarn 빌드 잡 전체
@@ -409,38 +409,38 @@ def DEFAULT_EXCLUDE_RULES = [
 
 ```bash
 # CRITICAL 잡 목록 추출
-jq '.results[] | select(.risk_level == "CRITICAL") | .job_name' internal/reports/data/jenkins-scan-result.json
+jq '.results[] | select(.risk_level == "CRITICAL") | .job_name' reports/jenkins-scan-result.json
 ```
 
 ### 7.2 폐쇄망 Jenkins 대응
 
-인터넷이 안 되는 Jenkins 인스턴스의 경우 GuardDog 이미지를 내부 레지스트리에 미러링한다.
+인터넷이 안 되는 Jenkins 인스턴스의 경우 GuardDog 이미지를 private 레지스트리에 미러링한다.
 
 ```bash
 # 인터넷 가능한 서버에서 (1회)
 docker pull ghcr.io/datadog/guarddog
 docker save ghcr.io/datadog/guarddog | gzip > guarddog-image.tar.gz
 
-# 내부 레지스트리로 전송 후 push
+# private 레지스트리로 전송 후 push
 docker load < guarddog-image.tar.gz
-docker tag ghcr.io/datadog/guarddog your-registry.internal/guarddog:latest
-docker push your-registry.internal/guarddog:latest
+docker tag ghcr.io/datadog/guarddog registry.example.com/guarddog:latest
+docker push registry.example.com/guarddog:latest
 ```
 
-래퍼 스크립트에서 내부 레지스트리 이미지 사용:
+래퍼 스크립트에서 private 레지스트리 이미지 사용:
 
 ```bash
 #!/bin/sh
 docker run --rm \
   -v "$(pwd):/workspace" \
   -w /workspace \
-  your-registry.internal/guarddog:latest "$@"
+  registry.example.com/guarddog:latest "$@"
 ```
 
 ### 7.3 분산 Jenkins 관리 전략
 
 ```
-중앙 Bitbucket (devops/jenkins-shared-library)
+중앙 Git 저장소 (devops/jenkins-shared-library)
         │
         ├── Jenkins Instance A (팀 1)  → @Library('company-shared-lib')
         ├── Jenkins Instance B (팀 2)  → @Library('company-shared-lib')
@@ -510,7 +510,7 @@ archiveArtifacts artifacts: 'guarddog-report.json', allowEmptyArchive: true
 
 A: Debian bookworm (Jenkins LTS 기본 베이스)에서 libgit2 버전 불일치로 발생합니다. Docker 방식(방법 A)을 권장합니다. pip을 고집하는 경우 `libgit2-dev` 버전을 명시하거나 `pygit2` 를 `--no-deps` 없이 설치해 보세요.
 
-**Q: 45개 Jenkins 중 일부만 npm 잡입니다. 나머지는 어떻게 하나요?**
+**Q: 여러 Jenkins 중 일부만 npm 잡입니다. 나머지는 어떻게 하나요?**
 
 A: `guardDogScan()` 은 `package-lock.json` 이 없으면 자동으로 건너뜁니다. 모든 파이프라인에 넣어도 부작용 없습니다. Python 프로젝트는 `guardDogScanPypi()` 를 추가하세요.
 
@@ -520,5 +520,6 @@ A: `guardDogScan()` 은 `package-lock.json` 이 없으면 자동으로 건너뜁
 
 - [GuardDog GitHub](https://github.com/DataDog/guarddog)
 - [GuardDog Rules 목록](https://github.com/DataDog/guarddog/tree/main/guarddog/rules)
-- [PoisonChain 사고 분석 보고서](../../internal/reports/)
+- [Axios maintainer post-mortem analysis](./analysis-of-axios-supply-chain-incident-based-on-maintainer-report.md)
+- [Axios technical attack report](./axios-npm-supply-chain-attack-report.md)
 - [Jenkins Shared Libraries 공식 문서](https://www.jenkins.io/doc/book/pipeline/shared-libraries/)

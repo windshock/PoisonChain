@@ -189,18 +189,20 @@ def dominant_org_team_per_project(repos: List[dict]) -> Dict[str, Optional[str]]
     return out
 
 
-def load_jenkins_risk_index(path: str = JENKINS_SCAN_JSON) -> Dict[str, str]:
+def load_jenkins_scan_context(path: str = JENKINS_SCAN_JSON) -> dict:
     """
     Loads internal/reports/data/jenkins-scan-result.json if present.
-    Returns {bitbucket_repo_name: highest_risk_level} for matched repos.
+    Returns both per-repo risk and summary metadata so the generated report can
+    tell the reader whether the current Jenkins snapshot is partial.
     """
     if not os.path.exists(path):
-        return {}
+        return {"risk_index": {}, "summary": None}
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
     _RISK_ORDER = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1}
     index: Dict[str, str] = {}
-    for result in data.get("results", []):
+    results = data.get("results", [])
+    for result in results:
         repo = result.get("bitbucket_repo")
         risk = result.get("risk_level", "LOW")
         if not repo:
@@ -208,7 +210,35 @@ def load_jenkins_risk_index(path: str = JENKINS_SCAN_JSON) -> Dict[str, str]:
         current = index.get(repo)
         if current is None or _RISK_ORDER.get(risk, 0) > _RISK_ORDER.get(current, 0):
             index[repo] = risk
-    return index
+
+    summary = data.get("summary") or {}
+    if not summary:
+        matched_repo_names = sorted(
+            {result.get("bitbucket_repo") for result in results if result.get("bitbucket_repo")}
+        )
+        risk_counts: Dict[str, int] = {}
+        for result in results:
+            risk = result.get("risk_level", "LOW")
+            risk_counts[risk] = risk_counts.get(risk, 0) + 1
+        summary = {
+            "matched_jobs": sum(1 for result in results if result.get("bitbucket_repo")),
+            "matched_repos": len(matched_repo_names),
+            "matched_repo_names": matched_repo_names,
+            "risk_counts": risk_counts,
+        }
+
+    summary = {
+        **summary,
+        "scan_time": data.get("scan_time"),
+        "scan_mode": data.get("scan_mode"),
+        "inventory_instance_count": data.get("inventory_instance_count"),
+        "instances_targeted": data.get("instances_targeted"),
+        "instances_scanned": data.get("instances_scanned"),
+        "instances_skipped": data.get("instances_skipped"),
+        "partial_scan": data.get("partial_scan"),
+        "partial_scan_reasons": data.get("partial_scan_reasons") or [],
+    }
+    return {"risk_index": index, "summary": summary}
 
 
 def main():
@@ -218,7 +248,9 @@ def main():
         sys.exit(f"Missing {path}")
 
     morning_keys = load_morning_inventory_keys(inv_path)
-    jenkins_risk = load_jenkins_risk_index()
+    jenkins_ctx = load_jenkins_scan_context()
+    jenkins_risk = jenkins_ctx["risk_index"]
+    jenkins_summary = jenkins_ctx["summary"]
 
     with open(path) as f:
         scan = json.load(f)
@@ -257,6 +289,7 @@ def main():
     w = lines.append
     display_path = os.path.relpath(path, ROOT_DIR)
     display_inv_path = os.path.relpath(inv_path, ROOT_DIR) if inv_path else inv_path
+    display_jenkins_path = os.path.relpath(JENKINS_SCAN_JSON, ROOT_DIR)
     w("# axios 사용 리포지토리 — 팀별 그룹")
     w("")
     w(
@@ -295,10 +328,44 @@ def main():
         "**미분류**는 프로젝트 단위 다수결 팀을 물려 쓴 뒤에도 남는 경우. **Bitbucket 프로젝트** 열은 참고."
     )
     w("")
+    if jenkins_summary:
+        scope_bits = []
+        if jenkins_summary.get("inventory_instance_count"):
+            scope_bits.append(f"인벤토리 {jenkins_summary['inventory_instance_count']}대")
+        if jenkins_summary.get("instances_targeted") is not None:
+            scope_bits.append(f"이번 대상 {jenkins_summary['instances_targeted']}대")
+        if jenkins_summary.get("instances_scanned") is not None:
+            scope_bits.append(f"성공 {jenkins_summary['instances_scanned']}대")
+        if jenkins_summary.get("instances_skipped") is not None:
+            scope_bits.append(f"건너뜀 {jenkins_summary['instances_skipped']}대")
+        scope_bits.append(f"매칭 잡 {jenkins_summary.get('matched_jobs', 0)}건")
+        scope_bits.append(f"매칭 리포 {jenkins_summary.get('matched_repos', 0)}개")
+        w(
+            f"> **Jenkins 자동 스캔 상태:** `{display_jenkins_path}` 기준 — "
+            + ", ".join(scope_bits)
+            + "."
+        )
+        w("")
+        if jenkins_summary.get("partial_scan"):
+            reason = (
+                "; ".join(jenkins_summary.get("partial_scan_reasons") or [])
+                or "Jenkins 토큰/접근 범위에 따라 일부만 수집됨."
+            )
+            w(
+                "> **주의:** 현재 Jenkins 결과는 부분 수집이다. "
+                f"누락 인스턴스는 `LOW`로 간주하지 말고 미점검으로 본다. ({reason})"
+            )
+            w("")
     if jenkins_risk:
         w(
-            f"> **Jenkins 위험도:** `{JENKINS_SCAN_JSON}` 기준 — Jenkins 빌드 잡과 매칭된 리포의 최고 위험도. "
+            f"> **Jenkins 위험도:** `{display_jenkins_path}` 기준 — Jenkins 빌드 잡과 매칭된 리포의 최고 위험도. "
             "CRITICAL/HIGH/MEDIUM/LOW 순."
+        )
+        w("")
+    elif jenkins_summary:
+        w(
+            "> **Jenkins 위험도 열:** 현재 자동 스캔 결과에서 Bitbucket 리포와 매칭된 항목이 없어 "
+            "본문 표에는 생략했다. `전사 Jenkins 목록` 열은 Confluence 수동 인벤토리 기준이다."
         )
         w("")
     w("| 팀 | 리포 수(중복 허용) |")

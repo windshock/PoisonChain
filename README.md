@@ -1,12 +1,27 @@
-# PoisonChain 🔗☠️
+# PoisonChain
 
 [한국어](README.ko.md)
 
-**A malicious npm package just dropped. How many repos in your org are affected, who maintains them, and which builds ran during the attack window?**
+PoisonChain is an incident-response toolkit for npm supply chain attacks. It answers the questions security teams get first and fastest: which repositories were exposed, who owns them, which builds actually ran during the attack window, and what each team needs to do next.
 
-PoisonChain **automatically maps the blast radius** of an npm supply chain attack across your entire organization. It scans thousands of repositories to identify affected projects, their maintainers, and compromised build pipelines — then generates per-team incident response dashboards.
+It combines repository scanning, semver risk analysis, build-log inspection, maintainer lookup, and report generation into a single repeatable pipeline. What is usually scattered across spreadsheets, ad hoc scripts, and Slack threads becomes one structured workflow.
 
-> What would take weeks of manual analysis, **done in 2 hours.**
+> From malicious package publication to team-by-team impact report, in a single pipeline.
+
+## What You Get
+
+- Org-wide repository sweep for confirmed malicious versions and semver-based exposure
+- Build-log analysis to tell apart `npm install` compromise paths from safer `npm ci` flows
+- Maintainer and team attribution for every affected repository
+- Team dashboards, incident-response summaries, and reusable self-scan kits
+- Public-facing docs, forensic evidence bundles, and local lab environments for validation
+
+## When To Use It
+
+- A malicious npm version was published and you need blast-radius analysis now
+- Lockfiles alone are not trustworthy enough to answer what really ran
+- You need one output for security leadership and another for engineering teams
+- You want a reusable playbook instead of rebuilding the same incident scripts every time
 
 ---
 
@@ -42,7 +57,7 @@ The question isn't "what does the code look like now" but **"what actually ran i
 
 In March 2026, `axios@1.14.1` and `plain-crypto-js@4.2.1` were published to npm as malicious versions. Via `postinstall` hooks, they exfiltrated npm tokens, GitHub PATs, SSH keys, and other credentials.
 
-Questions a security team must answer:
+PoisonChain is built around the core questions an incident-response team has to answer:
 
 | Question | What PoisonChain Does |
 |----------|----------------------|
@@ -108,7 +123,11 @@ cp public/.env.example .env
 
 **Requirements:** Python 3.9+, `requests` library, API access to your analysis targets
 
-> **Note:** The scripts in this repo were built against a specific internal stack (Bitbucket, Jenkins, a proprietary vulnerability scanner API). Your organization will likely use different systems — GitHub/GitLab, GitHub Actions/CircleCI, Snyk/Dependabot, Okta/AD, etc. The value here is the **methodology and pipeline logic**, not the specific API calls. Fork and adapt the integration points to your own environment.
+> **Compatibility note:** This repository keeps the original `XEIZE_*` API naming and Bitbucket/Jenkins-oriented examples because they reflect the production workflow the toolkit was built from. If your environment uses GitHub/GitLab, GitHub Actions/CircleCI, or another scanner/provider, adapt the integration points and keep the pipeline design.
+
+## Why It Matters
+
+PoisonChain is opinionated about incident response: detection is not enough, and a raw package IOC list is not enough. Teams need evidence, ownership, and an execution path. This repo packages that operational layer so you can go from package compromise to remediation planning without inventing a new workflow under pressure.
 
 ---
 
@@ -148,6 +167,16 @@ Semver edge case test:
 cd public/lab/caret-021-only
 npm install && npm ls axios    # verify ^0.21.0 does NOT pull 0.30.x
 ```
+
+---
+
+## Outputs
+
+- Repository-level JSON for confirmed and potential exposure
+- Jenkins scan JSON with job-level risk scoring and partial-scan metadata
+- Team-specific Markdown reports for engineering follow-up
+- Email drafts and response material in local operating copies
+- Public documentation and lab assets for reproducible validation
 
 ---
 
@@ -216,6 +245,8 @@ PoisonChain/
 ## Documentation
 
 - [`public/handoff/HANDOFF.md`](public/handoff/HANDOFF.md) — API authentication summary
+- [`public/docs/analysis-of-axios-supply-chain-incident-based-on-maintainer-report.md`](public/docs/analysis-of-axios-supply-chain-incident-based-on-maintainer-report.md) — Maintainer post-mortem based analysis of the axios incident
+- [`public/docs/axios-npm-supply-chain-attack-report.md`](public/docs/axios-npm-supply-chain-attack-report.md) — Deep technical analysis of payloads, RAT behavior, and IOCs
 - [`public/docs/JENKINS-SECURITY-GUIDE.md`](public/docs/JENKINS-SECURITY-GUIDE.md) — Jenkins supply chain security guide
 - [`public/docs/GUARDDOG-JENKINS-GUIDE.md`](public/docs/GUARDDOG-JENKINS-GUIDE.md) — GuardDog + Jenkins Shared Library integration
 - [`public/lab/README.md`](public/lab/README.md) — Local lab environment

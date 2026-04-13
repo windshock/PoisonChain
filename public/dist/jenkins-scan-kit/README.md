@@ -35,7 +35,14 @@ python3 jenkins_scan.py
 cat reports/jenkins-scan-result.json
 ```
 
-`risk_level`이 **CRITICAL** 또는 **HIGH**인 항목을 보안팀에 전달해 주세요.
+`reports/jenkins-scan-result.json`의 `summary`와 `results`를 함께 확인하세요.
+
+- `matched_repos`: 현재 스캔에서 Bitbucket 리포와 매칭된 **고유 리포 수**
+- `matched_jobs`: 한 리포에 여러 Jenkins 잡이 잡히는 경우까지 포함한 **매칭 잡 수**
+- `summary.risk_counts`: 위험도별 잡 수
+
+> 이 키트는 보통 **단일 Jenkins**를 스캔하므로 결과는 `partial_scan: true` 인 **부분 수집본**이다.  
+> 조직 전체 수치처럼 사용하지 말고, **해당 Jenkins에서 확인된 결과만** 회신해야 한다.
 
 ---
 
@@ -43,10 +50,10 @@ cat reports/jenkins-scan-result.json
 
 | 위험도 | 의미 |
 |--------|------|
-| CRITICAL | 공격 시간대 빌드 + npm install + axios 사용 확인 |
-| HIGH | 공격 시간대 빌드 + npm install 확인 (axios 미확인) |
-| MEDIUM | npm install 있으나 공격 시간대 빌드 없음 |
-| LOW | npm install 없음 |
+| CRITICAL | semver 위험 axios 리포 + 공격 시간대 빌드 + `npm install` 가능 |
+| HIGH | semver 위험 axios 리포 + 공격 시간대 이후 빌드 + `npm install` 가능 |
+| MEDIUM | semver 위험 axios 리포 + `npm ci` 사용 또는 Jenkinsfile 내부라 명령이 보수적으로 해석됨 |
+| LOW | semver 위험 리포와 매칭되지 않았거나 `npm install` 흔적이 없음 |
 
 ## 토큰 발급 방법
 

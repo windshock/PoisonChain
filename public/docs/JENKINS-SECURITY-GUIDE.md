@@ -1,7 +1,7 @@
 # CI/CD 파이프라인 공급망 보안 가이드라인
 
 > **배경**: 2026-03-31 axios@1.14.1 공급망 공격 대응 과정에서 식별된 보안 미흡 사항을 반영한 설정 가이드.  
-> **적용 대상**: 사내 Jenkins 인스턴스 45개 + npm/Python 패키지 사용 프로젝트 전체
+> **적용 대상**: Jenkins 인스턴스를 운영하며 npm/Python 패키지를 사용하는 팀 또는 조직
 
 ---
 
@@ -125,11 +125,11 @@ cat .gitignore | grep package-lock   # 출력 없어야 정상
 ```
 → npm 레지스트리 공개 후 3일 미만 버전은 Renovate가 PR을 생성하지 않음.
 
-**npm — 내부 레지스트리(Nexus/Verdaccio) 정책**
+**npm — private 레지스트리(Nexus/Verdaccio) 정책**
 
 ```bash
-# .npmrc에서 내부 미러 강제
-registry=https://nexus.internal/repository/npm-proxy/
+# .npmrc에서 private 미러 강제
+registry=https://registry.example.com/repository/npm-proxy/
 ```
 → Nexus Smart Proxy 또는 Verdaccio 플러그인으로 age-based 필터 적용.
 
@@ -148,7 +148,7 @@ exclude-newer = "2026-03-30T00:00:00Z"
 | npm (Renovate) | `minimumReleaseAge` in renovate.json | ✅ |
 | npm (레지스트리) | Nexus/Verdaccio 미러 정책 | 간접 |
 | Python (uv) | `exclude-newer` in uv.toml | ✅ |
-| Python (pip) | 없음 — 내부 PyPI 미러 경유 | ❌ |
+| Python (pip) | 없음 — private PyPI 미러 경유 | ❌ |
 
 ### 4.2 postinstall 스크립트 실행 차단
 
@@ -198,11 +198,12 @@ stage('Supply Chain Scan') {
 
 - [ ] 공격 기간(2026-03-31 09:21~12:40 KST) 빌드 이력 확인
   ```bash
-  # 1. .env 파일에 Jenkins URL과 토큰 설정 (최초 1회)
+  # 1. jenkins-scan-kit/.env 파일에 Jenkins URL과 토큰 설정 (최초 1회)
   #    JENKINS_URL=https://your-jenkins.example.com
   #    JENKINS_TOKEN=your-username:11abc123def456789
-  python3 scripts/jenkins_scan.py
-  # 모든 잡(중첩 폴더 포함) 자동 스캔 → internal/reports/data/jenkins-scan-result.json
+  cd public/dist/jenkins-scan-kit
+  python3 jenkins_scan.py
+  # 모든 잡(중첩 폴더 포함) 자동 스캔 → reports/jenkins-scan-result.json
   ```
 - [ ] 해당 빌드에 `npm install` 포함 여부 확인
 - [ ] 빌드 로그에서 `plain-crypto-js` 관련 출력 여부 확인
@@ -221,7 +222,7 @@ stage('Supply Chain Scan') {
 ### ✅ 중기 조치 (1개월 이내)
 
 - [ ] GuardDog 파이프라인 통합 (`docs/GUARDDOG-JENKINS-GUIDE.md`)
-- [ ] 내부 npm 미러(Nexus/Artifactory) 레지스트리 고정
+- [ ] private npm 미러(Nexus/Artifactory) 레지스트리 고정
 - [ ] prod zone Jenkins 서버 외부 통신 방화벽 정책 검토
 
 ---
@@ -231,9 +232,9 @@ stage('Supply Chain Scan') {
 | 문서 | 위치 | 내용 |
 |------|------|------|
 | GuardDog 통합 가이드 | `docs/GUARDDOG-JENKINS-GUIDE.md` | npm 패키지 자동 보안 스캔 설정 |
-| Jenkins 점검 대상 목록 | `internal/reports/jenkins/jenkins-inspection-targets.md` | 우선순위별 점검 서버 및 담당자 |
-| 공급망 공격 보고서 | `internal/reports/axios/bitbucket-full-scan-report.md` | 이번 사고 상세 분석 |
-| Jenkins 스캔 스크립트 | `scripts/jenkins_scan.py` | 빌드 이력 자동 분석 도구 |
+| 메인테이너 포스트모템 분석 | `docs/analysis-of-axios-supply-chain-incident-based-on-maintainer-report.md` | 배포 체인과 계정/단말 침해 관점 분석 |
+| 공급망 공격 기술 분석 | `docs/axios-npm-supply-chain-attack-report.md` | 페이로드, RAT, IOC 중심 분석 |
+| Jenkins 스캔 키트 | `dist/jenkins-scan-kit/README.md` | 개별 Jenkins 빌드 이력 자동 분석 도구 |
 
 ---
 
