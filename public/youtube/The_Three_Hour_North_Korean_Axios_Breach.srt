@@ -1,0 +1,1466 @@
+﻿1
+00:00:00,000 --> 00:00:08,772
+[Speaker 1] Usually when we analyze a network intrusion, there is a, a fundamental expectation of forensic permanence right?
+
+2
+00:00:08,772 --> 00:00:10,449
+[Speaker 2] Like leaving footprints in the mud.
+
+3
+00:00:10,449 --> 00:00:34,450
+[Speaker 1] Exactly it's like a break-in at a physical data center.
+You come in the next morning and you know, the server rack is pried open the physical drives are missing and the access logs show exactly which badge was swiped at what time.
+Yeah, it's a mess. It's a huge mess but it's a measurable reconstructible mess.
+I mean, you isolate the VLAN, you pull the PCAPs and you just start working backward from the point of impact.
+
+4
+00:00:34,450 --> 00:00:53,009
+[Speaker 2] Because there's a chronological breadcrumb trail we heavily rely on the assumption that malicious actions generate persistent state changes, right you know, files written to disk registry keys, modified firewall rules, altered.
+The entire incident response playbook is basically built on categorizing those state changes.
+
+5
+00:00:53,009 --> 00:00:59,179
+[Speaker 1] But when you step into the world of modern software supply chains, that baseline assumption just completely disintegrates.
+
+6
+00:00:59,179 --> 00:01:00,301
+[Speaker 2] It really does.
+
+7
+00:01:00,301 --> 00:01:14,875
+[Speaker 1] I mean, imagine someone poisons a municipal water supply right at the treatment plant millions of people drink it.
+But the poison is biochemically engineered so that the exact millisecond it's exposed to the reagents we use to test water purity,
+
+8
+00:01:14,875 --> 00:01:15,996
+[Speaker 3] it just vanishes,
+
+9
+00:01:15,996 --> 00:01:28,192
+[Speaker 1] evaporates into harmless oxygen.
+You know, your infrastructure is compromised.
+You know, data is bleeding out but every telemetry dashboard and static analysis tool reports a completely pristine environment.
+
+10
+00:01:28,192 --> 00:01:40,362
+[Speaker 2] It's the definition of a forensic nightmare.
+The telemetry isn't just failing to detect the anomaly.
+The anomaly is actively using the telemetry's own execution environment to cover its tracks.
+
+11
+00:01:40,362 --> 00:01:48,750
+[Speaker 1] It's wild. We are looking at a situation that is actively forcing enterprise security teams to rewrite their incident response playbooks from scratch,
+
+12
+00:01:48,750 --> 00:01:49,869
+[Speaker 2] absolutely from scratch.
+
+13
+00:01:49,869 --> 00:02:00,019
+[Speaker 1] So today is April 13, 2026 and just 2 weeks ago, spanning the window of March 30th to the 31st, the software development ecosystem experienced a tectonic shift.
+
+14
+00:02:00,019 --> 00:02:01,210
+[Speaker 2] That's not an overstatement.
+
+15
+00:02:01,210 --> 00:02:21,584
+[Speaker 1] For today's deep dive, we are unpacking a leaked threat intelligence presentation titled PoisonChain PPTX.
+It details a catastrophic supply chain compromise of the Axios npm package, the big one, yeah, and it outlines the automated incident response framework, which is also named PoisonChain that was built to mitigate the fallout.
+
+16
+00:02:21,584 --> 00:02:37,279
+[Speaker 2] We really have to establish the sheer gravity of Axios as the target here I mean for you listening, if you are building a modern web application or a mobile app backend or even an internal CLI tool, you are almost certainly using Axios to handle HTTP requests.
+
+17
+00:02:37,279 --> 00:02:38,390
+[Speaker 1] It's everywhere, right?
+
+18
+00:02:38,390 --> 00:02:46,793
+[Speaker 2] It handles the promise-based asynchronous data fetching that essentially powers the modern interactive web.
+We're talking tens of millions of weekly downloads.
+
+19
+00:02:46,793 --> 00:02:47,914
+[Speaker 1] Well
+
+20
+00:02:47,914 --> 00:02:55,758
+[Speaker 2] compromising it isn't just breaching a single company it's pushing a master key into the build pipelines of half the fortune 500 simultaneously
+
+21
+00:02:55,758 --> 00:03:11,220
+[Speaker 1] which makes the methodology of this attack so chilling.
+It wasn't a brute force attack on the registry it was a surgical strike highly targeted, yeah, designed to weaponize the developer's own installation process, detonate in memory and completely erase its own intent.
+
+22
+00:03:11,220 --> 00:03:13,456
+[Speaker 2] It's brilliant in a terrifying way.
+
+23
+00:03:13,456 --> 00:03:21,240
+[Speaker 1] So let's trace the execution chain from the very beginning to poison the water, you need unrestricted administrative access to the treatment plant,
+
+24
+00:03:21,240 --> 00:03:21,850
+[Speaker 2] right?
+
+25
+00:03:21,850 --> 00:03:34,908
+[Speaker 1] According to the PoisonChain intel, this initiated with the compromise of a core Axios maintainer.
+The attackers successfully published 2 malicious versions 1.14.1 and 0.30.4
+
+26
+00:03:34,908 --> 00:03:50,310
+[Speaker 2] and those specific version numbers are critical to understand how so well they didn't bump the major version by publishing a minor patch update like 1.13.1 and an older legacy branch update like 0.30.4.
+They're exploiting the semantic versioning syntax
+
+27
+00:03:50,310 --> 00:03:53,630
+[Speaker 1] like the caret characters in a package.json file.
+
+28
+00:03:53,630 --> 00:04:00,363
+[Speaker 2] Exactly. Most automated CI/CD pipelines are configured to automatically pull minor or patch updates during a fresh build,
+
+29
+00:04:00,363 --> 00:04:02,593
+[Speaker 1] right to ensure they have the latest security fixes.
+
+30
+00:04:02,593 --> 00:04:07,850
+[Speaker 2] So the pipelines are doing exactly what they were designed to do.
+They pull the update automatically without human review,
+
+31
+00:04:07,850 --> 00:04:22,144
+[Speaker 1] right? The system is working as intended just against itself but here is the technical pivot that caught my attention.
+The maintainer's disclosure explicitly noted that they were fully compliant with npm's security mandates,
+
+32
+00:04:22,144 --> 00:04:23,267
+[Speaker 2] they're doing everything,
+
+33
+00:04:23,267 --> 00:04:48,730
+[Speaker 1] right? Their account had a hardware backed two factor authentication enabled.
+Now the source states the attackers abused legitimate publishing rights from the compromised machine following a targeted social engineering attack.
+Yes, wait, if 2FA was on, how did this happen?
+It feels like we're always told 2FA is the ultimate shield.
+If the attacker is operating remotely and the hardware key is sitting on the maintainer's desk in California,
+
+34
+00:04:48,730 --> 00:04:58,250
+[Speaker 2] they aren't attacking the authentication flow, right?
+They're attacking the authorization state.
+We have to differentiate the initial identity verification from the subsequent session management
+
+35
+00:04:58,250 --> 00:04:59,930
+[Speaker 1] Okay, break that down for me
+
+36
+00:04:59,930 --> 00:05:21,530
+[Speaker 2] When the maintainer authenticates to the npm registry via their CLI, they provide their credentials and they tap their YubiKey the npm registry validates that cryptographic challenge and responds by issuing a highly privileged session token.
+It's usually a bearer token stored in the local dot and PMRC file right in the user's home directory.
+
+37
+00:05:21,530 --> 00:05:33,170
+[Speaker 1] So the malware on the endpoint doesn't need to spoof the hardware key or intercept an SMS.
+It just waits for the developer to authenticate normally and then it quietly reads the .npmrc file
+
+38
+00:05:33,170 --> 00:05:40,984
+[Speaker 2] or it extracts the active session cookie from the browser's local storage database.
+It's basically riding the coattails of an already validated
+
+39
+00:05:40,984 --> 00:05:44,692
+[Speaker 1] wow so it just hops in the passenger seat once the engine is already running
+
+40
+00:05:44,692 --> 00:05:55,987
+[Speaker 2] precisely for you listening Think about your own work devices right now If someone had silent userland access to your laptop, what trusted systems could they access without ever needing a pass?
+
+41
+00:05:55,987 --> 00:05:57,661
+[Speaker 1] That's a scary thought.
+
+42
+00:05:57,661 --> 00:06:03,239
+[Speaker 2] If the attacker has execution privileges on that endpoint, they operate with the exact same permissions as the developer.
+
+43
+00:06:03,239 --> 00:06:08,180
+[Speaker 1] So all the physical security in the world doesn't matter if the machine itself is compromised
+
+44
+00:06:08,180 --> 00:06:22,824
+[Speaker 2] exactly like on a Windows machine even if the browser encrypts those session cookies using DPAPI, the Data Protection API the malware running under the developer's user context can just call the CryptUnprotectData API and decrypt the SQLite database instantly
+
+45
+00:06:22,824 --> 00:06:24,240
+[Speaker 3] instantly. Yeah
+
+46
+00:06:24,240 --> 00:06:30,965
+[Speaker 2] the perimeter is no longer the network gateway or the identity provider.
+The perimeter is the end points memory space.
+
+47
+00:06:30,965 --> 00:06:38,718
+[Speaker 1] And once they ripped that publishing token, they had the keys to the castle.
+They authenticated to the registry API and pushed the malicious payloads
+
+48
+00:06:38,718 --> 00:06:40,080
+[Speaker 2] they were officially in.
+
+49
+00:06:40,080 --> 00:06:44,919
+[Speaker 1] But they didn't directly embed the malware into the core Axios source code did they?
+
+50
+00:06:44,919 --> 00:06:46,048
+[Speaker 2] No that would be too obvious
+
+51
+00:06:46,048 --> 00:06:55,958
+[Speaker 1] if you look at the diff for Axios 1.14.1 there's no giant block of obfuscated C2 logic.
+Instead, they weaponize the dependency
+
+52
+00:06:55,958 --> 00:06:57,650
+[Speaker 2] a much stealthier approach.
+
+53
+00:06:57,650 --> 00:07:04,606
+[Speaker 1] They injected a completely new requirement, a package called plain-crypto-js at version 4,
+
+54
+00:07:04,606 --> 00:07:07,403
+[Speaker 2] which is an absolute master class in blending into the noise.
+
+55
+00:07:07,403 --> 00:07:12,439
+[Speaker 1] Yeah I mean, modern JavaScript projects often have dependency trees that are thousands of packages deep,
+
+56
+00:07:12,439 --> 00:07:20,272
+[Speaker 2] tens of thousands sometimes and a package named plain-crypto-js sounds like a completely mundane foundational polyfill,
+
+57
+00:07:20,272 --> 00:07:30,343
+[Speaker 1] right? No developer reviewing a massive dependency resolution log is going to manually audit a cryptography utility that appears to be pulled in by a network client.
+
+58
+00:07:30,343 --> 00:07:32,022
+[Speaker 2] Never, you'd never notice it.
+
+59
+00:07:32,022 --> 00:07:42,377
+[Speaker 1] But plain-crypto-js is the trojan horse and its execution mechanism relies entirely on npm's lifecycle scripts specifically the postinstall hook
+
+60
+00:07:42,377 --> 00:07:44,057
+[Speaker 2] the infamous postinstall.
+
+61
+00:07:44,057 --> 00:07:59,179
+[Speaker 1] The moment a developer or you know, a Jenkins build node runs npm install, the package manager downloads Axios, resolves plain-crypto-js, pulls it down and then automatically executes node setup.js without any human intervention.
+
+62
+00:07:59,179 --> 00:08:04,194
+[Speaker 2] Post-install hook is an incredibly powerful and incredibly dangerous legacy feature.
+
+63
+00:08:04,194 --> 00:08:05,873
+[Speaker 1] Why does it even exist if it's so dangerous
+
+64
+00:08:05,873 --> 00:08:15,383
+[Speaker 2] Well, it was originally designed to allow native C++ bindings like node-sass to compile themselves locally against the specific architecture of the machine downloading them.
+
+65
+00:08:15,383 --> 00:08:16,502
+[Speaker 1] Oh, that makes sense.
+
+66
+00:08:16,502 --> 00:08:25,022
+[Speaker 2] It has a legitimate purpose.
+Yeah but it inherently grants arbitrary code execution privileges simply by virtue of downloading a file
+
+67
+00:08:25,022 --> 00:08:33,734
+[Speaker 1] by downloading it. So Setupjs executes this is the dropper.
+The INTEL report dives into the obfuscation techniques here and it's fascinating.
+
+68
+00:08:33,734 --> 00:08:36,525
+[Speaker 2] It's definitely not your standard script kiddie obfuscation.
+
+69
+00:08:36,525 --> 00:08:51,785
+[Speaker 1] It's not just a simple base 64 encoded string.
+The payload was encrypted using an XOR cipher.
+Yeah the key was order underscore 7077 but they added a positional modifier, a per character offset of 7 times I squared margin of 10.
+
+70
+00:08:51,785 --> 00:08:56,118
+[Speaker 2] Let's break down why an attacker adds an algebraic calculation into the deployment script.
+
+71
+00:08:56,118 --> 00:08:57,237
+[Speaker 1] Why the math
+
+72
+00:08:57,237 --> 00:09:05,633
+[Speaker 2] when a new package is published it is immediately ingested by static analysis engines, security vendor honeypots and AST parsers
+
+73
+00:09:05,633 --> 00:09:07,312
+[Speaker 1] because everyone's watching the registry,
+
+74
+00:09:07,312 --> 00:09:14,589
+[Speaker 2] right? These tools are looking for known malicious signatures or suspicious entropy like hard coded IP addresses or domains.
+
+75
+00:09:14,589 --> 00:09:22,425
+[Speaker 1] So if you just have fetch sfrclak.com:8000 in the plain text, the static analyzer flags it in milliseconds
+
+76
+00:09:22,425 --> 00:09:29,702
+[Speaker 2] exactly so they encrypt it.
+But the security vendors know this so their parsers are designed to dynamically evaluate simple obfuscation.
+
+77
+00:09:29,702 --> 00:09:32,500
+[Speaker 1] Oh so the scanner will try to decode it on the fly.
+
+78
+00:09:32,500 --> 00:09:40,337
+[Speaker 2] Yes if they see standard base 64 decoding, the analyzer just runs the decode function in a sandbox, reads the output and flags.
+
+79
+00:09:40,337 --> 00:09:41,458
+[Speaker 1] Ah, I see
+
+80
+00:09:41,458 --> 00:09:55,790
+[Speaker 2] by introducing a polynomial time complexity calculation, the I squared modular 10, the attacker forces the automated scanner's regex engines and lightweight AST parsers to consume significantly more CPU cycles.
+
+81
+00:09:55,790 --> 00:10:01,273
+[Speaker 1] Wait so they are essentially inducing a micro denial of service attack against the scanner itself.
+
+82
+00:10:01,273 --> 00:10:07,577
+[Speaker 2] Precisely, enterprise scanning pipelines process thousands of packages a minute.
+They have strict time out threshold
+
+83
+00:10:07,577 --> 00:10:09,814
+[Speaker 1] because they can't slow down the developers' build.
+
+84
+00:10:09,814 --> 00:10:21,556
+[Speaker 2] Exactly if a script takes too long to evaluate dynamically, the scanner often defaults to a pass to avoid holding up the CI/CD pipeline.
+The math isn't meant to be cryptographically secure against a human reverse engineer.
+
+85
+00:10:21,556 --> 00:10:25,471
+[Speaker 1] It's just designed to exhaust the computational budget of an automated sandbox
+
+86
+00:10:25,471 --> 00:10:35,535
+[Speaker 2] just buying them the 60 seconds they need to fetch the real payload from sfrclak.com:8000/6202033.
+
+87
+00:10:35,535 --> 00:10:39,704
+[Speaker 1] Unbelievable but you know, the most insidious part of this dropper isn't even the math.
+
+88
+00:10:39,704 --> 00:10:40,775
+[Speaker 2] No, it's what comes.
+
+89
+00:10:40,775 --> 00:11:02,109
+[Speaker 1] It's the cleanup phase according to the poison chain presentation.
+The moment Setupjs successfully fetches the 2 stage payload, it deletes itself from the disk entirely and then it dynamically swaps out its own package JASON metadata file, replacing it with a harmless stub that claims to be version 4.2.0 with no postinstall hook.
+
+90
+00:11:02,109 --> 00:11:06,355
+[Speaker 2] This is where the standard paradigm of software auditing just collapses.
+
+91
+00:11:06,355 --> 00:11:15,658
+[Speaker 1] I mean, it's like a burglar who picks your lock, steals your valuables but then vacuums your living room and leaves a mint on the pillow so you don't realize you've been robbed on a casual inspection.
+
+92
+00:11:15,658 --> 00:11:16,779
+[Speaker 2] That's a perfect analogy.
+
+93
+00:11:16,779 --> 00:11:25,188
+[Speaker 1] But practically, how does it even do that?
+While the process is actively running, you're executing a node script that is modifying the very directory it resides in.
+
+94
+00:11:25,188 --> 00:11:48,890
+[Speaker 2] Well, in a Unix-like environment, when a process executes a file, it holds a file descriptor in memory the process doesn't actually need the physical file to remain untouched on the disk to finish its current execution context.
+Wow wow yeah the malware can issue a system call to unlink the setup JS file, effectively removing the directory entry while the active memory process continues to run just fine
+
+95
+00:11:48,890 --> 00:11:51,117
+[Speaker 1] that feels like a glitch in the matrix
+
+96
+00:11:51,117 --> 00:11:57,600
+[Speaker 2] it really does and then it overwrites the package.json file using standard asynchronous file IO operations.
+
+97
+00:11:57,600 --> 00:12:01,283
+[Speaker 1] So it's actively rewriting the historical record of its own installation.
+
+98
+00:12:01,283 --> 00:12:16,419
+[Speaker 2] Yes and the implications for vulnerability management are catastrophic here.
+Security teams rely heavily on commands like npm audit or tools that parse the package lock, jason and the physical node modules directory to generate a software bill of material
+
+99
+00:12:16,419 --> 00:12:18,834
+[Speaker 1] right to see what's actually running in production.
+
+100
+00:12:18,834 --> 00:12:33,750
+[Speaker 2] But if a security engineer runs an inventory check an hour after the compromise, the system scans the plain-crypto-js folder reads the modified package.
+JSON sees version 4.2.0 with 0 lifecycle scripts and reports a clean bill of health.
+
+101
+00:12:33,750 --> 00:12:37,656
+[Speaker 1] So the evidence of the attack is systematically dismantled by the attack itself.
+
+102
+00:12:37,656 --> 00:12:42,139
+[Speaker 2] Exactly the dropper creates a localized reality distortion field it
+
+103
+00:12:42,139 --> 00:13:02,000
+[Speaker 1] executes, pulls down the real malware and then just vaporizes which brings us to the actual payloads.
+The fun part yeah the Setupjs script didn't just pull down a generic of malware it queried the host's environment variables to determine the underlying architecture and then it delivered 1 of 3 distinct remote access trojans,
+
+104
+00:13:02,000 --> 00:13:03,120
+[Speaker 2] three different OSes.
+
+105
+00:13:03,120 --> 00:13:10,460
+[Speaker 1] This multi-platform capability demonstrates a terrifying level of resource allocation.
+Let's look at the macOS payload first
+
+106
+00:13:10,460 --> 00:13:18,183
+[Speaker 2] Sure, macOS environments are heavily prevalent in front end and full-stack development, making them a really high-value target for this specific npm,
+
+107
+00:13:18,183 --> 00:13:39,370
+[Speaker 1] right? If the victim was running a Mac, the dropper pulled down a 657 kilobyte MOCOC++ binary, which is pretty hefty.
+Yeah and it established persistence by placing itself in slash library slash caches, slash Comm, Apple dot mon and it was configured to beacon out to the command and control server every 60 seconds.
+
+108
+00:13:39,370 --> 00:13:52,980
+[Speaker 2] Like I said, 657 kilobytes is a substantial binary for second stage payload It indicates a fully statically linked executable likely containing really robust network communication libraries and local enumeration tools.
+
+109
+00:13:52,980 --> 00:13:55,536
+[Speaker 1] Why did they choose the library cache's directory?
+
+110
+00:13:55,536 --> 00:14:01,370
+[Speaker 2] Classic evasion technique modern macOS uses system integrity protection or SIP
+
+111
+00:14:01,370 --> 00:14:03,392
+[Speaker 1] oh, right sit,
+
+112
+00:14:03,392 --> 00:14:12,923
+[Speaker 2] which locks down core system directories even from root users.
+However, caching directories are historically permissive because applications constantly need to write temporary data there.
+
+113
+00:14:12,923 --> 00:14:17,957
+[Speaker 1] It bypasses the strict SIP protections by hiding in the system cache.
+Bad
+
+114
+00:14:17,957 --> 00:14:28,585
+[Speaker 2] exactly and to achieve that sixty-second Beacon, it likely dropped a custom property list file, a .plist into the user's ~/Library/LaunchAgents directory
+
+115
+00:14:28,585 --> 00:14:29,703
+[Speaker 1] hooking into the OS
+
+116
+00:14:29,703 --> 00:14:36,975
+[Speaker 2] right hooking into the macOS launch process to ensure the malware automatically restarts if the process is killed or the machine reboots.
+
+117
+00:14:36,975 --> 00:15:05,035
+[Speaker 1] Now contrast that heavy persistent C application with the Linux payload.
+It's completely different completely.
+If the dropper detected a Linux environment, it went in the complete opposite direction.
+It downloaded a tiny 12 kilobyte Python script, dropped it into the temporary directory at slash TM, slash LPY and executed it in the background using nohup.
+But the most striking detail in the INTEL report is that this payload had 0 persistence mechanisms.
+
+118
+00:15:05,035 --> 00:15:09,240
+[Speaker 1] If the Linux machine restarted, the malware was permanently gone.
+
+119
+00:15:09,240 --> 00:15:23,679
+[Speaker 2] Well, we have to analyze the operational context of Linux in a modern enterprise development pipeline.
+Okay while some backend developers do run desktop Linux, the vast majority of Linux hits for an npm package are going to be automated CI/CD run
+
+120
+00:15:23,679 --> 00:15:25,347
+[Speaker 1] like an ephemeral Docker container.
+
+121
+00:15:25,347 --> 00:15:29,269
+[Speaker 2] Exactly container spun up by Jenkins GitLab CI or GitHub Actions.
+
+122
+00:15:29,269 --> 00:15:32,070
+[Speaker 1] They are essentially disposable operating systems.
+
+123
+00:15:32,070 --> 00:15:42,155
+[Speaker 2] Precisely a Jenkins worker node might spin up, pull the repository, run npm install, compile the application into a static binary, upload the artifact and then immediately terminate the container
+
+124
+00:15:42,155 --> 00:15:46,637
+[Speaker 1] wow. So the entire lifecycle of that machine might be what 5 minutes,
+
+125
+00:15:46,637 --> 00:15:57,156
+[Speaker 2] maybe 10 minutes. The attackers understand that persistence is irrelevant here.
+If the machine ceases to exist, a cron job or a system service is completely useful.
+
+126
+00:15:57,156 --> 00:16:02,613
+[Speaker 1] So they just needed to run now steal the environment variables and get out before the container is destroyed.
+
+127
+00:16:02,613 --> 00:16:07,092
+[Speaker 2] Exactly and using a Python script is a textbook living off the land technique
+
+128
+00:16:07,092 --> 00:16:09,550
+[Speaker 1] because Python is already there, right?
+
+129
+00:16:09,550 --> 00:16:19,173
+[Speaker 2] Almost every standard Linux build image, whether it's an Alpine container or an Ubuntu Runner, has a Python interpreter natively installed to handle standard build utility.
+
+130
+00:16:19,173 --> 00:16:21,968
+[Speaker 1] And what does nohup do in this context?
+
+131
+00:16:21,968 --> 00:16:36,830
+[Speaker 2] Leveraging nohup, the script detaches from the current terminal session.
+That ensures that even if the primary npm install process finishes and the shell closes, the Python script continues running in the background for those critical few minutes before the container is reaped
+
+132
+00:16:36,830 --> 00:16:54,690
+[Speaker 1] that is so efficient. But wait, the threat INTEL notes a critical flaw here.
+Ah, yes, bug The Linux payload had a bug.
+A specific command within the script paningject failed to execute due to a Linux porting error.
+How does a group this advanced push a payload with a bug in?
+
+133
+00:16:54,690 --> 00:17:06,245
+[Speaker 2] It's an incredible detail because it humanizes the adversary No matter how sophisticated the operational security, they are still software engineers dealing with cross platform compatibility issues
+
+134
+00:17:06,245 --> 00:17:07,366
+[Speaker 1] still make typos
+
+135
+00:17:07,366 --> 00:17:13,529
+[Speaker 2] exactly the peinject command strongly implies they were trying to execute a portable executable injection,
+
+136
+00:17:13,529 --> 00:17:14,649
+[Speaker 1] which is a Windows thing,
+
+137
+00:17:14,649 --> 00:17:30,349
+[Speaker 2] right? A technique primarily designed for Windows but they tried to map it within a Linux memory space.
+It suggests they were reusing Core C2 functionality across their tool set and just failed to properly QA the Linux specific translation of those system calls.
+
+138
+00:17:30,349 --> 00:17:44,479
+[Speaker 1] It shows they were operating under a tight deadline.
+They pushed the code despite the failing tests Ship it right ship it we'll fix it in production even if production is malware, which transitions us perfectly to the 3 operating system target Windows
+
+139
+00:17:44,479 --> 00:17:46,110
+[Speaker 2] the hardest nut to crack for sure.
+
+140
+00:17:46,110 --> 00:18:02,144
+[Speaker 1] If you were developing on a Windows machine, you didn't get a heavy binary or a Python script, you got a fileless PowerShell loader utilizing .NET reflection.
+The initial hook was placed at percent program data percent slaw doxe with a registry run key for persistence.
+
+141
+00:18:02,144 --> 00:18:11,900
+[Speaker 2] The Windows ecosystem presents the most hostile operational terrain for a malware author primarily due to the maturity of the Anti Malware Scan Interface or AMSI,
+
+142
+00:18:11,900 --> 00:18:25,022
+[Speaker 1] the deeply integrated Endpoint detection and response platform.
+Exactly if you drop a compiled executable onto a modern Windows disk, Defender is going to immediately halt execution, sandbox it and analyze the import address.
+
+143
+00:18:25,022 --> 00:18:31,745
+[Speaker 2] Without a doubt, file-based deployment on Windows is incredibly noisy these days so they utilized a fileless execution.
+
+144
+00:18:31,745 --> 00:18:32,868
+[Speaker 1] How does that work?
+
+145
+00:18:32,868 --> 00:18:47,449
+[Speaker 2] The initial payload is likely a heavily obfuscated PowerShell one-liner that reaches out to the C2 and downloads a compiled .NET assembly.
+But instead of saving that assembly to the disk, it uses the system reflection assembly load method
+
+146
+00:18:47,449 --> 00:18:51,912
+[Speaker 1] loads the binary array directly into the active RAM space of the power shell process.
+
+147
+00:18:51,912 --> 00:18:57,513
+[Speaker 2] The actual malicious executable never touches the physical hard drive.
+It exists purely as volatile memory.
+
+148
+00:18:57,513 --> 00:18:58,633
+[Speaker 1] That is insane
+
+149
+00:18:58,633 --> 00:19:18,810
+[Speaker 2] because the binary is never written to disk.
+Traditional file scanning antivirus engines are completely blind to it and by leveraging .NET reflection, they can dynamically invoke methods within that malicious assembly completely bypassing the standard Windows API hooking that EDR solutions use to monitor suspicious process creation.
+
+150
+00:19:18,810 --> 00:19:20,478
+[Speaker 1] It's literally a ghost in the machine
+
+151
+00:19:20,478 --> 00:19:22,159
+[Speaker 2] a very dangerous ghost
+
+152
+00:19:22,159 --> 00:19:34,870
+[Speaker 1] for persistence. They rely on the Windows registry modifying a run key under HKCU\Software\Microsoft\Windows\CurrentVersion\Run ensures the PowerShell loader executes every time the developer logs in
+
+153
+00:19:34,870 --> 00:19:35,830
+[Speaker 2] simple but
+
+154
+00:19:35,830 --> 00:19:40,311
+[Speaker 1] and that WT do executable is likely just a hijacked legitimate binary.
+
+155
+00:19:40,311 --> 00:19:47,033
+[Speaker 2] Yeah perhaps a renamed Windows terminal executable.
+It's just used to quietly bootstrap the PowerShell process without raising suspicion.
+
+156
+00:19:47,033 --> 00:19:55,995
+[Speaker 1] So for everyone listening, just think about this No matter what OS you are using right now to listen to this deep dive there was a custom weapon built specifically for your architecture
+
+157
+00:19:55,995 --> 00:20:03,277
+[Speaker 2] heavy Mach-O binary for Macs, a volatile Python script for Linux and a fileless .NET assembly for Windows
+
+158
+00:20:03,277 --> 00:20:09,438
+[Speaker 1] 3 entirely distinct code bases interacting with 3 entirely different operating system apis.
+
+159
+00:20:09,438 --> 00:20:13,790
+[Speaker 2] And this is the crazy part they were all communicating with the exact same infrastructure, right?
+
+160
+00:20:13,790 --> 00:20:25,850
+[Speaker 1] The poison chain report outlines the command and control architecture.
+The primary C2 was hosted at sfrclak.com:8000 with a fallback domain of callnrwise.com.
+
+161
+00:20:25,850 --> 00:20:35,930
+[Speaker 2] And regardless of whether the victim was a MAC developer, a Windows developer or an epemoral Linux container, the C2 server utilized a unified shared command.
+
+162
+00:20:35,930 --> 00:20:39,850
+[Speaker 1] The commands were kill, run, script, run, dear and pain JCK.
+
+163
+00:20:39,850 --> 00:20:54,969
+[Speaker 2] This highlights the immense operational maturity of the group orchestrating this attack.
+How so well if you are an operator managing a campaign with potentially thousands of compromised endpoints, the cognitive load of tracking the underlying OS for every single target is unsustainable.
+
+164
+00:20:54,969 --> 00:21:03,370
+[Speaker 1] You don't want to query the victim see it's a Linux box and then try to remember to send bash syntax for directory numeration and then switch to powershell syntax for the next victim.
+
+165
+00:21:03,370 --> 00:21:26,735
+[Speaker 2] Exactly you'd make mistakes constantly so you build an abstraction layer.
+The attacker just issues the render command from their centralized dashboard.
+Oh, I see the C2 infrastructure sends that command down the web socket or HTTP polling channel.
+The local agent, whether it's the MAC binary, the Python script or the .NET assembly, receives Runndeer, interprets it and executes the native system calls for that specific
+
+166
+00:21:26,735 --> 00:21:32,338
+[Speaker 1] and then it just returns the directory listing in a standardized JSON format back to the CT
+
+167
+00:21:32,338 --> 00:21:36,035
+[Speaker 2] right? It's enterprise grade malware orchestration.
+It really is
+
+168
+00:21:36,035 --> 00:22:00,430
+[Speaker 1] amidst this enterprise grade orchestration there is an anomaly that completely defies logic the neonzme, the neonzign.
+When these highly sophisticated RS beaconed back to the C2 server over H, they used a specific user agent string to identify themselves in the request headers.
+They used Mozilla Slash 4.0 compatible MZ 8.0, Windows MT 5.1 Trident Slash 4.0.
+
+169
+00:22:00,430 --> 00:22:03,773
+[Speaker 2] Which is the Internet Explorer 8 string running on Windows XP
+
+170
+00:22:03,773 --> 00:22:20,560
+[Speaker 1] in 2026. Think about the absurdity of this.
+You have a cutting edge filelessnet payload executing in memory bypassing AMSI and when it makes a network request out to the Internet, it puts on a digital name tag that says Hello, I am Internet Explorer 8
+
+171
+00:22:20,560 --> 00:22:21,680
+[Speaker 2] Hilarious
+
+172
+00:22:21,680 --> 00:22:51,901
+[Speaker 1] If I am running a network proxy or a next-gen firewall, an IE8 user agent originating from a modern macOS developer laptop or a cloud native Linux container isn't just an anomaly it is a screaming siren.
+It's like someone trying to sneak into an exclusive 2026 nightclub wearing full 18th century Victorian attire.
+It's meant to blend into legacy traffic but it sticks out like a sore thumb in a modern environment.
+Why on earth would they hard code this specific string?
+
+173
+00:22:51,901 --> 00:23:11,370
+[Speaker 2] It is the most heavily debated artifact in the entire INTEL report I can imagine we have to look at the psychology and the operational constraints of threat actors.
+The primary theory is code reuse and operational inertia.
+Essentially, this specific user agent string isn't random it is a known historical artifact associated with specific malware families dating back a decade.
+
+174
+00:23:11,370 --> 00:23:22,893
+[Speaker 1] Ah, so the developer writing the network communication Model for the rat just copy pasted a legacy HTTP request function they wrote years ago and didn't bother to update the header dictionary.
+
+175
+00:23:22,893 --> 00:23:38,589
+[Speaker 2] That is the most Occam's razor explanation In the rush to build 3 distinct payloads for a targeted time sensitive supply chain attack, the QA process for network evasion just fell through the cracks.
+It perfectly mirrors the bug we saw in the Linux peinject command.
+
+176
+00:23:38,589 --> 00:23:56,577
+[Speaker 1] I have to push back on that though.
+Okay good, if you are a state sponsored actor, your entire mandate is stealth.
+I find it hard to believe you accidentally leave an IE8 string in your cutting edge MAC malware fair point Could this be a deliberate false flag?
+Are they trying to mimic a different older threat group to confuse attribution?
+
+177
+00:23:56,577 --> 00:24:14,560
+[Speaker 2] It's a highly plausible counter hypothesis.
+False flag operations are standard doctrine in state sponsored cyber warfare right?
+If a threat hunting team at a major Tech company spots an IE8 user agent, they might immediately categorize the alert as a low level legacy commodity malware infection,
+
+178
+00:24:14,560 --> 00:24:16,222
+[Speaker 1] something a script kiddie deployed
+
+179
+00:24:16,222 --> 00:24:23,790
+[Speaker 2] exactly. Rather than escalating it as an active nation-state supply chain breach they might just tune out the noise, wipe the machine and move on.
+
+180
+00:24:23,790 --> 00:24:30,838
+[Speaker 1] It's a fascinating gamble but regardless of the intention behind the user agent, the data it was exfiltrating was catastrophically
+
+181
+00:24:30,838 --> 00:24:32,513
+[Speaker 2] damaging.
+
+182
+00:24:32,513 --> 00:24:47,956
+[Speaker 1] Presentation extensively details the credential exposure surface.
+The objective of this campaign wasn't simply to maintain access to a few developer laptops.
+The RATs were designed to systematically pillage the local environment for high value authentication mater.
+
+183
+00:24:47,956 --> 00:24:50,750
+[Speaker 2] They wanted the keys to everything else
+
+184
+00:24:50,750 --> 00:24:59,690
+[Speaker 1] targeted npm tokens, CI/CD deployment secrets, cloud access keys, SSH private keys and active browser session data.
+
+185
+00:24:59,690 --> 00:25:11,210
+[Speaker 2] This is where we see the transition from an endpoint compromise to an enterprise-wide infrastructure breach.
+A senior developer's laptop is essentially a vault containing the keys to the entire production environment.
+
+186
+00:25:11,210 --> 00:25:17,370
+[Speaker 1] Walk me through the mechanics of that harvest.
+How is the Python script on a Linux build server finding those cloud keys?
+
+187
+00:25:17,370 --> 00:25:30,250
+[Speaker 2] So when an automated Jenkins server runs a build that needs to deploy code to AWS, the DevOps team injects the AWS access key and secret key into the container as environment variables.
+
+188
+00:25:30,250 --> 00:25:31,930
+[Speaker 1] OK So it's loaded into the environment
+
+189
+00:25:31,930 --> 00:25:39,210
+[Speaker 2] the Python RAT simply executes os.environ and dumps the entire list of variables directly to the C2.
+
+190
+00:25:39,210 --> 00:25:40,330
+[Speaker 3] It just scoops them all.
+
+191
+00:25:40,330 --> 00:25:53,850
+[Speaker 2] And if the payload is on a developer's Mac, it iterates through the ~/.aws/credentials file, reads the plain text keys and pulls the private RSA keys from the ~/.ssh directory.
+
+192
+00:25:53,850 --> 00:25:58,890
+[Speaker 1] With those cloud keys, the attacker can completely bypass the developer.
+They don't need the RAT.
+
+193
+00:25:58,890 --> 00:26:00,570
+[Speaker 2] Nope they're done with the endpoint
+
+194
+00:26:00,570 --> 00:26:13,450
+[Speaker 1] you can take that AWS token authenticate directly to the victim company's cloud infrastructure from their own servers, spin up rogue EC2 instances for crypto mining or just dump the production S3 buckets containing customer databases.
+
+195
+00:26:13,450 --> 00:26:17,930
+[Speaker 2] The blast radius expands exponentially with every minute the RAT is active,
+
+196
+00:26:17,930 --> 00:26:48,307
+[Speaker 1] which brings us to the most critical attribution data Who is organizing an attack of this magnitude?
+The who do it? Exactly the PoisonChain presentation references intelligence from Google's Threat Intelligence Group, GTIG they track the specific activity cluster under the designation UNC1069.
+Broadly, the security industry refers to this actor as TA 444 or BlueNoroff.
+Yes and the INTEL explicitly identifies them as a Democratic People's Republic of North Korea's state sponsored group
+
+197
+00:26:48,307 --> 00:26:50,310
+[Speaker 2] a very specific subset too, right
+
+198
+00:26:50,310 --> 00:27:02,065
+[Speaker 1] Furthermore, Gig linked this specific axios breach to a wider coordinated campaign tracked as Team PCP, which successfully compromised 4 other open source projects in March of 2026.
+
+199
+00:27:02,065 --> 00:27:07,099
+[Speaker 2] BlueNoroff is a highly specialized nexus within the broader Lazarus group.
+
+200
+00:27:07,099 --> 00:27:08,218
+[Speaker 1] What makes the difference?
+
+201
+00:27:08,218 --> 00:27:17,729
+[Speaker 2] Well, unlike traditional state sponsored intelligence units that focus on geopolitical espionage or military network disruption, BlueNoroff has a completely distinct mandate
+
+202
+00:27:17,729 --> 00:27:25,561
+[Speaker 1] and strictly adhering to the attribution provided in the source documentation.
+What is that mandate? Why target JavaScript developers instead of defense contractors
+
+203
+00:27:25,561 --> 00:27:46,195
+[Speaker 2] financial extraction? Exactly given the economic realities and heavy sanctions surrounding the DPRK, these cyber units are tasked with significant revenue generation.
+The modern financial ecosystem is increasingly decentralized, relying heavily on cryptocurrency, decentralized finance protocols and the massive Tech infrastructure that supports them
+
+204
+00:27:46,195 --> 00:27:53,586
+[Speaker 1] and all of those crypto exchanges, those DEF platforms they are all built using JavaScript They all use Axios
+
+205
+00:27:53,586 --> 00:28:17,185
+[Speaker 2] You've got it by compromising a foundational open source package they cast an incredibly wide net.
+They infect thousands of developer machines and build servers across the globe.
+And then what then they inject all the stolen credentials, SS keys and browser sessions into their back end infrastructure.
+They automate the parsing of those logs to identify victims working at high value financial targets.
+
+206
+00:28:17,185 --> 00:28:19,427
+[Speaker 1] They aren't trying to steal a military schematic,
+
+207
+00:28:19,427 --> 00:28:24,472
+[Speaker 2] not at all. They are looking for the AWS keys that control the hot wallets of a cryptocurrency exchange.
+
+208
+00:28:24,472 --> 00:28:27,274
+[Speaker 1] It is an industrialized algorithmic heist,
+
+209
+00:28:27,274 --> 00:28:28,395
+[Speaker 3] a great way to put it
+
+210
+00:28:28,395 --> 00:28:38,111
+[Speaker 1] but to pull off a heist of this scale, the timing has to be immaculate and the timeline detailed in the report is perhaps the most astonishing aspect of the entire incident.
+
+211
+00:28:38,111 --> 00:28:39,238
+[Speaker 2] The three-hour window,
+
+212
+00:28:39,238 --> 00:29:10,180
+[Speaker 1] the three hour window the entire compromise from publication to unpublishing occurred in an incredibly narrow time frame.
+The dropper plain-crypto-js was staged then Axios 1.1.1 was published at 0.21 UTC Axios 0.30.4 followed at 01.000, 0 UTC and then they were gone.
+Yes the malicious packages were unpublished between 03.15 and 03151 UTC less than 4 hours.
+
+213
+00:29:10,180 --> 00:29:11,291
+[Speaker 2] It's incredibly fast.
+
+214
+00:29:11,291 --> 00:29:24,738
+[Speaker 1] This completely subverts my understanding of malware distribution.
+I mean, if you burn an incredibly sophisticated 2FA bypass zero day and you successfully compromise the maintaining infrastructure for one of the most popular packages on the planet, why would you only leave the trap open for three hours?
+
+215
+00:29:24,738 --> 00:29:25,858
+[Speaker 2] Seems counterintuitive
+
+216
+00:29:25,858 --> 00:29:29,781
+[Speaker 1] totally. Why not leave it up for a week and infect millions of endpoints instead of a fraction?
+
+217
+00:29:29,781 --> 00:29:33,142
+[Speaker 2] Because in the modern software supply chain longevity is a liability.
+
+218
+00:29:33,142 --> 00:29:34,263
+[Speaker 1] Oh because of detection
+
+219
+00:29:34,263 --> 00:29:54,439
+[Speaker 2] exactly the global security community researchers, automated dependency scanners, AI driven anomaly detectors are constantly monitoring packages with the velocity of Axios.
+If a rogue update sits in the registry for a week, it is mathematically guaranteed that someone will notice the obfuscated R logic in plain Cryptoj.
+
+220
+00:29:54,439 --> 00:30:01,719
+[Speaker 1] And once it's detected, the security vendors immediately issue global blocks.
+The domains are sinkhold, the IP addresses are blacklist
+
+221
+00:30:01,719 --> 00:30:19,099
+[Speaker 2] and the entire multiplatform C2 infrastructure the attackers spent months building is burned globally.
+Oh, I see the burn down rate of their infrastructure would hit 100 percent almost instantly.
+They would lose their entire investment and gain very little actionable data because the industry would rapidly roll back the updates and rotate their credentials.
+
+222
+00:30:19,099 --> 00:30:23,009
+[Speaker 1] So it's a precision strike designed to evade the global monitoring apparatus.
+
+223
+00:30:23,009 --> 00:30:32,534
+[Speaker 2] Yes, they target a very specific window 00:00 to 03:00 UTC is late evening in the Americas and early morning.
+
+224
+00:30:32,534 --> 00:30:33,655
+[Speaker 1] What happens then?
+
+225
+00:30:33,655 --> 00:30:44,861
+[Speaker 2] It is the prime window when enterprise automated build systems, the Jenkins servers, the GitHub actions runners are scheduled to perform nightly integration tests and dependency updates.
+
+226
+00:30:44,861 --> 00:30:46,542
+[Speaker 1] Of course, the cron jobs
+
+227
+00:30:46,542 --> 00:30:56,627
+[Speaker 2] those headless servers wake up blindly pull the latest patch version of Axios, execute the post-install dropper, siphon the environment secrets and transmit them to the C2.
+
+228
+00:30:56,627 --> 00:31:03,911
+[Speaker 1] And then before the human security engineers even log in for their morning coffee, the attackers unpublished the packages themselves.
+
+229
+00:31:03,911 --> 00:31:07,833
+[Speaker 2] By the time the world wakes up, the malicious code is gone from the registry
+
+230
+00:31:07,833 --> 00:31:14,556
+[Speaker 1] minimize their exposure to researchers while maximizing their exposure to high value highly privileged automated environments
+
+231
+00:31:14,556 --> 00:31:15,677
+[Speaker 2] ruthless efficiency.
+
+232
+00:31:15,677 --> 00:31:29,270
+[Speaker 1] But this creates an absolute nightmare for the organizations trying to determine if they were hit.
+The registry is clean. The malware deleted its own setup.js file.
+It rewrote its own package.json to look innocent.
+
+233
+00:31:29,270 --> 00:31:32,381
+[Speaker 2] The ephemeral Linux containers that ran the build have already been destroyed.
+
+234
+00:31:32,381 --> 00:31:39,084
+[Speaker 1] Exactly how does an enterprise security team even begin to trace the blast radius of an invisible explosion
+
+235
+00:31:39,084 --> 00:31:46,904
+[Speaker 2] and this is the exact crisis that birthed the automated incident response tool detailed in the presentation
+
+236
+00:31:46,904 --> 00:32:02,921
+[Speaker 1] Right. The PoisonChain pipeline, the antidote to the attack the antidote The presentation outlines a highly specific, highly automated framework built to definitively answer the C-suite's screaming question.
+Were our systems compromised during that 3 hour window
+
+237
+00:32:02,921 --> 00:32:12,964
+[Speaker 2] and the core philosophy of this tool is distilled into 1 incredibly profound sentence.
+Let's hear it. Lockfiles show intent. Jenkins logs show execution.
+
+238
+00:32:12,964 --> 00:32:38,949
+[Speaker 1] That distinction is so fascinating.
+It feels like the bedrock of modern forensic analysis in CI/CD environments you cannot rely on the static state of the code base.
+You really can't. Let's unpack the mechanics of that.
+If I'm a security engineer, my 1 instinct is to scan my company's repositories for package-lock.json files and grep for Axios 1.14.1 or plain-crypto-js If I find it, I assume we are breached.
+Why is that insufficient?
+
+239
+00:32:38,949 --> 00:32:53,705
+[Speaker 2] Because the lock file only represents the desired state of the application as defined by the package manager.
+It is a blueprint, a blueprint. it says the next time this project is built, please download these specific versions.
+It proves the project had the intent to pull the malicious code
+
+240
+00:32:53,705 --> 00:32:59,702
+[Speaker 1] but intent doesn't equal execution.
+What if the project hasn't been actively built in 6 months?
+
+241
+00:32:59,702 --> 00:33:11,831
+[Speaker 2] Exactly the lock file might be updated by an automated dependency bot like Dependabot opening a pull request.
+The malicious version is documented in the PR but no server actually ran N PM install.
+
+242
+00:33:11,831 --> 00:33:17,993
+[Speaker 1] If you declare a breach based purely on the lock file, you generate an unmanageable volume of false positives.
+
+243
+00:33:17,993 --> 00:33:25,836
+[Speaker 2] A massive volume you force hundreds of developers to rotate their credentials and halt production for projects that were never actually infected
+
+244
+00:33:25,836 --> 00:33:26,956
+[Speaker 1] costs the business
+
+245
+00:33:26,956 --> 00:33:38,240
+[Speaker 2] exactly. And conversely, you might have a project without a strict lock file that dynamically pulled the bad version during that 3 hour window, executed the malware and then pulled a clean version.
+An hour later,
+
+246
+00:33:38,240 --> 00:33:47,552
+[Speaker 1] the log files the blueprint but the Jenkins log, the raw historical console output of the build server that is the security camera footage.
+
+247
+00:33:47,552 --> 00:33:48,730
+[Speaker 3] That is the proof
+
+248
+00:33:48,730 --> 00:33:57,530
+[Speaker 1] definitively proves that at 02:15 UTC, the server actually fetched the package, extracted it and ran the lifecycle scripts
+
+249
+00:33:57,530 --> 00:34:10,738
+[Speaker 2] and the PoisonChain tool operationalizes this philosophy through a 6 stage automated architecture.
+It is designed to compress what would normally be weeks of manual log parsing into a 2 hour automated sprint
+
+250
+00:34:10,738 --> 00:34:30,560
+[Speaker 1] trace. This pipeline stage 1 is CanisterWorm analysis.
+This implies pulling the initial thread intelligence, likely grabbing the specific IOC's indicators of compromise from an internal vulnerability database or a vendor API.
+It establishes the baseline signatures for plain-crypto-js and the known C2 domain
+
+251
+00:34:30,560 --> 00:34:32,233
+[Speaker 2] defines the parameters of the search.
+
+252
+00:34:32,233 --> 00:34:43,266
+[Speaker 1] Then we move to stage 2 Bitbucket full scan.
+The tool programmatically authenticates to the organization's version control system and stands potentially tens of thousands of repositories.
+
+253
+00:34:43,266 --> 00:34:45,508
+[Speaker 2] It is looking for the lock files.
+It maps the inent,
+
+254
+00:34:45,508 --> 00:34:49,991
+[Speaker 1] it creates the initial suspect list which projects were theoretically exposed.
+
+255
+00:34:49,991 --> 00:34:52,793
+[Speaker 2] It executes stage 3, which is frankly brilliant.
+
+256
+00:34:52,793 --> 00:35:10,594
+[Speaker 1] This is my favorite part Fetch committers It cross references the exposed repositories with the organization's identity and access management systems essentially performing an automated HR status check.
+Why is verifying the employment status of a developer a critical step in a mauer response pipeline?
+
+257
+00:35:10,594 --> 00:35:30,439
+[Speaker 2] Because the ultimate objective of the attacker is credential theft.
+If PoisonChain identifies a repository that was exposed to the malware, you must assume the active tokens associated with that repository are compromised naturally.
+But in an enterprise environment with high turnover, developers change, teams, migrate between departments or leave the company entirely,
+
+258
+00:35:30,439 --> 00:35:33,226
+[Speaker 1] their legacy tokens might still be active in the system
+
+259
+00:35:33,226 --> 00:35:45,002
+[Speaker 2] if the tool cross-references the repository owner and discovers that the lead developer resigned three months ago but their personal access token is still actively pushing code to that repository
+
+260
+00:35:45,002 --> 00:35:49,488
+[Speaker 1] a massive immediate red flag indicating lateral movement by the attacker.
+
+261
+00:35:49,488 --> 00:36:01,826
+[Speaker 2] It's exactly or alternatively, if the developer is actively employed, the system automatically pulls their contact information so the security operations center can immediately isolate their workstation and enforce a credential rotation.
+
+262
+00:36:01,826 --> 00:36:08,555
+[Speaker 1] You completely eliminate the hours wasted asking around Slack trying to figure out who owns the legacy billing API.
+
+263
+00:36:08,555 --> 00:36:10,237
+[Speaker 2] It automates the human triage
+
+264
+00:36:10,237 --> 00:36:20,279
+[Speaker 1] brings us to stage 4 the Jenkins scan.
+This is where the tool correlates the intent from Bitbucket with the execution logs from the build servers
+
+265
+00:36:20,279 --> 00:36:32,578
+[Speaker 2] is the computationally heavy lifting.
+I bet the pipeline interfaces with the Jenkins API pulling down the raw console logs for every build executed during the critical time window across all the suspect repositories.
+
+266
+00:36:32,578 --> 00:36:42,665
+[Speaker 1] It's parsing massive unstructured text files looking for specific forensic markers.
+The presentation notes that despite the malware's rigorous self cleanup, it leaves bread crumbs.
+
+267
+00:36:42,665 --> 00:36:44,340
+[Speaker 2] It can't clean up everything.
+
+268
+00:36:44,340 --> 00:37:01,029
+[Speaker 1] The primary marker is the presence of the node_modules/plain-crypto-js/ directory path in the build logs.
+Even though setup.js deleted itself and rewrote the metadata, the npm clients still logged the extraction of the physical directory to standard output.
+
+269
+00:37:01,029 --> 00:37:10,849
+[Speaker 2] It's the digital equivalent of spraying luminol at a crime scene.
+The attacker wiped the blood off the floor, but they couldn't rewrite the security camera log that recorded them walking into the room.
+
+270
+00:37:10,849 --> 00:37:35,747
+[Speaker 1] The Jenkins console output is immutable relative to the container's execution context exactly.
+PoisonChain also scans for the platform specific artifacts like the macOS file path /Library/Caches/com.apple.act.mond if a developer ran the build locally and pushed their terminal output or if a macOS build node was utilized that specific path acts as a definitive indicator of compromise.
+
+271
+00:37:35,747 --> 00:37:40,807
+[Speaker 2] Pipeline then flows into stages five and six.
+Report axios by team and preserve evidence.
+
+272
+00:37:40,807 --> 00:37:41,930
+[Speaker 1] The clean up phase
+
+273
+00:37:41,930 --> 00:37:56,070
+[Speaker 2] right it takes this massive chaotic data set, synthesizes it and generates targeted actionable Jira tickets or dashboards for each specific engineering manager outlining exactly which of their systems need credential rotation.
+
+274
+00:37:56,070 --> 00:38:06,150
+[Speaker 1] And crucially, it locks down the raw forensic data in a secure immutable storage bucket so the threat actors cannot tamper with the evidence post discovery.
+
+275
+00:38:06,150 --> 00:38:12,310
+[Speaker 2] It is an incredible piece of security engineering.
+It turns sheer panic into a prioritized to do list.
+
+276
+00:38:12,310 --> 00:38:35,179
+[Speaker 1] However, there is a fundamental limitation to this architecture.
+The poison chain pipeline assumes you are operating in a unified, hyperconnected corporate environment, which isn't always the case, right?
+It requires programmatic API access to Bitbucket, Jenkins, the HR databases and the security enclave simultaneously.
+What happens if a specific engineering team operates in a completely isolated environment?
+
+277
+00:38:35,179 --> 00:38:40,781
+[Speaker 2] You are addressing the reality of decentralized infrastructure, particularly in highly regulated sectors,
+
+278
+00:38:40,781 --> 00:38:50,790
+[Speaker 1] which is why the threat intelligence package includes section seven Do it Yourself-defense.
+The presentation provides a standalone forensic toolkit, a zip file named Jenkins Scan Kit, Zip,
+
+279
+00:38:50,790 --> 00:38:52,230
+[Speaker 2] a lifesaver for those teams
+
+280
+00:38:52,230 --> 00:39:05,414
+[Speaker 1] The documentation specifies that it requires zero external dependencies, relies on a simple .env file for configuration and can execute entirely offline by running Python 3, jenkins_scan.py.
+
+281
+00:39:05,414 --> 00:39:08,768
+[Speaker 2] This is a vital democratization of the forensic capability.
+
+282
+00:39:08,768 --> 00:39:23,310
+[Speaker 1] The documentation explicitly highlights its utility for air gapped environments.
+Now for the sake of clarity, for anyone listening who might not know, an air gap network means there is a literal physical gap of air between the local network and the public.
+
+283
+00:39:23,310 --> 00:39:27,091
+[Speaker 2] No Ethernet cables, no Wi-Fi, no external routing
+
+284
+00:39:27,091 --> 00:39:45,955
+[Speaker 1] right? These environments are typically reserved for highly classified defense networks core critical infrastructure like power grids or deeply sensitive financial trading algorithms.
+Correct if an environment is completely severed from the Internet, it cannot query the npm registry.
+So how could an npm supply chain attack possibly breach an air gap?
+
+285
+00:39:45,955 --> 00:39:56,560
+[Speaker 1] Logically, the Axios malware can't traverse the physical space to reach the isolated Jenkins server.
+Why would a North Korean APT group even factor air gap systems into their calculus?
+
+286
+00:39:56,560 --> 00:40:12,305
+[Speaker 2] Because the physical isolation of the server hardware does not isolate the human development lifecycle.
+What do you mean? An air gap network still requires software updates, dependency management and new code.
+To facilitate this, organizations utilize secure bridging mechanisms.
+
+287
+00:40:12,305 --> 00:40:14,710
+[Speaker 1] How does the code actually cross the gap?
+
+288
+00:40:14,710 --> 00:40:37,248
+[Speaker 2] The most common vector is a secure internal registry proxy such as an isolated instance of JFrog Artifactory or Sonatype Nexus.
+Okay this internal registry periodically sinks with the public npm registry through a highly scrutinized, strictly controlled 1 way data diode.
+The public registry pushes the approved updates across the diode into the isolated network.
+
+289
+00:40:37,248 --> 00:40:42,298
+[Speaker 1] The internal proxy initiates its synchronization cycle.
+During that critical 3 hour window,
+
+290
+00:40:42,298 --> 00:41:00,899
+[Speaker 2] the internal proxy will pull down axios 1.14.1 and plain-crypto-js.
+It pulls the malicious packages across the air gap assuming they are legitimate updates.
+The isolated Jenkins server then triggers an internal build queries.
+The internal proxy pulls the packages and executes the postinstall dropper.
+
+291
+00:41:00,899 --> 00:41:03,760
+[Speaker 1] The malware detonates inside the secure enclave
+
+292
+00:41:03,760 --> 00:41:17,270
+[Speaker 2] exactly now the malware cannot complete its primary objective immediately.
+It cannot beacon back to Sw, Clack Com because there is no outbound Internet routing.
+The DNS resolution will fail,
+
+293
+00:41:17,270 --> 00:41:21,050
+[Speaker 1] but the dropper still executes the payload still loads into memory.
+
+294
+00:41:21,050 --> 00:41:31,379
+[Speaker 2] Yes the payload executes it archives the highly classified internal environment variables, the proprietary source code or the internal SSH keys and it stores them locally.
+
+295
+00:41:31,379 --> 00:41:33,091
+[Speaker 1] Then what it just sits there,
+
+296
+00:41:33,091 --> 00:41:49,585
+[Speaker 2] it establishes persistence and waits.
+It waits for a developer to plug in the USB drive to transfer logs or it waits for an internal configuration error or it attempts to pivot through a compromised internal asset that does have a heavily filtered outbound connection.
+The air gap is breached from the inside out
+
+297
+00:41:49,585 --> 00:42:01,316
+[Speaker 1] that is deeply unsettling and in that scenario, the centralized poison chain pipeline is completely useless.
+You cannot pipe highly classified air gapped Jenkins logs out to a central corporate security server connected to the Internet
+
+298
+00:42:01,316 --> 00:42:04,109
+[Speaker 2] That would completely violate the core security protocols of those enclaves,
+
+299
+00:42:04,109 --> 00:42:21,690
+[Speaker 1] which is exactly why the standalone Jenkins scan kit is paramount.
+The isolated engineering team can copy the jenkins-scan-kit.zip onto a secure thumb drive, walk it into the clean room, deploy it locally on the isolated master node and run the Python script against their local logs.
+
+300
+00:42:21,690 --> 00:42:29,928
+[Speaker 2] And that definitively proves whether the internal proxy sinked the malicious payload without ever transmitting a single byte of telemetry back to the corporate network.
+
+301
+00:42:29,928 --> 00:42:49,104
+[Speaker 1] It empowers the isolated operators to conduct their own forensic validation.
+If you, the listener are responsible for managing a Jenkins instance, regardless of whether it's sitting on an air-gapped military network or just a private server under your desk this intelligence gives you the exact methodology to verify your historical integrity.
+
+302
+00:42:49,104 --> 00:42:58,634
+[Speaker 2] Download the kit, configure the local URL, execute Python 3 jenkins_scan.py and analyze the output in reports.
+reports/jenkins-scan-result.json
+
+303
+00:42:58,634 --> 00:43:06,484
+[Speaker 1] transitions the threat intelligence from an academic exercise into a deployable tactical asset.
+We have mapped an incredible sequence of events today.
+
+304
+00:43:06,484 --> 00:43:08,728
+[Speaker 2] We really have it's a lot to take in.
+
+305
+00:43:08,728 --> 00:43:28,410
+[Speaker 1] The sheer scale and architectural complexity of this attack fundamentally challenge how we view software security.
+We are looking at a highly sophisticated state sponsored actor attributed as the DPRK linked BlueNoroff, who bypassed hardware 2FA not by breaking the cryptography but by hijacking the authorization state of the end point.
+
+306
+00:43:28,410 --> 00:43:33,450
+[Speaker 2] They leverage that access to compromise Axios a structural pillar of the modern web
+
+307
+00:43:33,450 --> 00:43:43,585
+[Speaker 1] engineered a dropper that utilized polynomial mathematics to exhaust automated static analysis engines.
+They hijacked the npm lifecycle scripts to execute code without developer interaction
+
+308
+00:43:43,585 --> 00:43:56,857
+[Speaker 2] and they deployed tailored cross platform malware abusing macOS, caching directories, living off the land with Linux Python scripts and utilizing .NET reflection to bypass Windows.
+AMSI completely
+
+309
+00:43:56,857 --> 00:44:06,924
+[Speaker 1] exfiltrated critical cloud infrastructure keys back to a unified C2 server utilizing legacy user agents to potentially spoof attribution or simply bypassing noisy legacy monitors.
+
+310
+00:44:06,924 --> 00:44:17,551
+[Speaker 2] And they executed this entire devastating campaign from the initial publication to the final unpublishing and the self destruction of the metadata in an agonizingly brief 3 hour window
+
+311
+00:44:17,551 --> 00:44:23,703
+[Speaker 1] surgical strike aimed directly at the automated CI/CD pipelines of the world's largest Tech companies
+
+312
+00:44:23,703 --> 00:44:28,736
+[Speaker 2] is an absolute master class in exploiting the implicit trust we place in our automated tooling,
+
+313
+00:44:28,736 --> 00:44:37,736
+[Speaker 1] which forces a very uncomfortable philosophical reckoning for the software industry.
+And this brings us to the lingering concept we need to leave you with today
+
+314
+00:44:37,736 --> 00:44:38,858
+[Speaker 2] the big question
+
+315
+00:44:38,858 --> 00:44:55,140
+[Speaker 1] the entire modern digital ecosystem, the applications handling your banking, the backend services, managing logistics, grids, the secure communication platforms they are all built on the foundational axiom of open source security.
+Given enough eyeballs, all bugs are shallow.
+
+316
+00:44:55,140 --> 00:45:03,852
+[Speaker 2] It is the assumption that because the code is public, it is inherently subject to rigorous peer review.
+We trust the dependency tree because we believe the community is watching.
+
+317
+00:45:03,852 --> 00:45:27,254
+[Speaker 1] But this attack architecture completely subverts that axiom.
+If the malicious execution occurs entirely within the volatile split-second lifecycle of a postinstall script and if the payload dynamically unlinks its own files and overwrites its own package.json metadata before a human engineer ever has the opportunity to review the disk state, then the eyeballs are useless.
+
+318
+00:45:27,254 --> 00:45:36,515
+[Speaker 2] You cannot review code that fundamentally ceases to exist before the review process begins.
+We are relying on static analysis to catch dynamic self erasing threats.
+
+319
+00:45:36,515 --> 00:45:51,784
+[Speaker 1] We are looking for shattered glass but the glass was biochemically engineered to melt the exact moment it hit the floor, which leaves us with the most terrifying question of this entire deep dive.
+If this specific group managed to orchestrate this level of invisible compromise for 3 hours in March,
+
+320
+00:45:51,784 --> 00:46:04,240
+[Speaker 1] what else has already slipped through?
+What other self deleting packages have detonated inside our build servers quietly archived our cloud secrets, rewritten their own history and vanished back into the ether without triggering a single alarm
+
+321
+00:46:04,240 --> 00:46:09,560
+[Speaker 2] suggests that the integrity of our historical builds is a matter of faith rather than verifiable fact.
+
+322
+00:46:09,560 --> 00:46:25,032
+[Speaker 1] It certainly makes you look at every single line of your automated deployment logs a little differently.
+You run the npm audit the telemetry reports a pristine environment and it says the water is perfectly safe to drink.
+But you know, the poison evaporates on contact you still have to take a drink.
+
+323
+00:46:25,032 --> 00:46:27,275
+[Speaker 2] A deeply sobering reality, then.
+
+324
+00:46:27,275 --> 00:46:41,470
+[Speaker 1] Thank you for joining us on this deep dive into the Axios compromise.
+We encourage you to analyze your own build pipelines, question the static state of your lockfiles, leverage the Jenkins logging mechanisms and as always, stay profoundly curious.
+

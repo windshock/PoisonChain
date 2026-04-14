@@ -1,0 +1,9 @@
+# Ignore generated video files and large assets to prevent GitHub 100MB file limit errors
+*.mp4
+*.m4a
+*.pptx
+*.pdf
+slides/
+parts/
+concat.txt
+extract_slides.applescript

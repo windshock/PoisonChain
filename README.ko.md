@@ -1,5 +1,7 @@
 # PoisonChain
 
+[![The 3-Hour Breach: Deconstructing the Axios Supply Chain Attack](https://img.youtube.com/vi/nNCPH2xuIw4/maxresdefault.jpg)](https://youtu.be/nNCPH2xuIw4)
+
 [English](README.md)
 
 PoisonChain은 npm 공급망 공격 대응용 인시던트 리스폰스 툴킷이다. 보안팀이 가장 먼저 받아야 하는 질문, 즉 어떤 저장소가 노출됐는지, 누가 담당자인지, 공격 시간대에 어떤 빌드가 실제로 실행됐는지, 각 팀이 다음에 무엇을 해야 하는지를 빠르게 정리한다.

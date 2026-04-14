@@ -1,5 +1,7 @@
 # PoisonChain
 
+[![The 3-Hour Breach: Deconstructing the Axios Supply Chain Attack](https://img.youtube.com/vi/nNCPH2xuIw4/maxresdefault.jpg)](https://youtu.be/nNCPH2xuIw4)
+
 [한국어](README.ko.md)
 
 PoisonChain is an incident-response toolkit for npm supply chain attacks. It answers the questions security teams get first and fastest: which repositories were exposed, who owns them, which builds actually ran during the attack window, and what each team needs to do next.
