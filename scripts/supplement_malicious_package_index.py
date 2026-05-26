@@ -155,10 +155,11 @@ def merge_osv_advisory(
 
     added = updated = unchanged = 0
     for row in affected_npm_packages(osv):
-        if not row["versions"]:
-            # For compromised legitimate packages, a package-name-only entry would
-            # create too much false-positive risk. Keep range-only advisories out
-            # of the SSOT unless exact versions are available.
+        name_only = not row["versions"]
+        if name_only and category == "compromised_legitimate":
+            # A package-name-only entry for a hijacked legitimate package would
+            # block every clean release of that package. Require exact versions
+            # for this category; range-only advisories stay out of the SSOT.
             unchanged += 1
             continue
 
@@ -182,12 +183,13 @@ def merge_osv_advisory(
             continue
 
         changed = False
-        merged, version_changed = merge_versions(
-            existing.get("malicious_versions"), row["versions"]
-        )
-        if version_changed:
-            existing["malicious_versions"] = merged
-            changed = True
+        if row["versions"]:
+            merged, version_changed = merge_versions(
+                existing.get("malicious_versions"), row["versions"]
+            )
+            if version_changed:
+                existing["malicious_versions"] = merged
+                changed = True
         changed |= add_unique_list_values(existing, "osv_advisories", [advisory_id])
         changed |= add_unique_list_values(
             existing, "references", [u for u in [osv_url, ghsa_url] if u]
