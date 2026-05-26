@@ -7,11 +7,11 @@ name: Refresh malicious packages SSOT
 # never modified — only entries with campaign='datadog_auto' are touched by
 # the Datadog refresh; supplement entries gain/keep their own campaign tags.
 #
-# Cron: 21:00 UTC daily = 06:00 Asia/Seoul (KST = UTC+9).
+# Cron: 22:00 UTC daily = 07:00 Asia/Seoul (KST = UTC+9).
 
 on:
   schedule:
-    - cron: "0 21 * * *"
+    - cron: "0 22 * * *"
   workflow_dispatch: {}
 
 permissions:
