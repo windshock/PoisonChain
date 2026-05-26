@@ -153,21 +153,55 @@ For aliases or uncertain names:
 - Put them in `manual_review_aliases`.
 - Do not add them to `packages` until a machine-readable or strongly documented source confirms canonical npm name and affected version.
 
+## KISA Gap Audit (2026-05-26)
+
+After running the supplement importer against the real OSV API and cross-checking with the npm registry and the TanStack postmortem, the 25 KISA-listed names break down as follows:
+
+| Bucket | Count | Disposition | Examples |
+|---|---|---|---|
+| Auto-imported confirmed via OSV advisory | 1 | `confidence: confirmed` from `MAL-2026-2072` | `react-leaflet-heatmap-layer@2.0.1` (CanisterWorm) |
+| Canonical-name covered via GHSA-g7cv-rxg3-hmpx | 5 | Canonical entry in SSOT (confirmed); KISA alias also retained as `suspected` for recall | `@tanstack/{zod,valibot,arktype}-adapter`, `@emilgroup/{changelog,numbergenerator}-sdk-node` |
+| KISA-listed, npm-404 → `confidence: confirmed` | 4 | Material in SSOT; `npm_status: not_found` (post-incident unpublish signal) | `@tanstack/router-{esbuild,rspack,webpack}-plugin`, `@emilgroup/numbergenerator-sdk` |
+| KISA-listed, npm-exists, no OSV/postmortem confirmation → `confidence: suspected` | 14 | Material in SSOT; surfaced in scanner's separate suspected section | `@tanstack/{create-router, start-*, server-functions-plugin, ...}` |
+| Upstream-cleared carve-out | 1 | Excluded by policy | `@tanstack/start` (TanStack postmortem: "remain secure") |
+
+Dry-run output (`scripts/supplement_malicious_package_index.py --dry-run`):
+
+```
+GHSA-g7cv-rxg3-hmpx: +2 updated=62 unchanged=20
+MAL-2026-2072: +1 updated=0 unchanged=0
+KISA-listed packages: +23 updated=0 unchanged=0
+```
+
+Validation: `python3 scripts/build_malicious_package_index.py --validate` passes.
+
+### Why a confidence tier, not just include-everything
+
+Adding KISA names directly to `packages` would have produced two failure modes:
+
+- For `compromised_legitimate` packages with no specific malicious version, a name-only entry would block every clean release of legitimate packages (e.g., `@tanstack/start-server@1.166.x` non-malicious is still in use by real projects).
+- For `malicious_intent` packages, the lack of a verifiable name-level signal would surface unjustified high-severity alerts.
+
+`confidence: suspected` solves both by keeping the names in the SSOT for recall while letting downstream consumers (`canisterworm_lockfile_scan.py`) place them in a separate informational section.
+
+### Upstream carve-out rule
+
+A KISA-listed package is excluded from the SSOT only when an upstream maintainer postmortem **names the package explicitly** as unaffected. As of 2026-05-26, the only such case is `@tanstack/start`, where the TanStack postmortem distinguishes the meta-package from the `@tanstack/start-*` sub-packages. The sub-packages remain in `suspected` because the postmortem does not address them by name.
+
 ## Recommended Follow-Up Work
 
-1. Run the OSV supplement importer for `GHSA-g7cv-rxg3-hmpx` and inspect the diff.
-2. Compare the resulting TanStack entries against the KISA gap list.
-3. Confirm `react-leaflet-heatmap-layer@2.0.1` against JFrog/GitLab/Snyk or Datadog manifest and update the SSOT if the local entry is still missing.
-4. Review `@emilgroup/changelog-sdk` and `@emilgroup/numbergenerator-sdk` aliases against JFrog and Datadog canonical package names before importing.
-5. Add CI automation after the dry-run output is reviewed:
+1. Add CI automation after the dry-run output is reviewed:
    - `python3 scripts/build_malicious_package_index.py --refresh`
    - `python3 scripts/supplement_malicious_package_index.py --write`
    - `python3 scripts/build_malicious_package_index.py --validate`
+2. Promote `confidence: suspected` entries to `confidence: confirmed` once a machine-readable advisory (OSV/GHSA) is published or the npm registry takedown is observed. The importer already promotes — never demotes — on re-run.
+3. When a new authoritative source (e.g., new vendor postmortem) names additional packages as unaffected, add them to `kisa_listed_packages.upstream_carveouts` rather than deleting entries.
 
 ## Acceptance Criteria
 
-- `scripts/supplement_malicious_package_index.py --dry-run` can fetch configured OSV advisories and print a summary.
+- `scripts/supplement_malicious_package_index.py --dry-run` fetches configured OSV advisories AND materializes KISA-listed packages with appropriate `confidence`.
 - `--write` updates only the SSOT and preserves existing manual campaign entries.
-- No package-name-only TanStack entries are imported when exact OSV versions are missing.
-- `build_malicious_package_index.py --validate` passes after supplement import.
-- Manual-review aliases remain separate from automatic package entries.
+- No package-name-only TanStack entries are imported when exact OSV versions are missing, except via the KISA-listed path with explicit `confidence`.
+- `build_malicious_package_index.py --validate` passes after supplement import (`confidence`/`npm_status` validated).
+- `canisterworm_lockfile_scan.py` surfaces `confidence: suspected` entries in a separate informational section, not the high-severity bucket.
+- `@tanstack/start` is excluded from the SSOT KISA materialization; `@tanstack/start-*` sub-packages are not.

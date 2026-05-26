@@ -36,6 +36,8 @@ INDEX_PATH = ROOT_DIR / "public" / "data" / "malicious-packages.json"
 DATADOG_REPO = "DataDog/malicious-software-packages-dataset"
 
 VALID_CATEGORIES = {"compromised_legitimate", "malicious_intent", "unknown"}
+VALID_CONFIDENCE = {"confirmed", "suspected"}
+VALID_NPM_STATUS = {"exists", "not_found", "unknown"}
 
 
 def load_env(path: Path = ROOT_DIR / ".env") -> None:
@@ -96,6 +98,10 @@ def validate_index(data: dict) -> list[str]:
             errors.append(f"{prefix}: unknown campaign {p.get('campaign')!r}")
         if not isinstance(p.get("malicious_versions", []), list):
             errors.append(f"{prefix}: malicious_versions must be a list")
+        if "confidence" in p and p["confidence"] not in VALID_CONFIDENCE:
+            errors.append(f"{prefix}: invalid confidence {p.get('confidence')!r}")
+        if "npm_status" in p and p["npm_status"] not in VALID_NPM_STATUS:
+            errors.append(f"{prefix}: invalid npm_status {p.get('npm_status')!r}")
         key = (p.get("ecosystem", ""), p.get("name", ""))
         if key in seen:
             errors.append(f"{prefix}: duplicate (ecosystem, name) entry")

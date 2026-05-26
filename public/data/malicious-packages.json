@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-05-26T05:38:47+00:00",
-  "_comment": "Single source of truth for malicious npm packages tracked by PoisonChain. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
+  "generated_at": "2026-05-26T09:40:19+00:00",
+  "_comment": "Single source of truth for malicious npm packages tracked by PoisonChain. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = backed by a machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem or OSV does not confirm — scanners should surface these in a separate, lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence at the time the entry was added; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
     "malicious_intent": "Package published with malicious intent (typosquat, supply chain pretense). Any version of the package is a sign of compromise."
@@ -34,6 +34,24 @@
       "name": "Datadog malicious-software-packages-dataset (auto-imported)",
       "source": "https://github.com/DataDog/malicious-software-packages-dataset",
       "notes": "Synced daily by .github/workflows/refresh-malicious-packages.yml. This campaign's entries are authoritative-refreshed; do not edit by hand."
+    },
+    "tanstack_may_2026": {
+      "name": "TanStack May 2026 npm supply-chain compromise",
+      "actor": "TeamPCP",
+      "attack_window": {
+        "start": "2026-05-12T04:20:00+09:00",
+        "end": "2026-05-12T04:50:00+09:00"
+      },
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx",
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "OSV/GHSA is preferred for affected TanStack package names and exact malicious versions. The TanStack postmortem is preferred for incident context and clean-package clarifications."
+    },
+    "external_advisory_supplement": {
+      "name": "External advisory supplemental package source",
+      "notes": "Used for advisories that are not represented completely by the Datadog sample tree. Entries should keep exact package names and versions from machine-readable advisory feeds when available."
     }
   },
   "packages": [
@@ -6617,12 +6635,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.12"
+        "1.166.12",
+        "1.166.15"
       ],
       "version_dates": {
         "1.166.12": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/eslint-plugin-router",
@@ -6638,7 +6665,15 @@
         "1.161.12": "2026-05-11",
         "1.161.9": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/eslint-plugin-start",
@@ -6654,7 +6689,15 @@
         "0.0.4": "2026-05-11",
         "0.0.7": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/history",
@@ -6663,12 +6706,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.161.12",
         "1.161.9"
       ],
       "version_dates": {
         "1.161.9": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/nitro-v2-vite-plugin",
@@ -6677,12 +6729,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.154.12"
+        "1.154.12",
+        "1.154.15"
       ],
       "version_dates": {
         "1.154.12": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-router",
@@ -6698,7 +6759,15 @@
         "1.169.5": "2026-05-11",
         "1.169.8": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-router-devtools",
@@ -6707,12 +6776,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.16"
+        "1.166.16",
+        "1.166.19"
       ],
       "version_dates": {
         "1.166.16": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-start",
@@ -6728,7 +6806,15 @@
         "1.167.68": "2026-05-11",
         "1.167.71": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-start-client",
@@ -6744,7 +6830,15 @@
         "1.166.51": "2026-05-11",
         "1.166.54": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-start-rsc",
@@ -6760,7 +6854,15 @@
         "0.0.47": "2026-05-11",
         "0.0.50": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/react-start-server",
@@ -6769,12 +6871,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.55"
+        "1.166.55",
+        "1.166.58"
       ],
       "version_dates": {
         "1.166.55": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-cli",
@@ -6790,7 +6901,15 @@
         "1.166.46": "2026-05-11",
         "1.166.49": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-core",
@@ -6806,7 +6925,15 @@
         "1.169.5": "2026-05-11",
         "1.169.8": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-devtools",
@@ -6815,12 +6942,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.16"
+        "1.166.16",
+        "1.166.19"
       ],
       "version_dates": {
         "1.166.16": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-devtools-core",
@@ -6836,7 +6972,15 @@
         "1.167.6": "2026-05-11",
         "1.167.9": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-generator",
@@ -6852,7 +6996,15 @@
         "1.166.45": "2026-05-11",
         "1.166.48": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-plugin",
@@ -6868,7 +7020,15 @@
         "1.167.38": "2026-05-11",
         "1.167.41": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-ssr-query-core",
@@ -6884,7 +7044,15 @@
         "1.168.3": "2026-05-11",
         "1.168.6": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-utils",
@@ -6900,7 +7068,15 @@
         "1.161.11": "2026-05-11",
         "1.161.14": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/router-vite-plugin",
@@ -6909,12 +7085,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.53"
+        "1.166.53",
+        "1.166.56"
       ],
       "version_dates": {
         "1.166.53": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-router",
@@ -6930,7 +7115,15 @@
         "1.169.5": "2026-05-11",
         "1.169.8": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-router-devtools",
@@ -6939,12 +7132,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.16"
+        "1.166.16",
+        "1.166.19"
       ],
       "version_dates": {
         "1.166.16": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-router-ssr-query",
@@ -6953,12 +7155,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.15"
+        "1.166.15",
+        "1.166.18"
       ],
       "version_dates": {
         "1.166.15": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-start",
@@ -6974,7 +7185,15 @@
         "1.167.65": "2026-05-11",
         "1.167.68": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-start-client",
@@ -6983,12 +7202,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.50"
+        "1.166.50",
+        "1.166.53"
       ],
       "version_dates": {
         "1.166.50": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/solid-start-server",
@@ -6997,12 +7225,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.54"
+        "1.166.54",
+        "1.166.57"
       ],
       "version_dates": {
         "1.166.54": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-client-core",
@@ -7018,7 +7255,15 @@
         "1.168.5": "2026-05-11",
         "1.168.8": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-fn-stubs",
@@ -7027,12 +7272,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.161.12",
         "1.161.9"
       ],
       "version_dates": {
         "1.161.9": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-plugin-core",
@@ -7048,7 +7302,15 @@
         "1.169.23": "2026-05-11",
         "1.169.26": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-server-core",
@@ -7064,7 +7326,15 @@
         "1.167.33": "2026-05-11",
         "1.167.36": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-static-server-functions",
@@ -7073,12 +7343,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.44"
+        "1.166.44",
+        "1.166.47"
       ],
       "version_dates": {
         "1.166.44": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/start-storage-context",
@@ -7087,12 +7366,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.38"
+        "1.166.38",
+        "1.166.41"
       ],
       "version_dates": {
         "1.166.38": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/virtual-file-routes",
@@ -7101,12 +7389,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.161.10"
+        "1.161.10",
+        "1.161.13"
       ],
       "version_dates": {
         "1.161.10": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-router",
@@ -7122,7 +7419,15 @@
         "1.169.5": "2026-05-11",
         "1.169.8": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-router-devtools",
@@ -7131,12 +7436,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.16"
+        "1.166.16",
+        "1.166.19"
       ],
       "version_dates": {
         "1.166.16": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-router-ssr-query",
@@ -7145,12 +7459,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.15"
+        "1.166.15",
+        "1.166.18"
       ],
       "version_dates": {
         "1.166.15": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-start",
@@ -7166,7 +7489,15 @@
         "1.167.61": "2026-05-11",
         "1.167.64": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-start-client",
@@ -7175,12 +7506,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.46"
+        "1.166.46",
+        "1.166.49"
       ],
       "version_dates": {
         "1.166.46": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/vue-start-server",
@@ -7189,12 +7529,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.50"
+        "1.166.50",
+        "1.166.53"
       ],
       "version_dates": {
         "1.166.50": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@tanstack/zod-adapter",
@@ -7203,12 +7552,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.166.12"
+        "1.166.12",
+        "1.166.15"
       ],
       "version_dates": {
         "1.166.12": "2026-05-11"
       },
-      "datadog_added": "2026-05-11"
+      "datadog_added": "2026-05-11",
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@taskflow-corp/cli",
@@ -204815,6 +205173,386 @@
         "1.0.1": "2025-02-19"
       },
       "datadog_added": "2025-02-19"
+    },
+    {
+      "name": "@tanstack/react-router-ssr-query",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.166.15",
+        "1.166.18"
+      ],
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx",
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "notes": "TanStack router/start package compromise. Import exact affected packages and versions from OSV rather than copying KISA package names verbatim."
+    },
+    {
+      "name": "@tanstack/valibot-adapter",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.166.12",
+        "1.166.15"
+      ],
+      "osv_advisories": [
+        "GHSA-g7cv-rxg3-hmpx"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx",
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx"
+      ],
+      "notes": "TanStack router/start package compromise. Import exact affected packages and versions from OSV rather than copying KISA package names verbatim."
+    },
+    {
+      "name": "react-leaflet-heatmap-layer",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "canisterworm",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-2072"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-2072"
+      ],
+      "notes": "CanisterWorm: react-leaflet-heatmap-layer compromise. OSV advisory pins exact malicious version."
+    },
+    {
+      "name": "@emilgroup/changelog-sdk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@emilgroup/numbergenerator-sdk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "confirmed",
+      "npm_status": "not_found",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; npm registry returns 404 (consistent with post-incident takedown). Category between malicious_intent and compromised_legitimate cannot be determined without npm version history."
+    },
+    {
+      "name": "@tanstack/create-router",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/directive-functions-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/react-cross-context",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/react-router-with-query",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/router-arktype-adapter",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/router-esbuild-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "confirmed",
+      "npm_status": "not_found",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; npm registry returns 404 (consistent with post-incident takedown). Category between malicious_intent and compromised_legitimate cannot be determined without npm version history."
+    },
+    {
+      "name": "@tanstack/router-rspack-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "confirmed",
+      "npm_status": "not_found",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; npm registry returns 404 (consistent with post-incident takedown). Category between malicious_intent and compromised_legitimate cannot be determined without npm version history."
+    },
+    {
+      "name": "@tanstack/router-valibot-adapter",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/router-webpack-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "confirmed",
+      "npm_status": "not_found",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; npm registry returns 404 (consistent with post-incident takedown). Category between malicious_intent and compromised_legitimate cannot be determined without npm version history."
+    },
+    {
+      "name": "@tanstack/router-zod-adapter",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/server-functions-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-api-routes",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-client",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-config",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-server",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-server-functions-client",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-server-functions-fetcher",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-server-functions-handler",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-server-functions-ssr",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
+    },
+    {
+      "name": "@tanstack/start-vite-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "tanstack_may_2026",
+      "source": "kisa_listed",
+      "confidence": "suspected",
+      "npm_status": "exists",
+      "malicious_versions": [],
+      "references": [
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream postmortem indicates package remains secure. Retained under recall-first policy for human review."
     }
   ],
   "payloads": {
@@ -204827,6 +205565,7 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-05-26T05:38:47+00:00"
+    "datadog": "2026-05-26T05:38:47+00:00",
+    "supplemental_advisories": "2026-05-26T09:40:19+00:00"
   }
 }

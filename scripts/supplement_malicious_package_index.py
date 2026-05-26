@@ -172,6 +172,7 @@ def merge_osv_advisory(
                 "category": category,
                 "campaign": campaign,
                 "source": "osv_advisory",
+                "confidence": "confirmed",
                 "malicious_versions": row["versions"],
                 "osv_advisories": [advisory_id],
                 "references": [u for u in [osv_url, ghsa_url] if u],
@@ -197,6 +198,95 @@ def merge_osv_advisory(
         if not existing.get("source"):
             existing["source"] = "osv_advisory"
             changed = True
+        # A machine-readable advisory promotes the entry to confirmed,
+        # regardless of any prior suspected tier.
+        if existing.get("confidence") != "confirmed":
+            existing["confidence"] = "confirmed"
+            changed = True
+        if changed:
+            updated += 1
+        else:
+            unchanged += 1
+
+    return added, updated, unchanged
+
+
+def merge_kisa_listed(
+    index: dict[str, Any],
+    kisa_cfg: dict[str, Any],
+) -> tuple[int, int, int]:
+    """Materialize KISA-listed packages into the SSOT as confidence-tagged entries.
+
+    Returns (added, updated, unchanged).
+    """
+    packages = index.setdefault("packages", [])
+    by_key: dict[tuple[str, str], dict[str, Any]] = {
+        (p.get("ecosystem", ""), p.get("name", "")): p for p in packages
+    }
+
+    campaign = kisa_cfg.get("campaign", "external_advisory_supplement")
+    default_category = kisa_cfg.get("default_category", "compromised_legitimate")
+    carveouts = {c["package"] for c in kisa_cfg.get("upstream_carveouts") or []}
+    refs = list(kisa_cfg.get("references") or [])
+
+    added = updated = unchanged = 0
+    for row in kisa_cfg.get("packages") or []:
+        name = row.get("name")
+        if not name:
+            continue
+        if name in carveouts:
+            unchanged += 1
+            continue
+
+        confidence = row.get("confidence", "suspected")
+        npm_status = row.get("npm_status", "unknown")
+        key = ("npm", name)
+        existing = by_key.get(key)
+
+        if existing is None:
+            note = (
+                "KISA-listed; npm registry returns 404 (consistent with post-incident "
+                "takedown). Category between malicious_intent and compromised_legitimate "
+                "cannot be determined without npm version history."
+                if npm_status == "not_found"
+                else "KISA-listed; no OSV/GHSA advisory confirms compromise and upstream "
+                "postmortem indicates package remains secure. Retained under "
+                "recall-first policy for human review."
+            )
+            entry = {
+                "name": name,
+                "ecosystem": "npm",
+                "category": default_category,
+                "campaign": campaign,
+                "source": "kisa_listed",
+                "confidence": confidence,
+                "npm_status": npm_status,
+                "malicious_versions": [],
+                "references": refs,
+                "notes": note,
+            }
+            packages.append(entry)
+            by_key[key] = entry
+            added += 1
+            continue
+
+        # If the entry was promoted to confirmed by an OSV advisory, do not
+        # demote it. Otherwise stamp KISA metadata onto the existing entry.
+        if existing.get("confidence") == "confirmed":
+            unchanged += 1
+            continue
+
+        changed = False
+        if existing.get("confidence") != confidence:
+            existing["confidence"] = confidence
+            changed = True
+        if existing.get("npm_status") != npm_status and npm_status != "unknown":
+            existing["npm_status"] = npm_status
+            changed = True
+        if not existing.get("source"):
+            existing["source"] = "kisa_listed"
+            changed = True
+        changed |= add_unique_list_values(existing, "references", refs)
         if changed:
             updated += 1
         else:
@@ -207,6 +297,7 @@ def merge_osv_advisory(
 
 def refresh_from_supplements(
     advisory_filter: set[str] | None = None,
+    skip_kisa: bool = False,
     write: bool = False,
 ) -> int:
     index = load_json(INDEX_PATH)
@@ -217,22 +308,39 @@ def refresh_from_supplements(
     if advisory_filter:
         advisories = [a for a in advisories if a.get("id") in advisory_filter]
 
-    if not advisories:
-        print("No supplemental OSV advisories selected.")
-        return 0
-
     total_added = total_updated = total_unchanged = 0
-    for advisory_cfg in advisories:
-        advisory_id = advisory_cfg.get("id")
-        if not advisory_id:
-            raise SupplementError("supplemental OSV advisory missing id")
-        print(f"Fetching OSV advisory {advisory_id}...")
-        osv = fetch_osv_advisory(advisory_id)
-        added, updated, unchanged = merge_osv_advisory(index, advisory_cfg, osv)
-        print(f"  {advisory_id}: +{added} updated={updated} unchanged={unchanged}")
-        total_added += added
-        total_updated += updated
-        total_unchanged += unchanged
+
+    if advisories:
+        for advisory_cfg in advisories:
+            advisory_id = advisory_cfg.get("id")
+            if not advisory_id:
+                raise SupplementError("supplemental OSV advisory missing id")
+            print(f"Fetching OSV advisory {advisory_id}...")
+            osv = fetch_osv_advisory(advisory_id)
+            added, updated, unchanged = merge_osv_advisory(index, advisory_cfg, osv)
+            print(f"  {advisory_id}: +{added} updated={updated} unchanged={unchanged}")
+            total_added += added
+            total_updated += updated
+            total_unchanged += unchanged
+    else:
+        print("No supplemental OSV advisories selected.")
+
+    # KISA-listed packages always run after OSV so confirmed advisories can
+    # promote KISA-suspected entries to confidence: confirmed.
+    if not skip_kisa and not advisory_filter:
+        kisa_cfg = supplements.get("kisa_listed_packages")
+        if kisa_cfg:
+            added, updated, unchanged = merge_kisa_listed(index, kisa_cfg)
+            print(
+                f"KISA-listed packages: +{added} updated={updated} "
+                f"unchanged={unchanged}"
+            )
+            total_added += added
+            total_updated += updated
+            total_unchanged += unchanged
+
+    if total_added == 0 and total_updated == 0 and total_unchanged == 0:
+        return 0
 
     timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     index["generated_at"] = timestamp
@@ -269,6 +377,11 @@ def main() -> int:
         action="store_true",
         help="Explicitly run without writing. This is the default.",
     )
+    parser.add_argument(
+        "--skip-kisa",
+        action="store_true",
+        help="Skip kisa_listed_packages materialization (advisory-only run).",
+    )
     args = parser.parse_args()
 
     if args.write and args.dry_run:
@@ -278,6 +391,7 @@ def main() -> int:
     try:
         return refresh_from_supplements(
             advisory_filter=set(args.advisory or []) or None,
+            skip_kisa=args.skip_kisa,
             write=args.write,
         )
     except SupplementError as exc:

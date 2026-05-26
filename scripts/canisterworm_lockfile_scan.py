@@ -92,6 +92,39 @@ MALICIOUS_PACKAGES = {
 # Also check for any usage of these packages (even non-malicious versions = risk)
 MALICIOUS_PACKAGE_NAMES = set(MALICIOUS_PACKAGES.keys())
 
+
+# ---------------------------------------------------------------------------
+# Supplemental SSOT-driven detection (KISA-listed and suspected entries)
+# ---------------------------------------------------------------------------
+
+SSOT_PATH = os.path.join(ROOT_DIR, "public", "data", "malicious-packages.json")
+
+
+def load_suspected_from_ssot():
+    """Return {name: entry} for SSOT packages with confidence != 'confirmed'.
+
+    These are surfaced in a separate report section so KISA-listed-but-
+    unconfirmed packages do not collide with the high-severity CanisterWorm
+    hardcoded list above.
+    """
+    suspected = {}
+    if not os.path.exists(SSOT_PATH):
+        return suspected
+    try:
+        with open(SSOT_PATH) as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return suspected
+    for p in data.get("packages", []) or []:
+        if p.get("ecosystem") != "npm":
+            continue
+        if p.get("confidence") == "suspected":
+            suspected[p.get("name", "")] = p
+    return suspected
+
+
+SUSPECTED_PACKAGES = load_suspected_from_ssot()
+
 # ---------------------------------------------------------------------------
 # API helpers
 # ---------------------------------------------------------------------------
@@ -140,7 +173,14 @@ def fetch_file_from_bitbucket(repo, pat, branch, filepath):
 
 
 def check_lockfile_content(content, filename):
-    """Check lockfile content for CanisterWorm packages."""
+    """Check lockfile content for CanisterWorm packages and suspected entries.
+
+    Three finding tiers are emitted:
+    - confidence='confirmed', malicious_version=True  → CanisterWorm-known bad version
+    - confidence='confirmed', malicious_version=False → CanisterWorm package, benign version
+    - confidence='suspected'                          → KISA-listed, no machine-readable
+                                                        advisory; informational only
+    """
     findings = []
 
     if not content:
@@ -158,6 +198,7 @@ def check_lockfile_content(content, filename):
                         "package": pkg_name,
                         "version": ver,
                         "malicious_version": True,
+                        "confidence": "confirmed",
                         "file": filename,
                     })
                     version_hit = True
@@ -168,8 +209,24 @@ def check_lockfile_content(content, filename):
                     "package": pkg_name,
                     "version": "(non-malicious version)",
                     "malicious_version": False,
+                    "confidence": "confirmed",
                     "file": filename,
                 })
+
+    for pkg_name, entry in SUSPECTED_PACKAGES.items():
+        if pkg_name and pkg_name.lower() in content_lower:
+            # Skip overlap with the hardcoded CanisterWorm list — confirmed
+            # findings take precedence and we don't double-report.
+            if pkg_name in MALICIOUS_PACKAGE_NAMES:
+                continue
+            findings.append({
+                "package": pkg_name,
+                "version": "(suspected — KISA-listed)",
+                "malicious_version": False,
+                "confidence": "suspected",
+                "npm_status": entry.get("npm_status", "unknown"),
+                "file": filename,
+            })
 
     return findings
 
@@ -288,9 +345,15 @@ def generate_lockfile_report(results, errors, scanned, total):
     w(f"> **대상:** npm 사용 프로젝트 {total}개 중 lockfile 확인 {scanned}개")
     w("")
 
-    # Categorize
+    # Categorize. A project belongs to the highest-severity bucket it
+    # qualifies for (malicious > reference > suspected > clean) so a single
+    # confirmed-malicious finding doesn't get hidden in the suspected section.
+    def has_confirmed(f):
+        return f.get("confidence", "confirmed") == "confirmed"
+
     malicious_projects = []
     reference_projects = []
+    suspected_projects = []
     clean_projects = []
 
     for r in results:
@@ -298,8 +361,10 @@ def generate_lockfile_report(results, errors, scanned, total):
             clean_projects.append(r)
         elif any(f["malicious_version"] for f in r["findings"]):
             malicious_projects.append(r)
-        else:
+        elif any(has_confirmed(f) for f in r["findings"]):
             reference_projects.append(r)
+        else:
+            suspected_projects.append(r)
 
     w("## 스캔 요약")
     w("")
@@ -308,6 +373,7 @@ def generate_lockfile_report(results, errors, scanned, total):
     w(f"| 스캔 프로젝트 | {scanned}개 |")
     w(f"| 🚨 악성 버전 사용 | {len(malicious_projects)}개 |")
     w(f"| ⚠️ 패키지 참조 (비악성 버전) | {len(reference_projects)}개 |")
+    w(f"| 🟡 의심 (KISA-listed, 외부 advisory 미확정) | {len(suspected_projects)}개 |")
     w(f"| ✅ 클린 | {len(clean_projects)}개 |")
     w(f"| 스캔 실패/건너뜀 | {len(errors)}개 |")
     w("")
@@ -343,7 +409,31 @@ def generate_lockfile_report(results, errors, scanned, total):
         w("|---|---|---|")
         for r in reference_projects:
             for f in r["findings"]:
+                if f.get("confidence", "confirmed") != "confirmed":
+                    continue
                 w(f"| {r['project']} | `{f['package']}` | {f['file']} |")
+        w("")
+
+    # Informational: Suspected (KISA-listed, no machine-readable confirmation)
+    if suspected_projects:
+        w("## 🟡 의심 패키지 (KISA-listed, OSV/postmortem 미확정)")
+        w("")
+        w("이 항목들은 KISA 공급망 확산 공격 헌팅 가이드에 명시된 패키지명입니다.")
+        w("OSV/GHSA에는 해당 advisory가 없고 업스트림 postmortem이 'unaffected'라고")
+        w("발표한 경우도 있어서 '악성'으로 단정할 수 없지만, recall-first 정책상")
+        w("스캔에 노출합니다. 사용 사실만으로 즉시 차단 대상은 아니며, 수동 검증이")
+        w("필요합니다(`npm_status: not_found`인 경우 사고 후 unpublish 정황이라 더 강한 신호).")
+        w("")
+        w("| 프로젝트 | 패키지 | npm status | lockfile |")
+        w("|---|---|---|---|")
+        for r in suspected_projects:
+            for f in r["findings"]:
+                if f.get("confidence") != "suspected":
+                    continue
+                w(
+                    f"| {r['project']} | `{f['package']}` | "
+                    f"{f.get('npm_status', 'unknown')} | {f['file']} |"
+                )
         w("")
 
     # Errors
