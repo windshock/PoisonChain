@@ -1,0 +1,80 @@
+name: Refresh malicious packages SSOT
+
+# Pulls the latest Datadog malicious-software-packages-dataset metadata
+# (tree only — no ZIP blob downloads), then merges configured OSV advisories
+# and the KISA-listed package set on top, and commits any new/changed entries
+# straight to main. Manual campaigns (canisterworm, axios_march_2026) are
+# never modified — only entries with campaign='datadog_auto' are touched by
+# the Datadog refresh; supplement entries gain/keep their own campaign tags.
+#
+# Cron: 21:00 UTC daily = 06:00 Asia/Seoul (KST = UTC+9).
+
+on:
+  schedule:
+    - cron: "0 21 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-malicious-packages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh SSOT from Datadog dataset
+        env:
+          # Bumps the GitHub API rate limit from 60/hr (anonymous) to 5000/hr.
+          # The default GITHUB_TOKEN is enough — read-only access to the
+          # public Datadog dataset is all we need.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/build_malicious_package_index.py --refresh
+
+      - name: Supplement SSOT from OSV + KISA-listed
+        # Fetches every advisory listed in
+        # public/data/supplemental-malicious-package-sources.json#osv_advisories
+        # (api.osv.dev, no key required) and materializes the kisa_listed_packages
+        # section. Confidence is promote-only: an entry that the previous step
+        # marked confirmed stays confirmed.
+        run: |
+          python3 scripts/supplement_malicious_package_index.py --write
+
+      - name: Validate SSOT after refresh
+        run: |
+          python3 scripts/build_malicious_package_index.py --validate
+
+      - name: Summarize delta
+        id: delta
+        run: |
+          python3 scripts/build_malicious_package_index.py --diff-summary >> "$GITHUB_STEP_SUMMARY" || true
+          delta=$(python3 scripts/build_malicious_package_index.py --diff-summary --quiet || echo "")
+          echo "delta=$delta" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- public/data/malicious-packages.json; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+
+          git add public/data/malicious-packages.json
+          msg="chore(ssot): daily refresh (Datadog + OSV + KISA supplement)"
+          if [ -n "${{ steps.delta.outputs.delta }}" ]; then
+            msg="$msg (${{ steps.delta.outputs.delta }})"
+          fi
+          git commit -m "$msg"
+          git push
