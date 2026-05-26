@@ -79,18 +79,50 @@ _FALLBACK_CANISTERWORM_PACKAGES = {
 _MALICIOUS_INDEX_PATH = os.path.join(ROOT_DIR, "public", "data", "malicious-packages.json")
 
 
-def _load_canisterworm_packages() -> set[str]:
+def _load_target_packages(
+    all_campaigns: bool = False,
+    only_malicious_intent: bool = False,
+) -> set[str]:
+    """Load package names from the SSOT, with optional scope filters.
+
+    Default scope: ``campaign == "canisterworm"`` (the original behavior of
+    this script).  Two flags widen or tighten that scope:
+
+    - ``all_campaigns=True`` — every campaign in the SSOT, not just the
+      CanisterWorm campaign. Useful when you want to cross-reference the
+      vulnerability DB against the entire SSOT.
+    - ``only_malicious_intent=True`` — further restrict to
+      ``category == "malicious_intent"`` entries. This is the safe scope
+      for substring matching: the package name itself is the IOC, so a
+      hit in any vulnerability description is meaningful. Compromised-
+      legitimate packages (e.g. ``axios@1.14.1``) need version-aware
+      matching, which this script does not do — pair them with
+      ``nexus_proxy_scan.py --include-compromised`` or
+      ``canisterworm_lockfile_scan.py`` instead.
+
+    If the SSOT file is missing, falls back to the embedded
+    ``_FALLBACK_CANISTERWORM_PACKAGES`` constant — the flags are ignored in
+    that branch because we no longer know each package's
+    category/campaign.
+    """
     if not os.path.exists(_MALICIOUS_INDEX_PATH):
         return set(_FALLBACK_CANISTERWORM_PACKAGES)
     try:
         with open(_MALICIOUS_INDEX_PATH, encoding="utf-8") as f:
             data = json.load(f)
-        return {p["name"] for p in data.get("packages", []) if p.get("campaign") == "canisterworm"}
+        packages = data.get("packages", []) or []
+        if not all_campaigns:
+            packages = [p for p in packages if p.get("campaign") == "canisterworm"]
+        if only_malicious_intent:
+            packages = [p for p in packages if p.get("category") == "malicious_intent"]
+        return {p["name"] for p in packages if p.get("name")}
     except Exception:
         return set(_FALLBACK_CANISTERWORM_PACKAGES)
 
 
-CANISTERWORM_PACKAGES = _load_canisterworm_packages()
+# Default at import time preserves the script's historical behaviour. main()
+# replaces this when --all-campaigns / --only-malicious-intent are supplied.
+CANISTERWORM_PACKAGES = _load_target_packages()
 
 # Substring match on vulnerability name/description/ruleId. Only campaign-specific
 # tokens — generic phrases ("supply chain", "backdoor", …) match almost everything.
@@ -196,10 +228,16 @@ def match_canisterworm(vuln):
 
 
 def run_analysis():
+    scope_label = "canisterworm campaign"
+    if globals().get("_SCOPE_ALL_CAMPAIGNS"):
+        scope_label = "ALL SSOT campaigns"
+    if globals().get("_SCOPE_ONLY_MALICIOUS_INTENT"):
+        scope_label += " (malicious_intent only)"
     print("=" * 70)
     print("  CanisterWorm Impact Analysis — XEIZE")
     print(f"  Attack window: 2026-03-19 ~ 2026-03-23")
     print(f"  Scan time: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    print(f"  Package scope: {scope_label} → {len(CANISTERWORM_PACKAGES)} names")
     print("=" * 70)
 
     # ----- Step 1: Load projects -----
@@ -495,7 +533,58 @@ def generate_report(projects, direct_hits, ioc_hits, trivy_hits,
 # Main
 # ---------------------------------------------------------------------------
 
+def _parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(
+        description=(
+            "CanisterWorm impact analysis against the XEIZE vulnerability DB. "
+            "Defaults to the original CanisterWorm campaign scope; flags below "
+            "widen or tighten the scope."
+        )
+    )
+    parser.add_argument(
+        "--all-campaigns",
+        action="store_true",
+        help=(
+            "Match against every package in public/data/malicious-packages.json, "
+            "not just campaign='canisterworm'. WARNING: without "
+            "--only-malicious-intent this also pulls in compromised_legitimate "
+            "names (e.g. 'axios'), which substring-match against any normal CVE "
+            "for that package and produce false positives. The version-aware "
+            "scanners (nexus_proxy_scan.py, canisterworm_lockfile_scan.py) are "
+            "the right tools for compromised_legitimate detection."
+        ),
+    )
+    parser.add_argument(
+        "--only-malicious-intent",
+        action="store_true",
+        help=(
+            "Restrict to category=='malicious_intent' entries only. Safe to "
+            "combine with --all-campaigns for a broad name-only sweep."
+        ),
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = _parse_args()
+    # Re-bind the module globals so the rest of the script sees the requested
+    # scope. We expose the flag state via private globals so run_analysis()
+    # can label the header without taking new parameters.
+    _SCOPE_ALL_CAMPAIGNS = args.all_campaigns
+    _SCOPE_ONLY_MALICIOUS_INTENT = args.only_malicious_intent
+    CANISTERWORM_PACKAGES = _load_target_packages(
+        all_campaigns=args.all_campaigns,
+        only_malicious_intent=args.only_malicious_intent,
+    )
+    if args.all_campaigns and not args.only_malicious_intent:
+        sys.stderr.write(
+            "WARNING: --all-campaigns without --only-malicious-intent will "
+            "match compromised_legitimate package names (e.g. axios) against "
+            "the full vulnerability DB and will produce false positives. "
+            "Consider adding --only-malicious-intent unless you want to triage "
+            "those manually.\n"
+        )
     report = run_analysis()
     # Also print summary to console
     print("\n" + "=" * 70)
