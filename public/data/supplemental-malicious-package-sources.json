@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "_comment": "Supplemental sources for public/data/malicious-packages.json. This file does not replace the SSOT; scripts/build_malicious_package_index.py can use it to enrich the SSOT from advisory feeds that are not covered completely by the Datadog sample tree.",
+  "campaigns": {
+    "tanstack_may_2026": {
+      "name": "TanStack May 2026 npm supply-chain compromise",
+      "actor": "TeamPCP",
+      "attack_window": {
+        "start": "2026-05-12T04:20:00+09:00",
+        "end": "2026-05-12T04:50:00+09:00"
+      },
+      "references": [
+        "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx",
+        "https://osv.dev/vulnerability/GHSA-g7cv-rxg3-hmpx",
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      ],
+      "notes": "OSV/GHSA is preferred for affected TanStack package names and exact malicious versions. The TanStack postmortem is preferred for incident context and clean-package clarifications."
+    },
+    "external_advisory_supplement": {
+      "name": "External advisory supplemental package source",
+      "notes": "Used for advisories that are not represented completely by the Datadog sample tree. Entries should keep exact package names and versions from machine-readable advisory feeds when available."
+    }
+  },
+  "osv_advisories": [
+    {
+      "id": "GHSA-g7cv-rxg3-hmpx",
+      "campaign": "tanstack_may_2026",
+      "category": "compromised_legitimate",
+      "ecosystem": "npm",
+      "notes": "TanStack router/start package compromise. Import exact affected packages and versions from OSV rather than copying KISA package names verbatim."
+    },
+    {
+      "id": "MAL-2026-2072",
+      "campaign": "canisterworm",
+      "category": "malicious_intent",
+      "ecosystem": "npm",
+      "notes": "CanisterWorm: react-leaflet-heatmap-layer compromise. OSV advisory pins exact malicious version."
+    }
+  ],
+  "kisa_listed_packages": {
+    "_comment": "Packages on the KISA Supply Chain Diffusion Attack hunting guide that are NOT confirmed compromised by a machine-readable OSV/GHSA advisory. We add them to the SSOT anyway under a recall-first policy. confidence reflects KISA-vs-upstream agreement; category stays conservative because we do not know if the package is malicious_intent (typosquat) or compromised_legitimate (hijacked version) without a version-level signal.",
+    "campaign": "tanstack_may_2026",
+    "default_category": "compromised_legitimate",
+    "policy": {
+      "confirmed_when": "KISA-listed AND npm registry returns 404 (consistent with post-incident unpublish/takedown).",
+      "suspected_when": "KISA-listed AND npm registry returns 200 AND no OSV/GHSA advisory confirms compromise. Often disputed by upstream postmortem.",
+      "exclude_when": "Upstream maintainer postmortem explicitly names the package as unaffected."
+    },
+    "upstream_carveouts": [
+      {
+        "package": "@tanstack/start",
+        "reason": "TanStack postmortem explicitly names @tanstack/start (the meta-package, not @tanstack/start-*) as unaffected.",
+        "reference": "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+      }
+    ],
+    "packages": [
+      {"name": "@emilgroup/changelog-sdk", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@emilgroup/numbergenerator-sdk", "npm_status": "not_found", "confidence": "confirmed"},
+      {"name": "@tanstack/create-router", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/directive-functions-plugin", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/react-cross-context", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/react-router-with-query", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/router-arktype-adapter", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/router-esbuild-plugin", "npm_status": "not_found", "confidence": "confirmed"},
+      {"name": "@tanstack/router-rspack-plugin", "npm_status": "not_found", "confidence": "confirmed"},
+      {"name": "@tanstack/router-valibot-adapter", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/router-webpack-plugin", "npm_status": "not_found", "confidence": "confirmed"},
+      {"name": "@tanstack/router-zod-adapter", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/server-functions-plugin", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-api-routes", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-client", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-config", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-plugin", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-server", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-server-functions-client", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-server-functions-fetcher", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-server-functions-handler", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-server-functions-ssr", "npm_status": "exists", "confidence": "suspected"},
+      {"name": "@tanstack/start-vite-plugin", "npm_status": "exists", "confidence": "suspected"}
+    ],
+    "references": [
+      "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
+    ]
+  },
+  "manual_review_aliases": [
+    {
+      "reported_name": "@emilgroup/changelog-sdk",
+      "candidate_canonical_names": ["@emilgroup/changelog-sdk-node"],
+      "reason": "KISA-style list and Datadog/local SSOT differ; validate against JFrog/Datadog/npm before adding as a new package."
+    },
+    {
+      "reported_name": "@emilgroup/numbergenerator-sdk",
+      "candidate_canonical_names": ["@emilgroup/numbergenerator-sdk-node"],
+      "reason": "KISA-style list and Datadog/local SSOT differ; validate against JFrog/Datadog/npm before adding as a new package."
+    },
+    {
+      "reported_name": "@tanstack/router-zod-adapter",
+      "candidate_canonical_names": ["@tanstack/zod-adapter"],
+      "reason": "TanStack/GHSA naming may differ from secondary summaries. Prefer OSV/GHSA affected.package.name."
+    },
+    {
+      "reported_name": "@tanstack/router-valibot-adapter",
+      "candidate_canonical_names": ["@tanstack/valibot-adapter"],
+      "reason": "TanStack/GHSA naming may differ from secondary summaries. Prefer OSV/GHSA affected.package.name."
+    },
+    {
+      "reported_name": "@tanstack/router-arktype-adapter",
+      "candidate_canonical_names": ["@tanstack/arktype-adapter"],
+      "reason": "TanStack/GHSA naming may differ from secondary summaries. Prefer OSV/GHSA affected.package.name."
+    }
+  ],
+  "human_review_sources": {
+    "canisterworm_jfrog": {
+      "name": "JFrog CanisterWorm compromised package list",
+      "url": "https://research.jfrog.com/post/canister-worm/",
+      "use_for": [
+        "CanisterWorm package/version normalization",
+        "react-leaflet-heatmap-layer",
+        "@emilgroup/* aliases",
+        "@opengov/* version confirmation"
+      ]
+    },
+    "tanstack_postmortem": {
+      "name": "TanStack npm supply-chain compromise postmortem",
+      "url": "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem",
+      "use_for": [
+        "incident context",
+        "clean package clarification",
+        "remediation guidance"
+      ]
+    }
+  }
+}
