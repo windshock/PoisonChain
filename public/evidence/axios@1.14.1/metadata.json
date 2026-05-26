@@ -6,5 +6,8 @@
   "file": "axios-1.14.1.tgz",
   "sha256": "1b5d13dcb825751a72f7b557325809e4823c57163d9e400565108f2ad0a469d1",
   "sha1": "f3340a78b80f82e8cb41c8c31c4701f26826300d",
-  "file_size_bytes": 634913
+  "file_size_bytes": 634913,
+  "category": "compromised_legitimate",
+  "campaign": "axios_march_2026",
+  "datadog_path": "samples/npm/compromised_lib/axios"
 }

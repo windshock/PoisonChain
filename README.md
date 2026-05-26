@@ -99,13 +99,22 @@ Malicious package published
               ▼
 ┌─ report_axios_by_team.py ───┐   Per-team dashboard + IR reports
 │  executive reporting + IR    │   → batch Markdown report generation
+└─────────────┬───────────────┘
+              ▼
+┌─ nexus_proxy_scan.py ───────┐   Probe internal Nexus mirrors
+│  cross-reference malicious   │   → cache hit / download history
+│  packages vs cached blobs    │   → risk per (instance, package)
 └─────────────────────────────┘
 ```
 
 Run all at once:
 ```bash
-./scripts/run_full_pipeline.sh --with-hr --with-lockfile
+./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
+
+All scripts read the curated package list from **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** (single source of truth). Each entry is tagged with `category`: `compromised_legitimate` (legitimate package, only specific versions are malicious — e.g. `axios@1.14.1`) or `malicious_intent` (the package itself is a typosquat / supply-chain pretense — any version is a sign of compromise — e.g. `plain-crypto-js@4.2.1`). This distinction matters for IR: malicious_intent packages should not exist in your registry at any version; compromised_legitimate packages stay in use at safe versions.
+
+The SSOT is **refreshed daily at 07:00 KST** by [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml), which pulls metadata-only (no ZIP downloads) from the [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset) and commits any new/changed entries directly to `main`. Manually-curated campaigns (`canisterworm`, `axios_march_2026`) are never touched; only entries tagged `campaign: datadog_auto` are refreshed. For the workflow to push to `main`, `Settings → Actions → General → Workflow permissions` must be set to **Read and write**, and any branch protection on `main` must allow `github-actions[bot]` (or use a PAT secret instead).
 
 ---
 
@@ -148,6 +157,8 @@ PoisonChain is opinionated about incident response: detection is not enough, and
 | `report_axios_by_team.py` | Generate per-team dashboards | All above outputs | Markdown reports |
 | `preserve_evidence.py` | Archive malicious packages + SHA verification | npm/Datadog/GitHub | Forensic evidence bundle |
 | `verify_repos.py` | Clean up deleted/excluded repos | Scan result JSON | Sanitized JSON |
+| `build_malicious_package_index.py` | Validate the curated SSOT (`public/data/malicious-packages.json`) and optionally cross-check categories against Datadog | SSOT JSON + Datadog API | Pass/fail + drift warnings |
+| `nexus_proxy_scan.py` | Probe internal Nexus Repository Manager for cached malicious packages, with download history | SSOT JSON + Nexus REST API | Per-`(repo, package, version)` JSON with `risk_level` |
 
 ---
 
@@ -223,7 +234,7 @@ public/evidence/
     └── ...
 ```
 
-Each `metadata.json` records the acquisition source (`source`), timestamp (`acquired_at`), and cryptographic hashes — verifiable against SANS-published indicators.
+Each `metadata.json` records the acquisition source (`source`), timestamp (`acquired_at`), cryptographic hashes, and the package's `category` / `campaign` (synced from the SSOT). Verifiable against SANS-published indicators.
 
 ---
 

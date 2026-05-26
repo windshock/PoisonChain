@@ -98,13 +98,22 @@ PoisonChain은 사고 대응팀이 실제로 답해야 하는 질문을 기준�
               ▼
 ┌─ report_axios_by_team.py ───┐   팀별 대시보드 + 대응 보고서
 │  경영진 보고 + IR 패키지      │   → Markdown 보고서 일괄 생성
+└─────────────┬───────────────┘
+              ▼
+┌─ nexus_proxy_scan.py ───────┐   사내 Nexus 미러 점검
+│  악성 패키지 ↔ 캐시 컴포넌트  │   → 캐시 히트 / 다운로드 이력
+│  교차 검증                    │   → (repo, 패키지) 단위 리스크
 └─────────────────────────────┘
 ```
 
 한 번에 실행:
 ```bash
-./scripts/run_full_pipeline.sh --with-hr --with-lockfile
+./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
+
+모든 스크립트는 **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** 을 단일 진실 소스로 읽는다. 각 패키지는 `category` 필드로 분류된다 — `compromised_legitimate`(정상 패키지가 특정 버전에서만 오염된 케이스, 예: `axios@1.14.1`)와 `malicious_intent`(처음부터 악의로 publish된 패키지, 예: `plain-crypto-js@4.2.1` — 어떤 버전이든 사고). 이 구분이 대응 전략을 가른다 — malicious_intent는 사내 어디서도 캐시되어 있어선 안 되고, compromised_legitimate는 안전 버전에서는 계속 사용되어야 한다.
+
+SSOT는 **매일 KST 07:00**에 [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml) 가 자동 갱신한다. [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset)의 트리 메타데이터만 가져오고(ZIP 바이너리 다운로드 없음), 신규/변경 항목을 `main`에 직접 커밋한다. 수기 큐레이션 캠페인(`canisterworm`, `axios_march_2026`)은 절대 건드리지 않으며, `campaign: datadog_auto` 항목만 자동 갱신된다. 워크플로우가 `main` 에 직접 푸시하려면 `Settings → Actions → General → Workflow permissions` 가 **Read and write** 여야 하고, `main` 브랜치 보호가 켜져 있다면 `github-actions[bot]` 우회 허용 또는 PAT 시크릿 사용이 필요하다.
 
 ---
 
@@ -147,6 +156,8 @@ cp public/.env.example .env
 | `report_axios_by_team.py` | 팀별 대시보드 생성 | 위 결과물 전체 | Markdown 보고서 |
 | `preserve_evidence.py` | 악성 패키지 아카이브 + SHA 검증 | npm/Datadog/GitHub | 포렌식 증거 번들 |
 | `verify_repos.py` | 삭제/제외 저장소 정리 | 스캔 결과 JSON | 정제된 JSON |
+| `build_malicious_package_index.py` | 큐레이션된 SSOT(`public/data/malicious-packages.json`) 검증 및 Datadog 카테고리 교차 확인 | SSOT JSON + Datadog API | 검증 통과/실패 + 드리프트 경고 |
+| `nexus_proxy_scan.py` | 사내 Nexus Repository Manager에 캐시된 악성 패키지 점검 + 다운로드 이력 | SSOT JSON + Nexus REST API | `(repo, 패키지, 버전)` 단위 `risk_level` JSON |
 
 ---
 
@@ -222,7 +233,7 @@ public/evidence/
     └── ...
 ```
 
-각 `metadata.json`에 수집 출처(`source`)·시각(`acquired_at`)·해시가 기록되어 있으며, SANS에서 공개한 해시와 대조 검증 가능하다.
+각 `metadata.json`에 수집 출처(`source`)·시각(`acquired_at`)·해시 + 패키지 `category` / `campaign`(SSOT에서 동기화)이 기록되어 있으며, SANS에서 공개한 해시와 대조 검증 가능하다.
 
 ---
 

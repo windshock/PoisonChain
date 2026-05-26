@@ -7,6 +7,7 @@
 #   ./scripts/run_full_pipeline.sh --hr-refresh  # hr_portal만: 재직·부서 JSON 반영 + axios-repos-by-team.md만 (짧음)
 #   ./scripts/run_full_pipeline.sh --with-lockfile # 위 + canisterworm_lockfile_scan (/tmp/npm_projects.json 필요)
 #   ./scripts/run_full_pipeline.sh --with-jenkins  # 위 + jenkins_scan.py (선택 단계; Jenkins 토큰/접근권 필요, 부분 수집 가능)
+#   ./scripts/run_full_pipeline.sh --with-nexus    # 위 + nexus_proxy_scan.py (.env 의 NEXUS_BASE_URL/NEXUS_ID/NEXUS_PW 필요)
 #
 # 환경: 저장소 루트의 .env (XEIZE_* 등). PY=python3.12 처럼 인터프리터 덮어쓰기 가능.
 
@@ -20,11 +21,13 @@ WITH_HR=0
 WITH_LOCKFILE=0
 HR_REFRESH=0
 WITH_JENKINS=0
+WITH_NEXUS=0
 for arg in "$@"; do
   case "$arg" in
     --with-hr)       WITH_HR=1 ;;
     --with-lockfile) WITH_LOCKFILE=1 ;;
     --with-jenkins)  WITH_JENKINS=1 ;;
+    --with-nexus)    WITH_NEXUS=1 ;;
     --hr-refresh)    HR_REFRESH=1 ;;
     -h|--help)
       grep '^#' "$0" | grep -v '^#!' | sed 's/^# //' | head -24
@@ -32,6 +35,10 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+# SSOT 무결성 가드 — 모든 단계가 public/data/malicious-packages.json 에 의존
+echo "==> [0] build_malicious_package_index.py --validate (SSOT 무결성 확인)"
+$PY scripts/build_malicious_package_index.py --validate
 
 if [[ ! -f .env ]]; then
   echo "WARN: .env 없음 — XEIZE·hr_portal 스크립트는 실패할 수 있음" >&2
@@ -79,6 +86,11 @@ $PY scripts/report_axios_by_team.py
 if [[ "$WITH_JENKINS" == "1" ]]; then
   echo "==> [9] jenkins_scan.py (선택 단계; Jenkins 토큰/접근권 필요, 부분 수집 가능)"
   $PY scripts/jenkins_scan.py
+fi
+
+if [[ "$WITH_NEXUS" == "1" ]]; then
+  echo "==> [10] nexus_proxy_scan.py (.env 의 NEXUS_BASE_URL/NEXUS_ID/NEXUS_PW 필요)"
+  $PY scripts/nexus_proxy_scan.py
 fi
 
 echo "완료. 산출물은 internal/reports/ 참고."

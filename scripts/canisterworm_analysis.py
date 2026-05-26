@@ -46,9 +46,10 @@ if not API_KEY:
 ATTACK_START = "2026-03-19T00:00:00Z"
 ATTACK_END   = "2026-03-23T23:59:59Z"
 
-# Known CanisterWorm malicious packages (from checklist)
-CANISTERWORM_PACKAGES = {
-    # @emilgroup (37)
+# Fallback list — used only if public/data/malicious-packages.json is missing.
+# Keep in sync with that file. Edits to this constant alone won't propagate;
+# the SSOT is the JSON file (see scripts/build_malicious_package_index.py).
+_FALLBACK_CANISTERWORM_PACKAGES = {
     "@emilgroup/account-sdk", "@emilgroup/account-sdk-node",
     "@emilgroup/accounting-sdk-node", "@emilgroup/api-documentation",
     "@emilgroup/auth-sdk", "@emilgroup/auth-sdk-node",
@@ -68,14 +69,28 @@ CANISTERWORM_PACKAGES = {
     "@emilgroup/numbergenerator-sdk-node", "@emilgroup/partner-portal-sdk",
     "@emilgroup/setting-sdk", "@emilgroup/task-sdk",
     "@emilgroup/task-sdk-node",
-    # @opengov (6)
     "@opengov/form-renderer", "@opengov/ppf-backend-types",
     "@opengov/ppf-eslint-config", "@opengov/form-utils",
     "@opengov/qa-record-types-api", "@opengov/form-builder",
-    # Others (3)
     "@teale.io/eslint-config", "@airtm/uuid-base32",
     "@pypestream/floating-ui-dom",
 }
+
+_MALICIOUS_INDEX_PATH = os.path.join(ROOT_DIR, "public", "data", "malicious-packages.json")
+
+
+def _load_canisterworm_packages() -> set[str]:
+    if not os.path.exists(_MALICIOUS_INDEX_PATH):
+        return set(_FALLBACK_CANISTERWORM_PACKAGES)
+    try:
+        with open(_MALICIOUS_INDEX_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+        return {p["name"] for p in data.get("packages", []) if p.get("campaign") == "canisterworm"}
+    except Exception:
+        return set(_FALLBACK_CANISTERWORM_PACKAGES)
+
+
+CANISTERWORM_PACKAGES = _load_canisterworm_packages()
 
 # Substring match on vulnerability name/description/ruleId. Only campaign-specific
 # tokens — generic phrases ("supply chain", "backdoor", …) match almost everything.

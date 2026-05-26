@@ -6,5 +6,8 @@
   "file": "plain-crypto-js-4.2.1.tgz",
   "sha256": "8f8e3d518e8a39a6908f7d3d2ef6d5517823d162f02795d86acef85a8a10010a",
   "sha1": "a90c74985b14a65d5384c3f0f9b8939ff5fd0335",
-  "file_size_bytes": 90713
+  "file_size_bytes": 90713,
+  "category": "malicious_intent",
+  "campaign": "axios_march_2026",
+  "datadog_path": "samples/npm/malicious_intent/plain-crypto-js"
 }

@@ -43,8 +43,10 @@ SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
-# CanisterWorm malicious packages with known bad versions
-MALICIOUS_PACKAGES = {
+# Fallback — used only if public/data/malicious-packages.json is missing.
+# Keep in sync with that file. The JSON is the SSOT
+# (see scripts/build_malicious_package_index.py).
+_FALLBACK_MALICIOUS_PACKAGES = {
     "@emilgroup/account-sdk": ["1.41.1", "1.41.2"],
     "@emilgroup/account-sdk-node": ["1.40.1", "1.40.2"],
     "@emilgroup/accounting-sdk-node": ["1.26.1", "1.26.2"],
@@ -88,6 +90,34 @@ MALICIOUS_PACKAGES = {
     "@airtm/uuid-base32": ["1.0.2"],
     "@pypestream/floating-ui-dom": ["2.15.1"],
 }
+
+_MALICIOUS_INDEX_PATH = os.path.join(ROOT_DIR, "public", "data", "malicious-packages.json")
+
+
+def _load_malicious_packages() -> dict:
+    """Load {package_name: [bad_versions]} from the SSOT index, restricted to
+    canisterworm-campaign entries with at least one known malicious version.
+    Falls back to the legacy hardcoded constant if the file is missing or unreadable.
+    """
+    if not os.path.exists(_MALICIOUS_INDEX_PATH):
+        return dict(_FALLBACK_MALICIOUS_PACKAGES)
+    try:
+        with open(_MALICIOUS_INDEX_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+        result: dict = {}
+        for p in data.get("packages", []):
+            if p.get("campaign") != "canisterworm":
+                continue
+            vers = p.get("malicious_versions") or []
+            if not vers:
+                continue
+            result[p["name"]] = list(vers)
+        return result or dict(_FALLBACK_MALICIOUS_PACKAGES)
+    except Exception:
+        return dict(_FALLBACK_MALICIOUS_PACKAGES)
+
+
+MALICIOUS_PACKAGES = _load_malicious_packages()
 
 # Also check for any usage of these packages (even non-malicious versions = risk)
 MALICIOUS_PACKAGE_NAMES = set(MALICIOUS_PACKAGES.keys())

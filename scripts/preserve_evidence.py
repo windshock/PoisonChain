@@ -40,14 +40,20 @@ load_env()
 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
-MALICIOUS_PACKAGES = [
+DATADOG_REPO = "DataDog/malicious-software-packages-dataset"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+EVIDENCE_DIR = ROOT_DIR / "public" / "evidence"
+REPORTS_DIR = ROOT_DIR / "internal" / "reports" / "data"
+_MALICIOUS_INDEX_PATH = ROOT_DIR / "public" / "data" / "malicious-packages.json"
+
+# Fallback — used only when public/data/malicious-packages.json is missing.
+# The JSON is the SSOT (see scripts/build_malicious_package_index.py).
+_FALLBACK_MALICIOUS_PACKAGES = [
     {"name": "axios", "version": "1.14.1"},
     {"name": "axios", "version": "0.30.4"},
     {"name": "plain-crypto-js", "version": "4.2.1"},
 ]
-
-# SANS-published reference hashes for verification
-KNOWN_HASHES = {
+_FALLBACK_KNOWN_HASHES = {
     "axios@0.30.4": {
         "sha1": "d6f3f62fd3b9f5432f5782b62d8cfd5247d5ee71",
         "note": "SANS-published reference hash for tarball",
@@ -62,10 +68,92 @@ KNOWN_HASHES = {
     },
 }
 
-DATADOG_REPO = "DataDog/malicious-software-packages-dataset"
-ROOT_DIR = Path(__file__).resolve().parent.parent
-EVIDENCE_DIR = ROOT_DIR / "public" / "evidence"
-REPORTS_DIR = ROOT_DIR / "internal" / "reports" / "data"
+
+def _load_index() -> dict | None:
+    if not _MALICIOUS_INDEX_PATH.exists():
+        return None
+    try:
+        return json.loads(_MALICIOUS_INDEX_PATH.read_text())
+    except Exception:
+        return None
+
+
+def _load_packages_for_preservation(index: dict | None = None) -> list[dict]:
+    """Return list of {name, version, category, campaign, datadog_path} dicts to acquire.
+
+    Filters to the recent axios_march_2026 campaign — these are the packages we
+    have first-party evidence acquisition support for. The much larger
+    canisterworm campaign list remains documented in the SSOT, but evidence
+    files are not automatically fetched for it.
+    """
+    data = index if index is not None else _load_index()
+    if not data:
+        return list(_FALLBACK_MALICIOUS_PACKAGES)
+    out: list[dict] = []
+    for p in data.get("packages", []):
+        if p.get("campaign") != "axios_march_2026":
+            continue
+        for ver in p.get("malicious_versions") or []:
+            out.append({
+                "name": p["name"],
+                "version": ver,
+                "category": p.get("category"),
+                "campaign": p.get("campaign"),
+                "datadog_path": p.get("datadog_path"),
+            })
+    return out or list(_FALLBACK_MALICIOUS_PACKAGES)
+
+
+def _load_known_hashes(index: dict | None = None) -> dict:
+    """Build {label → {sha1?, sha256?, note?}} from the SSOT for verification.
+
+    Prefers SANS-published hashes (key suffix _sans or bare sha1/sha256 paired
+    with source=='SANS') because those match tarballs as served by the npm
+    registry. Acquired-from-Datadog hashes are included only when they're the
+    only thing available.
+    """
+    data = index if index is not None else _load_index()
+    if not data:
+        return dict(_FALLBACK_KNOWN_HASHES)
+    result: dict = {}
+    for p in data.get("packages", []):
+        for ver, hashes in (p.get("known_hashes") or {}).items():
+            sha1 = hashes.get("sha1_sans") or (
+                hashes.get("sha1") if hashes.get("source") in ("SANS",) else None
+            ) or hashes.get("sha1")
+            sha256 = hashes.get("sha256_sans") or (
+                hashes.get("sha256") if hashes.get("source") in ("SANS",) else None
+            ) or hashes.get("sha256")
+            if not (sha1 or sha256):
+                continue
+            entry: dict = {}
+            if sha1:
+                entry["sha1"] = sha1
+            if sha256:
+                entry["sha256"] = sha256
+            note = hashes.get("source")
+            if note:
+                entry["note"] = note
+            result[f"{p['name']}@{ver}"] = entry
+    for key, payload in (data.get("payloads") or {}).items():
+        if not isinstance(payload, dict):
+            continue  # skip _comment-style string entries
+        entry = {}
+        if payload.get("sha1"):
+            entry["sha1"] = payload["sha1"]
+        if payload.get("sha256"):
+            entry["sha256"] = payload["sha256"]
+        src = payload.get("source")
+        if src:
+            entry["note"] = src
+        if entry:
+            result[key] = entry
+    return result or dict(_FALLBACK_KNOWN_HASHES)
+
+
+_INDEX = _load_index()
+MALICIOUS_PACKAGES = _load_packages_for_preservation(_INDEX)
+KNOWN_HASHES = _load_known_hashes(_INDEX)
 
 
 # ── HTTP helpers ──────────────────────────────────────────────────────────────
@@ -321,6 +409,9 @@ def acquire_package(pkg: dict, dry_run: bool, force: bool) -> dict:
     metadata = {
         "name": name,
         "version": version,
+        "category": pkg.get("category"),
+        "campaign": pkg.get("campaign"),
+        "datadog_path": pkg.get("datadog_path"),
         "source": source_used,
         "acquired_at": acquired_at,
         "file": tgz_filename,
@@ -367,11 +458,85 @@ def _annotate_known_hashes(result: dict):
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+def migrate_metadata(dry_run: bool = False) -> int:
+    """Add missing category/campaign/datadog_path fields to existing
+    public/evidence/<pkg>@<ver>/metadata.json files using the SSOT.
+
+    Originals are backed up to metadata.json.bak before rewriting.
+    Returns the number of files updated.
+    """
+    index = _load_index()
+    if index is None:
+        print("⚠️  malicious-packages.json not found — nothing to migrate from")
+        return 0
+
+    by_label: dict[str, dict] = {}
+    for p in index.get("packages", []):
+        for ver in p.get("malicious_versions") or []:
+            by_label[f"{p['name']}@{ver}"] = p
+
+    updated = 0
+    if not EVIDENCE_DIR.exists():
+        print(f"ℹ️  No evidence dir at {EVIDENCE_DIR}")
+        return 0
+    for pkg_dir in sorted(EVIDENCE_DIR.iterdir()):
+        if not pkg_dir.is_dir():
+            continue
+        meta_path = pkg_dir / "metadata.json"
+        if not meta_path.exists():
+            continue
+        try:
+            meta = json.loads(meta_path.read_text())
+        except Exception as e:
+            print(f"  ⚠️  {pkg_dir.name}: cannot read metadata.json ({e})")
+            continue
+        label = f"{meta.get('name')}@{meta.get('version')}"
+        src = by_label.get(label)
+        if not src:
+            # Folder name may not match meta name exactly — try folder label too
+            src = by_label.get(pkg_dir.name)
+        if not src:
+            print(f"  ⏭️  {pkg_dir.name}: not in SSOT, skipping")
+            continue
+
+        changed = False
+        for field in ("category", "campaign", "datadog_path"):
+            if not meta.get(field) and src.get(field):
+                meta[field] = src.get(field)
+                changed = True
+
+        if not changed:
+            print(f"  ✓  {pkg_dir.name}: already has all fields")
+            continue
+
+        if dry_run:
+            print(f"  [dry-run] {pkg_dir.name}: would add "
+                  f"category={meta.get('category')!r} campaign={meta.get('campaign')!r}")
+            continue
+
+        backup_path = meta_path.with_suffix(".json.bak")
+        backup_path.write_text(meta_path.read_text())
+        meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n")
+        print(f"  ✏️  {pkg_dir.name}: updated (backup → {backup_path.name})")
+        updated += 1
+
+    print(f"\n{updated} metadata.json file(s) updated.")
+    return updated
+
+
 def main():
     parser = argparse.ArgumentParser(description="Preserve malicious npm packages as forensic evidence")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be attempted, don't download")
     parser.add_argument("--force", action="store_true", help="Re-download even if already exists")
+    parser.add_argument(
+        "--migrate-metadata",
+        action="store_true",
+        help="Backfill category/campaign/datadog_path on existing metadata.json files (using SSOT) and exit.",
+    )
     args = parser.parse_args()
+
+    if args.migrate_metadata:
+        sys.exit(0 if migrate_metadata(dry_run=args.dry_run) >= 0 else 1)
 
     if not args.dry_run:
         EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
