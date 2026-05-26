@@ -12,6 +12,14 @@ PoisonChain은 npm 공급망 공격 대응용 인시던트 리스폰스 툴킷�
 
 > 악성 패키지 퍼블리시부터 팀별 영향 보고서까지, 하나의 파이프라인으로 정리한다.
 
+<p align="center">
+  <img src="demo/nexus_scan_demo.gif" alt="PoisonChain Nexus 스캔 — 13,500여 SSOT 타깃 점검, KISA suspected 항목 분리" width="550" />
+</p>
+
+<p align="center">
+  <sub><code>scripts/nexus_proxy_scan.py</code>가 SSOT의 모든 타깃을 사내 Nexus에서 점검하는 화면. KISA 명단에 있지만 OSV/GHSA로 확정되지 않은 항목은 별도 🟡 <code>suspected</code> 섹션으로 분리한다. 호스트명·계정은 마스킹.</sub>
+</p>
+
 ## 무엇을 제공하나
 
 - 조직 전체 저장소에서 악성 버전과 semver 노출 범위를 동시에 식별
@@ -80,8 +88,8 @@ PoisonChain은 사고 대응팀이 실제로 답해야 하는 질문을 기준�
         │
         ▼
 ┌─ canisterworm_analysis.py ──┐   XEIZE 취약점 DB에서 IOC 매칭
-│  CanisterWorm 캠페인 46개    │   → 직접 매칭 + IOC 키워드 검색
-│  패키지 + IOC 키워드 검색     │
+│  CanisterWorm 캠페인 패키지   │   → 직접 매칭 + IOC 키워드 검색
+│  (SSOT에서 로드)              │
 └─────────────┬───────────────┘
               ▼
 ┌─ bitbucket_full_scan.py ────┐   Bitbucket 전체 저장소 스캔
@@ -96,13 +104,13 @@ PoisonChain은 사고 대응팀이 실제로 답해야 하는 질문을 기준�
 │  공격 시간대 빌드 교차 분석   │   → npm install 사용 여부 + 리스크 등급
 └─────────────┬───────────────┘
               ▼
-┌─ report_axios_by_team.py ───┐   팀별 대시보드 + 대응 보고서
-│  경영진 보고 + IR 패키지      │   → Markdown 보고서 일괄 생성
-└─────────────┬───────────────┘
-              ▼
 ┌─ nexus_proxy_scan.py ───────┐   사내 Nexus 미러 점검
 │  악성 패키지 ↔ 캐시 컴포넌트  │   → 캐시 히트 / 다운로드 이력
-│  교차 검증                    │   → (repo, 패키지) 단위 리스크
+│  교차 검증                    │   → (repo, 패키지, 버전) 단위 리스크
+└─────────────┬───────────────┘
+              ▼
+┌─ report_axios_by_team.py ───┐   팀별 대시보드 + 대응 보고서
+│  위 결과 전체 집계             │   → Markdown 보고서 일괄 생성
 └─────────────────────────────┘
 ```
 
@@ -111,9 +119,25 @@ PoisonChain은 사고 대응팀이 실제로 답해야 하는 질문을 기준�
 ./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
 
-모든 스크립트는 **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** 을 단일 진실 소스로 읽는다. 각 패키지는 `category` 필드로 분류된다 — `compromised_legitimate`(정상 패키지가 특정 버전에서만 오염된 케이스, 예: `axios@1.14.1`)와 `malicious_intent`(처음부터 악의로 publish된 패키지, 예: `plain-crypto-js@4.2.1` — 어떤 버전이든 사고). 이 구분이 대응 전략을 가른다 — malicious_intent는 사내 어디서도 캐시되어 있어선 안 되고, compromised_legitimate는 안전 버전에서는 계속 사용되어야 한다.
+모든 스크립트는 **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** 을 단일 진실 소스로 읽는다. 각 항목은 스캐너가 사용하는 두 개의 직교 축을 가진다:
 
-SSOT는 **매일 KST 07:00**에 [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml) 가 자동 갱신한다. [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset)의 트리 메타데이터만 가져오고(ZIP 바이너리 다운로드 없음), 신규/변경 항목을 `main`에 직접 커밋한다. 수기 큐레이션 캠페인(`canisterworm`, `axios_march_2026`)은 절대 건드리지 않으며, `campaign: datadog_auto` 항목만 자동 갱신된다. 워크플로우가 `main` 에 직접 푸시하려면 `Settings → Actions → General → Workflow permissions` 가 **Read and write** 여야 하고, `main` 브랜치 보호가 켜져 있다면 `github-actions[bot]` 우회 허용 또는 PAT 시크릿 사용이 필요하다.
+- `category` — `compromised_legitimate`(정상 패키지가 특정 버전에서만 오염된 케이스, 예: `axios@1.14.1`. 스캐너는 버전 단위로 차단)와 `malicious_intent`(이름 자체가 IOC, 예: `plain-crypto-js@4.2.1`. 이름만으로 차단 가능). malicious_intent는 사내 어디서도 캐시되어 있어선 안 되고, compromised_legitimate는 안전 버전에서는 계속 사용되어야 한다.
+- `confidence` — `confirmed`(머신 리더블 advisory가 확정 또는 권위 있는 명단 + npm registry 테이크다운 신호) 또는 `suspected`(KISA처럼 이름은 올라와 있지만 OSV/upstream postmortem이 확정하지 않은 케이스). 스캐너는 `suspected` 결과를 별도의 낮은 심각도 섹션으로 분리해서, KISA의 광범위한 헌팅 명단이 정상 사용자에게 페이지/알림을 발생시키지 않도록 한다.
+
+SSOT는 **매일 KST 07:00**에 [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml) 가 자동 갱신한다. 세 가지 출처를 차례로 적용한다:
+
+1. [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset) — 트리 메타데이터만 가져오고(ZIP 다운로드 없음), `campaign: datadog_auto`로 태깅.
+2. **OSV / GHSA** — [`public/data/supplemental-malicious-package-sources.json`](public/data/supplemental-malicious-package-sources.json)의 `osv_advisories`에 등록된 모든 advisory ID를 `api.osv.dev`에서 익명으로 가져와 `confidence: confirmed`로 머지. 새 advisory 추가는 코드 수정 없이 이 파일에 한 줄 추가하면 다음 refresh가 반영한다.
+3. **KISA 헌팅 가이드** — KISA Supply Chain Diffusion Attack 가이드에 있지만 머신 리더블 advisory가 없는 이름은 `confidence: suspected`로 들어간다. 단, upstream maintainer postmortem이 이름을 찍어서 "unaffected"라고 선언한 패키지는 제외된다(현재는 `@tanstack/start`만 해당). 정책과 2026-05-26 KISA 갭 감사 결과: [`public/docs/kisa-osv-supplement-plan.md`](public/docs/kisa-osv-supplement-plan.md).
+
+수기 큐레이션 캠페인(`canisterworm`, `axios_march_2026`)은 refresh 시 절대 건드리지 않으며, Datadog 단계는 `campaign: datadog_auto` 항목만 갱신한다. 워크플로우가 `main`에 직접 푸시하려면 `Settings → Actions → General → Workflow permissions`가 **Read and write**여야 하고, `main` 브랜치 보호가 켜져 있다면 `github-actions[bot]` 우회 허용 또는 PAT 시크릿 사용이 필요하다.
+
+매일 자동 fire 전에 새 advisory를 미리 SSOT에 반영하려면 로컬에서 supplement importer를 돌릴 수 있다:
+
+```bash
+python3 scripts/supplement_malicious_package_index.py --dry-run
+python3 scripts/supplement_malicious_package_index.py --advisory MAL-2026-2072 --write
+```
 
 ---
 
@@ -147,7 +171,7 @@ cp public/.env.example .env
 
 | 스크립트 | 역할 | 입력 | 출력 |
 |----------|------|------|------|
-| `canisterworm_analysis.py` | CanisterWorm 캠페인(46개 패키지) IOC 매칭 | XEIZE API | 영향 보고서 |
+| `canisterworm_analysis.py` | CanisterWorm 캠페인 패키지 IOC 매칭 (SSOT에서 로드) | XEIZE API | 영향 보고서 |
 | `bitbucket_full_scan.py` | 전체 저장소 lockfile 스캔 + semver 리스크 | Bitbucket API | 저장소별 감염/리스크 JSON |
 | `canisterworm_lockfile_scan.py` | 실제 lockfile을 git에서 가져와 정밀 스캔 | Git PAT | 패키지별 매칭 보고서 |
 | `fetch_committers.py` | 저장소별 최근 커미터 추출 | Bitbucket API | 커미터 정보 JSON |
@@ -157,6 +181,7 @@ cp public/.env.example .env
 | `preserve_evidence.py` | 악성 패키지 아카이브 + SHA 검증 | npm/Datadog/GitHub | 포렌식 증거 번들 |
 | `verify_repos.py` | 삭제/제외 저장소 정리 | 스캔 결과 JSON | 정제된 JSON |
 | `build_malicious_package_index.py` | 큐레이션된 SSOT(`public/data/malicious-packages.json`) 검증 및 Datadog 카테고리 교차 확인 | SSOT JSON + Datadog API | 검증 통과/실패 + 드리프트 경고 |
+| `supplement_malicious_package_index.py` | OSV/GHSA advisory와 KISA 헌팅 가이드 명단을 SSOT에 머지, `confidence: confirmed`/`suspected` 태깅 | Supplemental 설정 + `api.osv.dev` | SSOT in-place 업데이트 (기본 dry-run, `--write`로 커밋) |
 | `nexus_proxy_scan.py` | 사내 Nexus Repository Manager에 캐시된 악성 패키지 점검 + 다운로드 이력 | SSOT JSON + Nexus REST API | `(repo, 패키지, 버전)` 단위 `risk_level` JSON |
 
 ---
@@ -263,6 +288,7 @@ PoisonChain/
 - [`public/docs/axios-npm-supply-chain-attack-report.md`](public/docs/axios-npm-supply-chain-attack-report.md) — 페이로드, RAT 동작, IOC 중심 기술 분석
 - [`public/docs/JENKINS-SECURITY-GUIDE.md`](public/docs/JENKINS-SECURITY-GUIDE.md) — Jenkins 공급망 보안 가이드
 - [`public/docs/GUARDDOG-JENKINS-GUIDE.md`](public/docs/GUARDDOG-JENKINS-GUIDE.md) — GuardDog + Jenkins Shared Library 연동
+- [`public/docs/kisa-osv-supplement-plan.md`](public/docs/kisa-osv-supplement-plan.md) — 멀티소스 SSOT 보강 정책(OSV + KISA + confidence tier) 및 2026-05-26 KISA 갭 감사 결과
 - [`public/lab/README.md`](public/lab/README.md) — 로컬 랩 환경 설명
 
 ---

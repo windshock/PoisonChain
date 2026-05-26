@@ -12,6 +12,14 @@ It combines repository scanning, semver risk analysis, build-log inspection, mai
 
 > From malicious package publication to team-by-team impact report, in a single pipeline.
 
+<p align="center">
+  <img src="demo/nexus_scan_demo.gif" alt="PoisonChain Nexus scan — probing 13,500+ SSOT targets, segregating KISA-suspected hits" width="550" />
+</p>
+
+<p align="center">
+  <sub><code>scripts/nexus_proxy_scan.py</code> probing every SSOT target against an internal Nexus, with a separate 🟡 <code>suspected</code> bucket for KISA-listed names that lack a confirmed advisory. Hostnames sanitized.</sub>
+</p>
+
 ## What You Get
 
 - Org-wide repository sweep for confirmed malicious versions and semver-based exposure
@@ -80,8 +88,8 @@ Malicious package published
         │
         ▼
 ┌─ canisterworm_analysis.py ──┐   Match IOCs against vuln DB
-│  46 CanisterWorm campaign    │   → direct matches + IOC keyword search
-│  packages + IOC keywords     │
+│  CanisterWorm campaign       │   → direct matches + IOC keyword search
+│  packages (from SSOT)        │
 └─────────────┬───────────────┘
               ▼
 ┌─ bitbucket_full_scan.py ────┐   Full Bitbucket repo scan
@@ -97,13 +105,13 @@ Malicious package published
 │  window builds               │
 └─────────────┬───────────────┘
               ▼
-┌─ report_axios_by_team.py ───┐   Per-team dashboard + IR reports
-│  executive reporting + IR    │   → batch Markdown report generation
-└─────────────┬───────────────┘
-              ▼
 ┌─ nexus_proxy_scan.py ───────┐   Probe internal Nexus mirrors
 │  cross-reference malicious   │   → cache hit / download history
-│  packages vs cached blobs    │   → risk per (instance, package)
+│  packages vs cached blobs    │   → risk per (repo, package, version)
+└─────────────┬───────────────┘
+              ▼
+┌─ report_axios_by_team.py ───┐   Per-team dashboard + IR reports
+│  aggregates all above        │   → batch Markdown report generation
 └─────────────────────────────┘
 ```
 
@@ -112,9 +120,25 @@ Run all at once:
 ./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
 
-All scripts read the curated package list from **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** (single source of truth). Each entry is tagged with `category`: `compromised_legitimate` (legitimate package, only specific versions are malicious — e.g. `axios@1.14.1`) or `malicious_intent` (the package itself is a typosquat / supply-chain pretense — any version is a sign of compromise — e.g. `plain-crypto-js@4.2.1`). This distinction matters for IR: malicious_intent packages should not exist in your registry at any version; compromised_legitimate packages stay in use at safe versions.
+All scripts read the curated package list from **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** (single source of truth). Each entry carries two orthogonal axes that scanners consume:
 
-The SSOT is **refreshed daily at 07:00 KST** by [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml), which pulls metadata-only (no ZIP downloads) from the [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset) and commits any new/changed entries directly to `main`. Manually-curated campaigns (`canisterworm`, `axios_march_2026`) are never touched; only entries tagged `campaign: datadog_auto` are refreshed. For the workflow to push to `main`, `Settings → Actions → General → Workflow permissions` must be set to **Read and write**, and any branch protection on `main` must allow `github-actions[bot]` (or use a PAT secret instead).
+- `category` — `compromised_legitimate` (only specific versions are malicious, e.g. `axios@1.14.1`, scanners must block by version) or `malicious_intent` (the name itself is the IOC, e.g. `plain-crypto-js@4.2.1`, scanners can block by name alone). malicious_intent packages should not exist in your registry at any version; compromised_legitimate stay in use at safe versions.
+- `confidence` — `confirmed` (machine-readable advisory or authoritative listing combined with an npm registry takedown) or `suspected` (secondary source such as KISA lists the name but upstream postmortem or OSV does not confirm). Scanners surface `suspected` hits in a separate, lower-severity section so KISA's broader hunting list does not page on call-rotation users.
+
+The SSOT is **refreshed daily at 07:00 KST** by [`.github/workflows/refresh-malicious-packages.yml`](.github/workflows/refresh-malicious-packages.yml), which layers three sources:
+
+1. [Datadog malicious-software-packages-dataset](https://github.com/DataDog/malicious-software-packages-dataset) — metadata-only refresh (no ZIP downloads), tagged `campaign: datadog_auto`.
+2. **OSV / GHSA** — every advisory ID listed in [`public/data/supplemental-malicious-package-sources.json`](public/data/supplemental-malicious-package-sources.json) is fetched anonymously from `api.osv.dev` and merged with `confidence: confirmed`. Adding a new advisory is config-only: append it to `osv_advisories` and the next refresh picks it up.
+3. **KISA hunting guide** — names from the KISA Supply Chain Diffusion Attack guide that lack a machine-readable advisory enter with `confidence: suspected`, except where an upstream maintainer postmortem clears them by name (currently only `@tanstack/start`). Policy and the 2026-05-26 audit table are in [`public/docs/kisa-osv-supplement-plan.md`](public/docs/kisa-osv-supplement-plan.md).
+
+Manually-curated campaigns (`canisterworm`, `axios_march_2026`) are never modified by the refresh — only entries tagged `campaign: datadog_auto` are touched by the Datadog pass. For the workflow to push to `main`, `Settings → Actions → General → Workflow permissions` must be set to **Read and write**, and any branch protection on `main` must allow `github-actions[bot]` (or use a PAT secret instead).
+
+Run the supplement importer locally when you want to add a new advisory before the daily fire:
+
+```bash
+python3 scripts/supplement_malicious_package_index.py --dry-run
+python3 scripts/supplement_malicious_package_index.py --advisory MAL-2026-2072 --write
+```
 
 ---
 
@@ -148,7 +172,7 @@ PoisonChain is opinionated about incident response: detection is not enough, and
 
 | Script | Purpose | Input | Output |
 |--------|---------|-------|--------|
-| `canisterworm_analysis.py` | IOC matching for CanisterWorm campaign (46 packages) | Vuln scan API | Impact report |
+| `canisterworm_analysis.py` | IOC matching for CanisterWorm campaign packages (loaded from SSOT) | Vuln scan API | Impact report |
 | `bitbucket_full_scan.py` | Full repo lockfile scan + semver risk analysis | Bitbucket API | Per-repo infection/risk JSON |
 | `canisterworm_lockfile_scan.py` | Fetch actual lockfiles from git for deep scan | Git PAT | Per-package match report |
 | `fetch_committers.py` | Extract recent committers per repo | Bitbucket API | Committer info JSON |
@@ -158,6 +182,7 @@ PoisonChain is opinionated about incident response: detection is not enough, and
 | `preserve_evidence.py` | Archive malicious packages + SHA verification | npm/Datadog/GitHub | Forensic evidence bundle |
 | `verify_repos.py` | Clean up deleted/excluded repos | Scan result JSON | Sanitized JSON |
 | `build_malicious_package_index.py` | Validate the curated SSOT (`public/data/malicious-packages.json`) and optionally cross-check categories against Datadog | SSOT JSON + Datadog API | Pass/fail + drift warnings |
+| `supplement_malicious_package_index.py` | Merge OSV/GHSA advisories and the KISA hunting-guide list into the SSOT with `confidence: confirmed`/`suspected` tagging | Supplemental config + `api.osv.dev` | Updated SSOT in place (dry-run by default; `--write` to commit) |
 | `nexus_proxy_scan.py` | Probe internal Nexus Repository Manager for cached malicious packages, with download history | SSOT JSON + Nexus REST API | Per-`(repo, package, version)` JSON with `risk_level` |
 
 ---
@@ -264,6 +289,7 @@ PoisonChain/
 - [`public/docs/axios-npm-supply-chain-attack-report.md`](public/docs/axios-npm-supply-chain-attack-report.md) — Deep technical analysis of payloads, RAT behavior, and IOCs
 - [`public/docs/JENKINS-SECURITY-GUIDE.md`](public/docs/JENKINS-SECURITY-GUIDE.md) — Jenkins supply chain security guide
 - [`public/docs/GUARDDOG-JENKINS-GUIDE.md`](public/docs/GUARDDOG-JENKINS-GUIDE.md) — GuardDog + Jenkins Shared Library integration
+- [`public/docs/kisa-osv-supplement-plan.md`](public/docs/kisa-osv-supplement-plan.md) — Multi-source SSOT enrichment policy (OSV + KISA + confidence tier) and the 2026-05-26 KISA gap audit
 - [`public/lab/README.md`](public/lab/README.md) — Local lab environment
 
 ---
