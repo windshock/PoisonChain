@@ -26,9 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      # Pinned to commit SHA for supply-chain safety (zizmor unpinned-uses).
+      # Comments record the human-readable tag; bump SHA + tag together when
+      # upgrading.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: "3.12"
 
@@ -62,6 +65,11 @@ jobs:
           echo "delta=$delta" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push if changed
+        # Pass step output through the env, not directly into the shell, so a
+        # malformed delta string can never break out of the `msg` quoting.
+        # (zizmor: template-injection.)
+        env:
+          DELTA: ${{ steps.delta.outputs.delta }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -73,8 +81,8 @@ jobs:
 
           git add public/data/malicious-packages.json
           msg="chore(ssot): daily refresh (Datadog + OSV + KISA supplement)"
-          if [ -n "${{ steps.delta.outputs.delta }}" ]; then
-            msg="$msg (${{ steps.delta.outputs.delta }})"
+          if [ -n "$DELTA" ]; then
+            msg="$msg ($DELTA)"
           fi
           git commit -m "$msg"
           git push
