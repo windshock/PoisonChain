@@ -177,7 +177,8 @@ from _bitbucket_creds import get_git_credentials_for_project as get_git_credenti
 # Git helpers
 # ---------------------------------------------------------------------------
 
-BITBUCKET_SERVER = "https://bitbucket.example.com"
+from _bitbucket_creds import get_bitbucket_base_url  # noqa: E402
+BITBUCKET_SERVER = get_bitbucket_base_url()
 
 
 def fetch_file_from_bitbucket(repo, pat, branch, filepath):

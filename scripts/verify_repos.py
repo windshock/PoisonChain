@@ -31,7 +31,8 @@ REPORTS_DATA_DIR = ROOT_DIR / "internal" / "reports" / "data"
 
 SCAN_JSON      = str(REPORTS_DATA_DIR / "bitbucket-full-scan-result.json")
 OVERRIDES_PATH = str(REPORTS_DATA_DIR / "manual-overrides.json")
-BB             = "https://bitbucket.example.com"
+from _bitbucket_creds import get_bitbucket_base_url  # noqa: E402
+BB             = get_bitbucket_base_url()
 
 # ---------------------------------------------------------------------------
 # Env / auth

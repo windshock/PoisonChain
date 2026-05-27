@@ -40,7 +40,8 @@ load_env()
 
 API_KEY = os.environ.get("XEIZE_API_KEY", "")
 BASE_URL = os.environ.get("XEIZE_BASE_URL", "")
-BB = "https://bitbucket.example.com"
+from _bitbucket_creds import get_bitbucket_base_url  # noqa: E402
+BB = get_bitbucket_base_url()
 
 SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
