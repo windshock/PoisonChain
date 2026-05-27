@@ -83,41 +83,53 @@ PoisonChain은 사고 대응팀이 실제로 답해야 하는 질문을 기준�
 
 ## 파이프라인 흐름
 
+PoisonChain은 두 개의 독립 트랙으로 구성된다. 두 트랙 모두 같은 SSOT를 읽지만 답하는 질문이 다르다.
+
 ```
-악성 패키지 퍼블리시
-        │
-        ▼
-┌─ canisterworm_analysis.py ──┐   XEIZE 취약점 DB에서 IOC 매칭
-│  CanisterWorm 캠페인 패키지   │   → 직접 매칭 + IOC 키워드 검색
-│  (SSOT에서 로드)              │
-└─────────────┬───────────────┘
-              ▼
-┌─ bitbucket_full_scan.py ────┐   Bitbucket 전체 저장소 스캔
-│  lockfile 파싱 + semver 분석 │   → 감염 확정 / semver 리스크 분류
-└─────────────┬───────────────┘
-              ▼
-┌─ fetch_committers.py ───────┐   저장소별 최근 커미터 추출
-│  + check_employee_status.py │   → 이름·이메일·팀·재직 여부
-└─────────────┬───────────────┘
-              ▼
-┌─ jenkins_scan.py ───────────┐   Jenkins 인스턴스 일괄 스캔
-│  공격 시간대 빌드 교차 분석   │   → npm install 사용 여부 + 리스크 등급
-└─────────────┬───────────────┘
-              ▼
-┌─ nexus_proxy_scan.py ───────┐   사내 Nexus 미러 점검
-│  악성 패키지 ↔ 캐시 컴포넌트  │   → 캐시 히트 / 다운로드 이력
-│  교차 검증                    │   → (repo, 패키지, 버전) 단위 리스크
-└─────────────┬───────────────┘
-              ▼
-┌─ report_axios_by_team.py ───┐   팀별 대시보드 + 대응 보고서
-│  위 결과 전체 집계             │   → Markdown 보고서 일괄 생성
-└─────────────────────────────┘
+                            악성 패키지 사건 발생
+                                       │
+                ┌──────────────────────┴──────────────────────┐
+                │                                             │
+                ▼                                             ▼
+
+  ┌────────── 캠페인 트랙 ─────────────────┐   ┌────────── 자산 노출 트랙 ───────────────┐
+  │ campaigns.<id>.kind == "incident"     │   │ SSOT의 모든 항목을 자동 흡수.            │
+  │ (attack_window + actor + IOC 키워드)  │   │ 캠페인 kind와 무관. 캠페인별 코드 불필요.│
+  │                                       │   │                                          │
+  │ canisterworm_analysis.py              │   │ bitbucket_full_scan.py                   │
+  │ ┌── XEIZE 취약점 DB 텍스트 매칭        │   │ ┌── 사내 repo lockfile 전수 + semver   │
+  │ │   - 취약점 description의             │   │ │                                        │
+  │ │     패키지 이름                      │   │ canisterworm_lockfile_scan.py            │
+  │ │   - IOC 키워드 (액터/C2/malware)     │   │ ┌── Bitbucket REST raw lockfile        │
+  │ │   - attack_window 내 탐지 취약점     │   │ │                                        │
+  │ └── 출력: impact report               │   │ jenkins_scan.py                          │
+  │                                       │   │ ┌── 공격 시간대 빌드 로그              │
+  │ incident 캠페인마다 별도 스크립트.    │   │                                          │
+  │ 새 캠페인 추가 시 canisterworm_*.py를 │   │ nexus_proxy_scan.py                      │
+  │ 클론해서 IOC만 갈아끼움.              │   │ ┌── 사내 registry 캐시 + 다운로드 이력  │
+  │ catalog 캠페인은 이 트랙에서 제외.    │   │                                          │
+  │                                       │   │ fetch_committers.py                      │
+  └───────────────────────────────────────┘   │ ┌── 저장소별 담당자 매핑                │
+                                              │                                          │
+                                              │           ↓ 위 산출물 전체 집계 ↓        │
+                                              │                                          │
+                                              │ report_axios_by_team.py                  │
+                                              │ └── 팀별 Markdown 대시보드               │
+                                              │                                          │
+                                              └──────────────────────────────────────────┘
 ```
 
-한 번에 실행:
+이 구조가 만드는 두 가지 운영 룰:
+
+- **캠페인 고유 IOC(액터·C2·malware 이름)가 있는 신규 사건** → 캠페인 전용 분석기 작성(`canisterworm_analysis.py`를 클론). 캠페인은 `kind: "incident"`로 태깅하고 `attack_window`를 채운다.
+- **캠페인-레벨 IOC 없이 악성 패키지만 추가** → SSOT 항목만 추가(catalog kind 또는 해당 incident에 붙임). 자산 노출 트랙 스크립트가 자동으로 흡수한다.
+
+자산 트랙 한 번에 실행:
 ```bash
 ./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
+
+> **생태계 스코프:** 이 툴킷은 현재 **npm만 다룬다** — `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `package.json` 한정. Maven(`pom.xml`), Gradle, PyPI, RubyGems 등 다른 생태계는 스코프 밖. pom.xml은 XML이라 [zizmor의 YAML anchor 견고화 작업](https://blog.trailofbits.com/2026/05/22/we-hardened-zizmors-github-actions-static-analyzer/)이 직접 적용되지는 않지만, XML도 XXE·entity expansion 같은 별개의 공격 표면이 있어 지원 확장 시 별도 파서가 필요하다.
 
 모든 스크립트는 **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** 을 단일 진실 소스로 읽는다. 각 항목은 스캐너가 사용하는 두 개의 직교 축을 가진다:
 

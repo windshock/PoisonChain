@@ -1,13 +1,14 @@
 {
   "schema_version": "1.0",
   "generated_at": "2026-05-26T22:14:10+00:00",
-  "_comment": "Single source of truth for malicious npm packages tracked by PoisonChain. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
+  "_comment": "Single source of truth for malicious npm packages tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
     "malicious_intent": "Package published with malicious intent (typosquat, supply chain pretense). Any version of the package is a sign of compromise."
   },
   "campaigns": {
     "canisterworm": {
+      "kind": "incident",
       "name": "CanisterWorm",
       "actor": "TeamPCP",
       "attack_window": {
@@ -20,6 +21,7 @@
       ]
     },
     "axios_march_2026": {
+      "kind": "incident",
       "name": "axios March 2026 compromise",
       "actor": "TA444/BlueNoroff (suspected)",
       "attack_window": {
@@ -31,11 +33,13 @@
       ]
     },
     "datadog_auto": {
+      "kind": "catalog",
       "name": "Datadog malicious-software-packages-dataset (auto-imported)",
       "source": "https://github.com/DataDog/malicious-software-packages-dataset",
       "notes": "Synced daily by .github/workflows/refresh-malicious-packages.yml. This campaign's entries are authoritative-refreshed; do not edit by hand."
     },
     "tanstack_may_2026": {
+      "kind": "incident",
       "name": "TanStack May 2026 npm supply-chain compromise",
       "actor": "TeamPCP",
       "attack_window": {
@@ -50,6 +54,7 @@
       "notes": "OSV/GHSA is preferred for affected TanStack package names and exact malicious versions. The TanStack postmortem is preferred for incident context and clean-package clarifications."
     },
     "external_advisory_supplement": {
+      "kind": "catalog",
       "name": "External advisory supplemental package source",
       "notes": "Used for advisories that are not represented completely by the Datadog sample tree. Entries should keep exact package names and versions from machine-readable advisory feeds when available."
     }

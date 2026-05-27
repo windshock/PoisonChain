@@ -3,6 +3,7 @@
   "_comment": "Supplemental sources for public/data/malicious-packages.json. This file does not replace the SSOT; scripts/build_malicious_package_index.py can use it to enrich the SSOT from advisory feeds that are not covered completely by the Datadog sample tree.",
   "campaigns": {
     "tanstack_may_2026": {
+      "kind": "incident",
       "name": "TanStack May 2026 npm supply-chain compromise",
       "actor": "TeamPCP",
       "attack_window": {
@@ -17,6 +18,7 @@
       "notes": "OSV/GHSA is preferred for affected TanStack package names and exact malicious versions. The TanStack postmortem is preferred for incident context and clean-package clarifications."
     },
     "external_advisory_supplement": {
+      "kind": "catalog",
       "name": "External advisory supplemental package source",
       "notes": "Used for advisories that are not represented completely by the Datadog sample tree. Entries should keep exact package names and versions from machine-readable advisory feeds when available."
     }

@@ -1,0 +1,45 @@
+name: GitHub Actions static analysis (zizmor)
+
+# Why: refresh-malicious-packages.yml pushes commits to main on a daily cron
+# with `contents: write`. A regression there — wrong permissions, untrusted
+# pull_request_target, an unpinned action, script-injectable string — would
+# compromise the SSOT for everyone consuming PoisonChain. zizmor catches the
+# common cases statically.
+#
+# Trail of Bits writeup on the analyzer:
+#   https://blog.trailofbits.com/2026/05/22/we-hardened-zizmors-github-actions-static-analyzer/
+
+on:
+  push:
+    paths:
+      - ".github/workflows/**"
+      - ".github/workflows/zizmor.yml"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+  workflow_dispatch: {}
+
+permissions:
+  # zizmor reads workflows + writes SARIF; no repo writes ever.
+  contents: read
+  security-events: write   # uploadable to the Security tab if desired later
+
+jobs:
+  zizmor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run zizmor
+        # Pinned to a tagged release. Bump in lock-step with the upstream
+        # changelog; do not move to a floating ref.
+        uses: zizmorcore/zizmor-action@v0.2.0
+        with:
+          # Only analyze workflows under .github/workflows. Action-style
+          # composite actions live elsewhere and are not currently in use.
+          inputs: ./.github/workflows
+          # Treat warnings as failures so a regression actually blocks the
+          # PR / push. If false-positive noise becomes an issue, swap to
+          # `min-severity: high` rather than disabling the gate.
+          advanced-security: false

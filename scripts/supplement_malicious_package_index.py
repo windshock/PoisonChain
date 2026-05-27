@@ -107,9 +107,25 @@ def affected_npm_packages(osv: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def ensure_campaigns(index: dict[str, Any], supplements: dict[str, Any]) -> None:
+    """Merge supplemental campaign metadata into the SSOT.
+
+    - Brand-new campaigns are copied in wholesale.
+    - For campaigns the SSOT already knows about, only fields that are not
+      already present are added — existing values (e.g. hand-edited notes)
+      are preserved. This keeps newly-introduced metadata (like the ``kind``
+      discriminator) from getting stuck in the supplemental file when the
+      SSOT was authored before the field existed.
+    """
     index_campaigns = index.setdefault("campaigns", {})
-    for key, value in (supplements.get("campaigns") or {}).items():
-        index_campaigns.setdefault(key, value)
+    for key, supplemental in (supplements.get("campaigns") or {}).items():
+        existing = index_campaigns.get(key)
+        if existing is None:
+            index_campaigns[key] = supplemental
+            continue
+        if not isinstance(supplemental, dict) or not isinstance(existing, dict):
+            continue
+        for field, val in supplemental.items():
+            existing.setdefault(field, val)
 
 
 def merge_versions(existing: list[str] | None, incoming: list[str]) -> tuple[list[str], bool]:

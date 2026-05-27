@@ -38,6 +38,7 @@ DATADOG_REPO = "DataDog/malicious-software-packages-dataset"
 VALID_CATEGORIES = {"compromised_legitimate", "malicious_intent", "unknown"}
 VALID_CONFIDENCE = {"confirmed", "suspected"}
 VALID_NPM_STATUS = {"exists", "not_found", "unknown"}
+VALID_CAMPAIGN_KIND = {"incident", "catalog"}
 
 
 def load_env(path: Path = ROOT_DIR / ".env") -> None:
@@ -81,6 +82,29 @@ def validate_index(data: dict) -> list[str]:
     campaigns = data.get("campaigns") or {}
     if not isinstance(campaigns, dict) or not campaigns:
         errors.append("campaigns missing or empty")
+    for cid, cdef in (campaigns or {}).items():
+        if not isinstance(cdef, dict):
+            errors.append(f"campaigns.{cid}: must be an object")
+            continue
+        kind = cdef.get("kind")
+        if kind is None:
+            errors.append(
+                f"campaigns.{cid}: missing 'kind' "
+                f"(expected one of {sorted(VALID_CAMPAIGN_KIND)})"
+            )
+        elif kind not in VALID_CAMPAIGN_KIND:
+            errors.append(
+                f"campaigns.{cid}: invalid kind {kind!r} "
+                f"(expected one of {sorted(VALID_CAMPAIGN_KIND)})"
+            )
+        elif kind == "incident" and not cdef.get("attack_window"):
+            # Soft requirement: incidents normally carry a window. We only
+            # warn so a new incident can be tracked while its timeline is
+            # still being reconstructed.
+            print(
+                f"WARNING: campaigns.{cid} has kind='incident' but no "
+                "attack_window — add one when the timeline is confirmed."
+            )
 
     packages = data.get("packages") or []
     if not isinstance(packages, list) or not packages:
@@ -310,8 +334,18 @@ def refresh_from_datadog(dry_run: bool = False) -> tuple[int, int, int]:
     data.setdefault("last_refresh", {})["datadog"] = data["generated_at"]
     data["_comment"] = (
         "Single source of truth for malicious npm packages tracked by PoisonChain. "
+        "campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) "
+        "an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. "
+        "'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. "
+        "Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because "
+        "there is no shared attack_window or actor. "
         "category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; "
         "'malicious_intent' = package was malicious from the start (typosquat etc.). "
+        "confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative "
+        "listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the "
+        "package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. "
+        "npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate "
+        "post-incident unpublish. "
         "datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). "
         "version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. "
         "For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, "

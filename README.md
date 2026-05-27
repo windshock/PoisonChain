@@ -83,42 +83,55 @@ PoisonChain is built around the core questions an incident-response team has to 
 
 ## Pipeline Flow
 
+PoisonChain has two independent tracks. Each tracks runs against the same SSOT but answers a different question.
+
 ```
-Malicious package published
-        │
-        ▼
-┌─ canisterworm_analysis.py ──┐   Match IOCs against vuln DB
-│  CanisterWorm campaign       │   → direct matches + IOC keyword search
-│  packages (from SSOT)        │
-└─────────────┬───────────────┘
-              ▼
-┌─ bitbucket_full_scan.py ────┐   Full Bitbucket repo scan
-│  lockfile parsing + semver   │   → confirmed infected / semver risk
-└─────────────┬───────────────┘
-              ▼
-┌─ fetch_committers.py ───────┐   Extract recent committers per repo
-│  + check_employee_status.py │   → name, email, team, active/departed
-└─────────────┬───────────────┘
-              ▼
-┌─ jenkins_scan.py ───────────┐   Batch scan Jenkins instances
-│  cross-reference with attack │   → npm install detection + risk level
-│  window builds               │
-└─────────────┬───────────────┘
-              ▼
-┌─ nexus_proxy_scan.py ───────┐   Probe internal Nexus mirrors
-│  cross-reference malicious   │   → cache hit / download history
-│  packages vs cached blobs    │   → risk per (repo, package, version)
-└─────────────┬───────────────┘
-              ▼
-┌─ report_axios_by_team.py ───┐   Per-team dashboard + IR reports
-│  aggregates all above        │   → batch Markdown report generation
-└─────────────────────────────┘
+                            Malicious package event
+                                       │
+                ┌──────────────────────┴──────────────────────┐
+                │                                             │
+                ▼                                             ▼
+
+  ┌─────────── Campaign track ────────────┐   ┌────────── Asset-exposure track ──────────┐
+  │ campaigns.<id>.kind == "incident"     │   │ Triggered on every SSOT entry, regardless│
+  │ (attack_window + actor + IOC keywords)│   │ of campaign kind. SSOT-driven; no per-   │
+  │                                       │   │ campaign code needed.                    │
+  │ canisterworm_analysis.py              │   │                                          │
+  │ ┌── XEIZE vuln-DB text match          │   │ bitbucket_full_scan.py                   │
+  │ │   - direct package name in vuln     │   │ ┌── full repo lockfile scan + semver    │
+  │ │     description                     │   │ │                                        │
+  │ │   - IOC keywords (actor, C2,        │   │ canisterworm_lockfile_scan.py            │
+  │ │     malware names)                  │   │ ┌── raw lockfile from Bitbucket REST    │
+  │ │   - vulns detected in attack_window │   │ │                                        │
+  │ └── output: impact report             │   │ jenkins_scan.py                          │
+  │                                       │   │ ┌── build logs in attack window         │
+  │ One script per incident-kind campaign │   │                                          │
+  │ (clone-and-rename for new campaigns;  │   │ nexus_proxy_scan.py                      │
+  │ kind=catalog campaigns are skipped).  │   │ ┌── internal registry cache + history   │
+  │                                       │   │                                          │
+  └───────────────────────────────────────┘   │ fetch_committers.py                      │
+                                              │ ┌── per-repo maintainer enrichment      │
+                                              │                                          │
+                                              │            ↓ all of the above ↓          │
+                                              │                                          │
+                                              │ report_axios_by_team.py                  │
+                                              │ └── per-team Markdown dashboards         │
+                                              │                                          │
+                                              └──────────────────────────────────────────┘
 ```
 
-Run all at once:
+Two practical rules this enforces:
+
+- **New campaign with custom IOCs (actor name, C2 host, malware identifier)** → write a campaign-specific analyzer (clone of `canisterworm_analysis.py`). Tag the campaign `kind: "incident"` and fill in `attack_window`.
+- **New malicious package added to the SSOT, no campaign-level IOCs** → just append the entry under a `catalog`-kind campaign or the relevant incident campaign. Every scanner in the asset track picks it up automatically.
+
+Run the asset track end-to-end:
+
 ```bash
 ./scripts/run_full_pipeline.sh --with-hr --with-lockfile --with-jenkins --with-nexus
 ```
+
+> **Ecosystem scope:** This toolkit currently handles **npm only** — `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `package.json`. Maven (`pom.xml`), Gradle, PyPI, RubyGems, and other ecosystems are out of scope. Maven uses XML, not YAML, so the [zizmor YAML-anchor hardening work](https://blog.trailofbits.com/2026/05/22/we-hardened-zizmors-github-actions-static-analyzer/) does not apply directly, but XML carries its own analogous concerns (XXE, entity expansion) that would need a dedicated parser if support is ever added.
 
 All scripts read the curated package list from **[`public/data/malicious-packages.json`](public/data/malicious-packages.json)** (single source of truth). Each entry carries two orthogonal axes that scanners consume:
 
