@@ -161,6 +161,8 @@ cp public/.env.example .env
 **Requirements:** Python 3.9+, `requests` library, API access to your analysis targets
 
 > **Compatibility note:** This repository keeps the original `XEIZE_*` API naming and Bitbucket/Jenkins-oriented examples because they reflect the production workflow the toolkit was built from. If your environment uses GitHub/GitLab, GitHub Actions/CircleCI, or another scanner/provider, adapt the integration points and keep the pipeline design.
+>
+> **2026-05 update:** The legacy XEIZE `/open-api/v1/git/credentials` endpoint, which the Bitbucket-touching scripts used to fetch a PAT automatically, was removed from the latest OpenAPI spec. All four affected scripts (`bitbucket_full_scan.py`, `fetch_committers.py`, `verify_repos.py`, `canisterworm_lockfile_scan.py`) now read `BITBUCKET_PAT` directly from `.env` via the shared helper in `scripts/_bitbucket_creds.py`. The XEIZE path is still tried as a backward-compat fallback when `BITBUCKET_PAT` is unset.
 
 ## Why It Matters
 

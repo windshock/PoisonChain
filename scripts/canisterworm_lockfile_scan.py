@@ -16,6 +16,7 @@ import urllib.request
 from datetime import datetime
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 REPORTS_AXIOS_DIR = os.path.join(ROOT_DIR, "internal", "reports", "axios")
 LOCKFILE_REPORT_PATH = os.path.join(REPORTS_AXIOS_DIR, "canisterworm-lockfile-report.md")
 IMPACT_REPORT_PATH = os.path.join(REPORTS_AXIOS_DIR, "canisterworm-impact-report.md")
@@ -170,12 +171,7 @@ def api_get(endpoint, params=None):
         return json.loads(resp.read())
 
 
-def get_git_credentials(project_id):
-    """Get git URL and PAT for a project."""
-    try:
-        return api_get("git/credentials", {"project_id": project_id})
-    except Exception:
-        return None
+from _bitbucket_creds import get_git_credentials_for_project as get_git_credentials  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Git helpers

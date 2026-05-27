@@ -160,6 +160,8 @@ cp public/.env.example .env
 **요구 사항:** Python 3.9+, `requests` 라이브러리, 분석 대상 API 접근 권한
 
 > **호환성 참고:** 이 저장소는 실제 운영 환경에서 쓰던 `XEIZE_*` API 변수명과 Bitbucket/Jenkins 예시를 그대로 유지한다. 다른 조직이 GitHub/GitLab, GitHub Actions/CircleCI, 다른 스캐너를 쓰더라도 핵심 가치는 특정 벤더가 아니라 파이프라인 설계와 대응 절차에 있다. 필요한 연동부만 바꿔서 쓰면 된다.
+>
+> **2026-05 업데이트:** Bitbucket 접근 4개 스크립트(`bitbucket_full_scan.py`, `fetch_committers.py`, `verify_repos.py`, `canisterworm_lockfile_scan.py`)가 PAT를 자동 발급받던 XEIZE `/open-api/v1/git/credentials` 엔드포인트가 최신 OpenAPI 스펙에서 제거되었다. 이제는 `.env`에 직접 `BITBUCKET_PAT`를 넣고, 공용 헬퍼 `scripts/_bitbucket_creds.py`를 통해 읽는다. `BITBUCKET_PAT`가 없으면 구버전 호환으로 XEIZE 경로를 시도하지만 권장 경로는 직접 PAT.
 
 ## 왜 이 저장소가 필요한가
 

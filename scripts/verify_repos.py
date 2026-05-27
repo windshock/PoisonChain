@@ -55,33 +55,7 @@ SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode    = ssl.CERT_NONE
 
-_PAT = None
-
-def get_pat() -> str:
-    global _PAT
-    if _PAT:
-        return _PAT
-    req = urllib.request.Request(
-        f"{BASE_URL}/projects",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-    )
-    with urllib.request.urlopen(req, context=SSL_CTX) as r:
-        projects = json.loads(r.read())
-    for p in projects:
-        if p.get("integrationId"):
-            try:
-                req2 = urllib.request.Request(
-                    f"{BASE_URL}/git/credentials?project_id={p['id']}",
-                    headers={"Authorization": f"Bearer {API_KEY}"},
-                )
-                with urllib.request.urlopen(req2, context=SSL_CTX) as r2:
-                    creds = json.loads(r2.read())
-                    _PAT = creds.get("personalAccessToken")
-                    if _PAT:
-                        return _PAT
-            except Exception:
-                pass
-    sys.exit("ERROR: Bitbucket PAT 취득 실패")
+from _bitbucket_creds import get_bitbucket_pat as get_pat  # noqa: E402
 
 
 def repo_exists(project_key: str, repo_slug: str) -> bool:

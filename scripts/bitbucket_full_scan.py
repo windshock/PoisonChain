@@ -232,29 +232,7 @@ def enrich_from_package_json(result: dict, pk: str, slug: str):
 # API helpers
 # ---------------------------------------------------------------------------
 
-PAT = None
-
-def get_pat():
-    global PAT
-    if PAT:
-        return PAT
-    url = f"{BASE_URL}/projects"
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {API_KEY}"})
-    with urllib.request.urlopen(req, context=SSL_CTX) as r:
-        projects = json.loads(r.read())
-    for p in projects:
-        if p.get("integrationId"):
-            try:
-                cred_url = f"{BASE_URL}/git/credentials?project_id={p['id']}"
-                req2 = urllib.request.Request(cred_url, headers={"Authorization": f"Bearer {API_KEY}"})
-                with urllib.request.urlopen(req2, context=SSL_CTX) as r2:
-                    creds = json.loads(r2.read())
-                    PAT = creds.get("personalAccessToken")
-                    if PAT:
-                        return PAT
-            except:
-                pass
-    sys.exit("ERROR: Could not obtain Bitbucket PAT")
+from _bitbucket_creds import get_bitbucket_pat as get_pat  # noqa: E402
 
 
 def bb_get(path, timeout=15):
