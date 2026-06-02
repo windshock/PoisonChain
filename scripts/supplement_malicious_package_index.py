@@ -38,7 +38,17 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 INDEX_PATH = ROOT_DIR / "public" / "data" / "malicious-packages.json"
 SUPPLEMENT_PATH = ROOT_DIR / "public" / "data" / "supplemental-malicious-package-sources.json"
 OSV_VULN_URL = "https://api.osv.dev/v1/vulns/{id}"
-OSV_BULK_NPM_URL = "https://osv-vulnerabilities.storage.googleapis.com/npm/all.zip"
+OSV_GCS_BASE = "https://osv-vulnerabilities.storage.googleapis.com/{ecosystem}/all.zip"
+# Ecosystems to scan for malicious packages from the OSV GCS bulk bundle.
+# Keys are the OSV ecosystem identifiers (used in the bundle URL and advisory JSON).
+OSV_BULK_ECOSYSTEMS: dict[str, str] = {
+    "npm": "npm",
+    "PyPI": "PyPI",
+    "Maven": "Maven",
+    "crates.io": "crates.io",
+    "Go": "Go",
+    "NuGet": "NuGet",
+}
 
 
 
@@ -91,21 +101,34 @@ def fetch_osv_advisory(advisory_id: str) -> dict[str, Any]:
 
 
 def normalize_ecosystem(value: str | None) -> str:
+    """Normalise an OSV ecosystem string to the canonical form used in the SSOT."""
     if not value:
         return ""
-    if value.lower() == "npm":
-        return "npm"
-    return value
+    aliases: dict[str, str] = {
+        "npm": "npm",
+        "pypi": "PyPI",
+        "maven": "Maven",
+        "crates.io": "crates.io",
+        "go": "Go",
+        "nuget": "NuGet",
+    }
+    return aliases.get(value.lower(), value)
 
 
-def affected_npm_packages(osv: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract canonical npm package/version rows from one OSV advisory."""
+def affected_packages(osv: dict[str, Any], ecosystem_filter: str | None = None) -> list[dict[str, Any]]:
+    """Extract canonical package/version rows from one OSV advisory.
+
+    If ``ecosystem_filter`` is given (e.g. ``"npm"``), only entries matching
+    that ecosystem are returned.  Otherwise all ecosystems are included.
+    """
     rows: list[dict[str, Any]] = []
     for affected in osv.get("affected", []) or []:
         package = affected.get("package") or {}
         ecosystem = normalize_ecosystem(package.get("ecosystem"))
         name = package.get("name")
-        if ecosystem != "npm" or not name:
+        if not ecosystem or not name:
+            continue
+        if ecosystem_filter and ecosystem != normalize_ecosystem(ecosystem_filter):
             continue
 
         versions = sorted(set(affected.get("versions") or []))
@@ -185,7 +208,7 @@ def merge_osv_advisory(
             break
 
     added = updated = unchanged = 0
-    for row in affected_npm_packages(osv):
+    for row in affected_packages(osv):
         name_only = not row["versions"]
         if name_only and category == "compromised_legitimate":
             # A package-name-only entry for a hijacked legitimate package would
@@ -426,14 +449,14 @@ def _is_malicious(osv: dict[str, Any]) -> bool:
     return False
 
 
-def fetch_new_ossf_npm_advisories(
+def fetch_new_osv_advisories(
+    ecosystem: str,
     known_ids: set[str],
     since: str | None = None,
 ) -> list[tuple[str, dict[str, Any]]]:
-    """Download the OSV npm bulk bundle and return new malicious advisories.
+    """Download the OSV GCS bulk bundle for *ecosystem* and return new malicious advisories.
 
-    Downloads ``OSV_BULK_NPM_URL`` (GCS zip of all npm OSV entries), then
-    filters to advisories that are:
+    Filters to advisories that are:
       - malicious (MAL- prefix or CWE-506),
       - modified at or after ``since`` (default: 48 h ago),
       - not already recorded in ``known_ids``.
@@ -445,18 +468,20 @@ def fetch_new_ossf_npm_advisories(
     else:
         since_dt = _parse_ts(since)
 
-    print(f"Downloading OSV npm bundle ({OSV_BULK_NPM_URL})...")
+    url = OSV_GCS_BASE.format(ecosystem=ecosystem)
+    print(f"  Downloading OSV {ecosystem} bundle ({url})...")
     req = urllib.request.Request(
-        OSV_BULK_NPM_URL,
+        url,
         headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             bundle = resp.read()
     except urllib.error.URLError as exc:
-        raise SupplementError(f"Failed to download OSV npm bundle: {exc}") from exc
+        print(f"  WARNING: Failed to download OSV {ecosystem} bundle: {exc} — skipping")
+        return []
 
-    print(f"Downloaded {len(bundle) // 1024:,} KB — scanning for new malicious entries...")
+    print(f"  Downloaded {len(bundle) // 1024:,} KB — scanning for new malicious entries...")
     new: list[tuple[str, dict[str, Any]]] = []
     with zipfile.ZipFile(io.BytesIO(bundle)) as zf:
         for name in zf.namelist():
@@ -484,8 +509,9 @@ def fetch_new_ossf_npm_advisories(
 
 
 def refresh_from_osv_malicious(write: bool = False) -> int:
-    """Auto-discover and merge new npm malicious advisories from ossf/malicious-packages.
+    """Auto-discover and merge new malicious advisories across all supported ecosystems.
 
+    Scans OSV GCS bulk bundles for npm, PyPI, Maven, crates.io, Go and NuGet.
     This bridges the gap where Datadog hasn't picked up a new OSV entry yet
     and the advisory isn't listed in supplemental-malicious-package-sources.json.
     """
@@ -498,13 +524,20 @@ def refresh_from_osv_malicious(write: bool = False) -> int:
         print(f"Last OSV refresh: {last_refresh} — scanning for changes since then")
     else:
         print("No prior OSV refresh recorded — scanning last 48 h of commits")
-    print("Scanning ossf/malicious-packages for new npm advisories...")
+    print(f"Scanning OSV GCS bundles for ecosystems: {', '.join(OSV_BULK_ECOSYSTEMS)}")
 
-    new_advisories = fetch_new_ossf_npm_advisories(known_ids, since=last_refresh)
-    noun = "advisory" if len(new_advisories) == 1 else "advisories"
-    print(f"Found {len(new_advisories)} new {noun} not yet in SSOT.")
+    all_new: list[tuple[str, dict[str, Any]]] = []
+    for ecosystem in OSV_BULK_ECOSYSTEMS:
+        eco_new = fetch_new_osv_advisories(ecosystem, known_ids, since=last_refresh)
+        print(f"  {ecosystem}: {len(eco_new)} new advisories")
+        all_new.extend(eco_new)
+        # Keep known_ids up-to-date so duplicates across bundles are de-duped.
+        known_ids.update(adv_id for adv_id, _ in eco_new)
 
-    if not new_advisories:
+    noun = "advisory" if len(all_new) == 1 else "advisories"
+    print(f"Found {len(all_new)} new {noun} not yet in SSOT.")
+
+    if not all_new:
         print("SSOT is already up to date with ossf/malicious-packages.")
         return 0
 
@@ -520,7 +553,7 @@ def refresh_from_osv_malicious(write: bool = False) -> int:
     })
 
     total_added = total_updated = total_unchanged = 0
-    for advisory_id, osv in new_advisories:
+    for advisory_id, osv in all_new:
         advisory_cfg: dict[str, Any] = {
             "id": advisory_id,
             "campaign": "osv_auto",
