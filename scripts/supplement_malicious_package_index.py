@@ -508,19 +508,24 @@ def fetch_new_osv_advisories(
     return new
 
 
-def refresh_from_osv_malicious(write: bool = False) -> int:
+def refresh_from_osv_malicious(write: bool = False, full: bool = False) -> int:
     """Auto-discover and merge new malicious advisories across all supported ecosystems.
 
     Scans OSV GCS bulk bundles for npm, PyPI, Maven, crates.io, Go and NuGet.
     This bridges the gap where Datadog hasn't picked up a new OSV entry yet
     and the advisory isn't listed in supplemental-malicious-package-sources.json.
+
+    If ``full`` is True, ignore the last_refresh timestamp and scan all OSV history.
+    Useful when adding a new ecosystem for the first time.
     """
     index = load_json(INDEX_PATH)
     known_ids = _known_osv_advisory_ids(index)
-    last_refresh = (index.get("last_refresh") or {}).get("osv_malicious")
+    last_refresh = None if full else (index.get("last_refresh") or {}).get("osv_malicious")
 
     print(f"Known OSV advisory IDs in SSOT: {len(known_ids)}")
-    if last_refresh:
+    if full:
+        print("--full mode: ignoring last_refresh timestamp — scanning entire OSV history")
+    elif last_refresh:
         print(f"Last OSV refresh: {last_refresh} — scanning for changes since then")
     else:
         print("No prior OSV refresh recorded — scanning last 48 h of commits")
@@ -614,8 +619,16 @@ def main() -> int:
         "--refresh-osv",
         action="store_true",
         help=(
-            "Auto-discover new npm malicious advisories from ossf/malicious-packages "
-            "and merge them into the SSOT. Requires GITHUB_TOKEN for higher rate limits."
+            "Auto-discover new malicious advisories from OSV GCS bundles "
+            "(npm, PyPI, Maven, crates.io, Go, NuGet) and merge into the SSOT."
+        ),
+    )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help=(
+            "With --refresh-osv: ignore the last_refresh timestamp and scan entire "
+            "OSV history. Use when adding a new ecosystem for the first time."
         ),
     )
     args = parser.parse_args()
@@ -626,7 +639,7 @@ def main() -> int:
 
     try:
         if args.refresh_osv:
-            return refresh_from_osv_malicious(write=args.write)
+            return refresh_from_osv_malicious(write=args.write, full=args.full)
         return refresh_from_supplements(
             advisory_filter=set(args.advisory or []) or None,
             skip_kisa=args.skip_kisa,
