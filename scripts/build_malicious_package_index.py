@@ -139,21 +139,29 @@ def check_datadog_categories(data: dict, only: Iterable[str] | None = None) -> l
 
     Returns a list of warning strings (empty = all OK).
     """
+    # Maps SSOT ecosystem → Datadog directory name
+    eco_to_dd: dict[str, str] = {
+        "npm": "npm",
+        "PyPI": "pypi",
+    }
+
     warnings: list[str] = []
     only_set = set(only or [])
     for p in data["packages"]:
         if only_set and p["name"] not in only_set:
             continue
-        if p["ecosystem"] != "npm":
-            continue
+        eco = p.get("ecosystem", "")
+        dd_dir = eco_to_dd.get(eco)
+        if dd_dir is None:
+            continue  # ecosystem not tracked in Datadog dataset
         name = p["name"]
-        # encode @-scoped names for the URL path
+        # encode @-scoped (npm) and path-unsafe chars for the URL
         encoded = name.replace("/", "%2F")
         in_compromised_lib = _datadog_has(
-            f"contents/samples/npm/compromised_lib/{encoded}"
+            f"contents/samples/{dd_dir}/compromised_lib/{encoded}"
         )
         in_malicious_intent = _datadog_has(
-            f"contents/samples/npm/malicious_intent/{encoded}"
+            f"contents/samples/{dd_dir}/malicious_intent/{encoded}"
         )
 
         observed: str | None = None
@@ -163,7 +171,7 @@ def check_datadog_categories(data: dict, only: Iterable[str] | None = None) -> l
             observed = "malicious_intent"
         elif in_compromised_lib and in_malicious_intent:
             warnings.append(
-                f"{name}: present in BOTH Datadog paths — manual review needed"
+                f"{name} ({eco}): present in BOTH Datadog paths — manual review needed"
             )
             continue
         else:
@@ -172,7 +180,7 @@ def check_datadog_categories(data: dict, only: Iterable[str] | None = None) -> l
 
         if observed != p["category"]:
             warnings.append(
-                f"{name}: index says category={p['category']!r} but Datadog "
+                f"{name} ({eco}): index says category={p['category']!r} but Datadog "
                 f"path implies {observed!r}"
             )
 
@@ -188,22 +196,27 @@ def _gh_tree(sha_or_branch: str, recursive: bool = False) -> dict:
         return json.load(r)
 
 
-def fetch_datadog_tree() -> dict[tuple[str, str], dict[str, str]]:
-    """Return {(category, pkg_name) → {version: date_str}} from the Datadog dataset.
+def fetch_datadog_tree() -> dict[tuple[str, str, str], dict[str, str]]:
+    """Return {(ecosystem, category, pkg_name) → {version: date_str}} from the Datadog dataset.
 
     Only fetches *tree metadata* (~MBs) from GitHub — never downloads the
     actual ZIP blobs (~20GB). Splits per-category to avoid the truncation
     that hits a single recursive call against the whole repo.
 
+    ecosystem ∈ {'npm', 'PyPI'}.
     category ∈ {'compromised_legitimate', 'malicious_intent'}.
-    pkg_name returned in canonical npm form (@scope/name or name).
+    pkg_name returned in canonical form (@scope/name for npm, bare name for PyPI).
     """
     t = _gh_tree("main")
     samples_sha = next(e["sha"] for e in t["tree"] if e["path"] == "samples")
     t = _gh_tree(samples_sha)
-    npm_sha = next(e["sha"] for e in t["tree"] if e["path"] == "npm")
-    t = _gh_tree(npm_sha)
-    cat_shas = {e["path"]: e["sha"] for e in t["tree"] if e["type"] == "tree"}
+    ecosystem_shas = {e["path"]: e["sha"] for e in t["tree"] if e["type"] == "tree"}
+
+    # Maps Datadog directory name → SSOT ecosystem name
+    dd_ecosystems: dict[str, str] = {
+        "npm": "npm",
+        "pypi": "PyPI",
+    }
 
     dd_to_canonical = {
         "compromised_lib": "compromised_legitimate",
@@ -211,36 +224,46 @@ def fetch_datadog_tree() -> dict[tuple[str, str], dict[str, str]]:
     }
 
     # Datadog path structure: <pkg>/<version>/<YYYY-MM-DD-name-vX.Y.Z.zip>
-    # scoped packages are stored as @scope@pkg, normalized below to @scope/pkg.
+    # npm scoped packages are stored as @scope@pkg, normalized below to @scope/pkg.
     path_re = re.compile(r"^([^/]+)/([^/]+)/([^/]+)$")
     date_re = re.compile(r"(\d{4}-\d{2}-\d{2})")
 
-    out: dict[tuple[str, str], dict[str, str]] = defaultdict(dict)
-    for dd_cat, our_cat in dd_to_canonical.items():
-        if dd_cat not in cat_shas:
-            continue
-        sub = _gh_tree(cat_shas[dd_cat], recursive=True)
-        if sub.get("truncated"):
-            print(f"WARN: Datadog {dd_cat} tree truncated — some entries missed",
+    out: dict[tuple[str, str, str], dict[str, str]] = defaultdict(dict)
+    for dd_eco, ssot_eco in dd_ecosystems.items():
+        eco_sha = ecosystem_shas.get(dd_eco)
+        if not eco_sha:
+            print(f"WARN: Datadog {dd_eco} directory not found — skipping",
                   file=sys.stderr)
-        for entry in sub.get("tree", []):
-            if entry.get("type") != "blob":
+            continue
+        eco_tree = _gh_tree(eco_sha)
+        cat_shas = {e["path"]: e["sha"] for e in eco_tree["tree"] if e["type"] == "tree"}
+
+        for dd_cat, our_cat in dd_to_canonical.items():
+            if dd_cat not in cat_shas:
                 continue
-            m = path_re.match(entry["path"])
-            if not m:
-                continue
-            pkg_raw, version, filename = m.groups()
-            if pkg_raw.startswith("@") and "@" in pkg_raw[1:]:
-                parts = pkg_raw.split("@")
-                if len(parts) >= 3:
-                    pkg_name = f"@{parts[1]}/{parts[2]}"
+            sub = _gh_tree(cat_shas[dd_cat], recursive=True)
+            if sub.get("truncated"):
+                print(f"WARN: Datadog {dd_eco}/{dd_cat} tree truncated — some entries missed",
+                      file=sys.stderr)
+            for entry in sub.get("tree", []):
+                if entry.get("type") != "blob":
+                    continue
+                m = path_re.match(entry["path"])
+                if not m:
+                    continue
+                pkg_raw, version, filename = m.groups()
+                # npm scoped package normalisation: @scope@pkg → @scope/pkg
+                if ssot_eco == "npm" and pkg_raw.startswith("@") and "@" in pkg_raw[1:]:
+                    parts = pkg_raw.split("@")
+                    if len(parts) >= 3:
+                        pkg_name = f"@{parts[1]}/{parts[2]}"
+                    else:
+                        pkg_name = pkg_raw
                 else:
                     pkg_name = pkg_raw
-            else:
-                pkg_name = pkg_raw
-            d = date_re.search(filename)
-            date_str = d.group(1) if d else ""
-            out[(our_cat, pkg_name)][version] = date_str
+                d = date_re.search(filename)
+                date_str = d.group(1) if d else ""
+                out[(ssot_eco, our_cat, pkg_name)][version] = date_str
     return out
 
 
@@ -259,12 +282,15 @@ def refresh_from_datadog(dry_run: bool = False) -> tuple[int, int, int]:
     Returns (added, updated, unchanged).
     """
     data = load_index()
-    by_name: dict[str, dict] = {p["name"]: p for p in data["packages"]}
+    # Key by (ecosystem, name) to support multi-ecosystem dedup
+    by_key: dict[tuple[str, str], dict] = {
+        (p["ecosystem"], p["name"]): p for p in data["packages"]
+    }
 
     print(f"Existing SSOT: {len(data['packages'])} packages")
     print("Fetching Datadog tree (metadata only, no ZIP downloads)...")
     found = fetch_datadog_tree()
-    print(f"Datadog: {len(found)} (category, package) entries")
+    print(f"Datadog: {len(found)} (ecosystem, category, package) entries")
 
     data.setdefault("campaigns", {})
     if "datadog_auto" not in data["campaigns"]:
@@ -279,13 +305,13 @@ def refresh_from_datadog(dry_run: bool = False) -> tuple[int, int, int]:
     updated = 0
     unchanged = 0
 
-    for (category, pkg_name), versions in sorted(found.items()):
-        existing = by_name.get(pkg_name)
+    for (ecosystem, category, pkg_name), versions in sorted(found.items()):
+        existing = by_key.get((ecosystem, pkg_name))
 
         if existing is None:
             new_entry: dict = {
                 "name": pkg_name,
-                "ecosystem": "npm",
+                "ecosystem": ecosystem,
                 "category": category,
                 "campaign": "datadog_auto",
                 "source": "datadog_dataset",
@@ -296,7 +322,7 @@ def refresh_from_datadog(dry_run: bool = False) -> tuple[int, int, int]:
             if dates:
                 new_entry["datadog_added"] = min(dates)
             data["packages"].append(new_entry)
-            by_name[pkg_name] = new_entry
+            by_key[(ecosystem, pkg_name)] = new_entry
             added += 1
             continue
 
@@ -333,7 +359,7 @@ def refresh_from_datadog(dry_run: bool = False) -> tuple[int, int, int]:
     data["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     data.setdefault("last_refresh", {})["datadog"] = data["generated_at"]
     data["_comment"] = (
-        "Single source of truth for malicious npm packages tracked by PoisonChain. "
+        "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. "
         "campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) "
         "an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. "
         "'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. "

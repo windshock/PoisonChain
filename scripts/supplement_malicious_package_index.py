@@ -39,6 +39,8 @@ INDEX_PATH = ROOT_DIR / "public" / "data" / "malicious-packages.json"
 SUPPLEMENT_PATH = ROOT_DIR / "public" / "data" / "supplemental-malicious-package-sources.json"
 OSV_VULN_URL = "https://api.osv.dev/v1/vulns/{id}"
 OSV_GCS_BASE = "https://osv-vulnerabilities.storage.googleapis.com/{ecosystem}/all.zip"
+OSV_MODIFIED_CSV_URL = "https://osv-vulnerabilities.storage.googleapis.com/{ecosystem}/modified_id.csv"
+OSV_SINGLE_VULN_URL = "https://osv-vulnerabilities.storage.googleapis.com/{ecosystem}/{id}.json"
 # Ecosystems to scan for malicious packages from the OSV GCS bulk bundle.
 # Keys are the OSV ecosystem identifiers (used in the bundle URL and advisory JSON).
 OSV_BULK_ECOSYSTEMS: dict[str, str] = {
@@ -449,25 +451,16 @@ def _is_malicious(osv: dict[str, Any]) -> bool:
     return False
 
 
-def fetch_new_osv_advisories(
+def _fetch_from_full_bundle(
     ecosystem: str,
     known_ids: set[str],
-    since: str | None = None,
+    since_dt: datetime | None = None,
 ) -> list[tuple[str, dict[str, Any]]]:
-    """Download the OSV GCS bulk bundle for *ecosystem* and return new malicious advisories.
+    """Download the full all.zip bundle and extract new malicious advisories.
 
-    Filters to advisories that are:
-      - malicious (MAL- prefix or CWE-506),
-      - modified at or after ``since`` (default: 48 h ago),
-      - not already recorded in ``known_ids``.
-
-    Returns list of (advisory_id, osv_dict).
+    Used for --full mode (first-time scan of an ecosystem).
+    ``since_dt`` is applied as an additional filter when provided.
     """
-    if since is None:
-        since_dt = datetime.now(timezone.utc) - timedelta(hours=48)
-    else:
-        since_dt = _parse_ts(since)
-
     url = OSV_GCS_BASE.format(ecosystem=ecosystem)
     print(f"  Downloading OSV {ecosystem} bundle ({url})...")
     req = urllib.request.Request(
@@ -496,19 +489,104 @@ def fetch_new_osv_advisories(
                 continue
             if not _is_malicious(osv):
                 continue
-            modified_str = osv.get("modified") or osv.get("published") or ""
-            if modified_str:
-                try:
-                    if _parse_ts(modified_str) < since_dt:
-                        continue
-                except ValueError:
-                    pass
+            if since_dt is not None:
+                modified_str = osv.get("modified") or osv.get("published") or ""
+                if modified_str:
+                    try:
+                        if _parse_ts(modified_str) < since_dt:
+                            continue
+                    except ValueError:
+                        pass
             new.append((advisory_id, osv))
-
     return new
 
 
-def refresh_from_osv_malicious(write: bool = False, full: bool = False) -> int:
+def _fetch_from_modified_csv(
+    ecosystem: str,
+    known_ids: set[str],
+    since: str,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Use modified_id.csv to efficiently fetch only new/changed advisories.
+
+    The CSV is sorted newest-first; we stream it and stop at ``since``.
+    Only IDs with a ``MAL-`` prefix are fetched individually (non-malicious
+    entries are skipped without an HTTP round-trip).
+    Falls back to full bundle download on CSV fetch failure.
+    """
+    since_dt = _parse_ts(since)
+    csv_url = OSV_MODIFIED_CSV_URL.format(ecosystem=ecosystem)
+    req = urllib.request.Request(
+        csv_url,
+        headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            csv_text = resp.read().decode("utf-8")
+    except urllib.error.URLError as exc:
+        print(f"  WARNING: Could not fetch {csv_url}: {exc} — falling back to full bundle")
+        return _fetch_from_full_bundle(ecosystem, known_ids, since_dt=since_dt)
+
+    candidate_ids: list[str] = []
+    for line in csv_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split(",", 1)
+        if len(parts) != 2:
+            continue
+        ts_str, adv_id = parts[0].strip(), parts[1].strip()
+        try:
+            ts = _parse_ts(ts_str)
+        except ValueError:
+            continue
+        if ts < since_dt:
+            break  # CSV is sorted newest-first — nothing older will be new
+        if adv_id not in known_ids and adv_id.startswith("MAL-"):
+            candidate_ids.append(adv_id)
+
+    if not candidate_ids:
+        return []
+
+    print(f"  {ecosystem}: {len(candidate_ids)} MAL-* candidates via modified_id.csv — fetching...")
+    new: list[tuple[str, dict[str, Any]]] = []
+    for adv_id in candidate_ids:
+        vuln_url = OSV_SINGLE_VULN_URL.format(ecosystem=ecosystem, id=adv_id)
+        try:
+            req2 = urllib.request.Request(
+                vuln_url,
+                headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"},
+            )
+            with urllib.request.urlopen(req2, timeout=30) as resp2:
+                osv = json.loads(resp2.read())
+        except Exception as exc:
+            print(f"  WARNING: Could not fetch {vuln_url}: {exc}")
+            continue
+        if _is_malicious(osv):
+            new.append((adv_id, osv))
+    return new
+
+
+def fetch_new_osv_advisories(
+    ecosystem: str,
+    known_ids: set[str],
+    since: str | None = None,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Return new malicious advisories for *ecosystem* not in *known_ids*.
+
+    - If ``since`` is None (--full mode): downloads all.zip and scans everything.
+    - If ``since`` is set (incremental): uses modified_id.csv to fetch only
+      entries modified after ``since``, dramatically reducing bandwidth.
+
+    Returns list of (advisory_id, osv_dict).
+    """
+    if since is None:
+        return _fetch_from_full_bundle(ecosystem, known_ids)
+    return _fetch_from_modified_csv(ecosystem, known_ids, since)
+
+
+def refresh_from_osv_malicious(
+    write: bool = False, full: bool = False, ecosystems: list[str] | None = None
+) -> int:
     """Auto-discover and merge new malicious advisories across all supported ecosystems.
 
     Scans OSV GCS bulk bundles for npm, PyPI, Maven, crates.io, Go and NuGet.
@@ -517,23 +595,41 @@ def refresh_from_osv_malicious(write: bool = False, full: bool = False) -> int:
 
     If ``full`` is True, ignore the last_refresh timestamp and scan all OSV history.
     Useful when adding a new ecosystem for the first time.
+
+    If ``ecosystems`` is given, only those ecosystems are scanned (e.g. ['Maven','Go','NuGet']).
     """
+    target_ecosystems = (
+        [e for e in OSV_BULK_ECOSYSTEMS if e in ecosystems]
+        if ecosystems else list(OSV_BULK_ECOSYSTEMS)
+    )
     index = load_json(INDEX_PATH)
     known_ids = _known_osv_advisory_ids(index)
-    last_refresh = None if full else (index.get("last_refresh") or {}).get("osv_malicious")
+    # Per-ecosystem last_refresh timestamps live under last_refresh.osv_malicious_by_eco.
+    # A single legacy key (osv_malicious) is also supported for backward compat.
+    eco_refresh_map: dict[str, str] = (
+        (index.get("last_refresh") or {}).get("osv_malicious_by_eco") or {}
+    )
+    legacy_ts: str | None = (index.get("last_refresh") or {}).get("osv_malicious")
 
     print(f"Known OSV advisory IDs in SSOT: {len(known_ids)}")
     if full:
-        print("--full mode: ignoring last_refresh timestamp — scanning entire OSV history")
-    elif last_refresh:
-        print(f"Last OSV refresh: {last_refresh} — scanning for changes since then")
-    else:
-        print("No prior OSV refresh recorded — scanning last 48 h of commits")
-    print(f"Scanning OSV GCS bundles for ecosystems: {', '.join(OSV_BULK_ECOSYSTEMS)}")
+        print("--full mode: ignoring last_refresh timestamps — scanning entire OSV history")
+    print(f"Scanning OSV GCS bundles for ecosystems: {', '.join(target_ecosystems)}")
 
     all_new: list[tuple[str, dict[str, Any]]] = []
-    for ecosystem in OSV_BULK_ECOSYSTEMS:
-        eco_new = fetch_new_osv_advisories(ecosystem, known_ids, since=last_refresh)
+    for ecosystem in target_ecosystems:
+        if full:
+            since: str | None = None  # full bundle scan
+        else:
+            # Per-ecosystem timestamp takes priority; fall back to legacy single key.
+            since = eco_refresh_map.get(ecosystem) or legacy_ts
+            if since is None:
+                # First run for this ecosystem: limit to last 48 h via CSV
+                since = (datetime.now(timezone.utc) - timedelta(hours=48)).isoformat(timespec="seconds")
+                print(f"  {ecosystem}: no prior refresh — scanning last 48 h")
+            else:
+                print(f"  {ecosystem}: last refresh {since[:10]} — scanning for changes since then")
+        eco_new = fetch_new_osv_advisories(ecosystem, known_ids, since=since)
         print(f"  {ecosystem}: {len(eco_new)} new advisories")
         all_new.extend(eco_new)
         # Keep known_ids up-to-date so duplicates across bundles are de-duped.
@@ -577,7 +673,12 @@ def refresh_from_osv_malicious(write: bool = False, full: bool = False) -> int:
 
     timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     index["generated_at"] = timestamp
-    index.setdefault("last_refresh", {})["osv_malicious"] = timestamp
+    lr = index.setdefault("last_refresh", {})
+    lr["osv_malicious"] = timestamp  # legacy key for backward compat
+    # Per-ecosystem timestamps: update all ecosystems scanned in this run
+    lr.setdefault("osv_malicious_by_eco", {}).update(
+        {eco: timestamp for eco in target_ecosystems}
+    )
 
     print(
         f"OSV auto-discovery summary: +{total_added} added, "
@@ -631,6 +732,16 @@ def main() -> int:
             "OSV history. Use when adding a new ecosystem for the first time."
         ),
     )
+    parser.add_argument(
+        "--ecosystems",
+        nargs="+",
+        metavar="ECO",
+        help=(
+            "With --refresh-osv: limit scan to these ecosystems only "
+            "(e.g. --ecosystems Maven Go NuGet). Useful for first-time backfill "
+            "of a single ecosystem without re-scanning all others."
+        ),
+    )
     args = parser.parse_args()
 
     if args.write and args.dry_run:
@@ -639,7 +750,11 @@ def main() -> int:
 
     try:
         if args.refresh_osv:
-            return refresh_from_osv_malicious(write=args.write, full=args.full)
+            return refresh_from_osv_malicious(
+                write=args.write,
+                full=args.full,
+                ecosystems=args.ecosystems,
+            )
         return refresh_from_supplements(
             advisory_filter=set(args.advisory or []) or None,
             skip_kisa=args.skip_kisa,
