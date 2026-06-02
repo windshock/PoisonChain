@@ -44,6 +44,13 @@ jobs:
         run: |
           python3 scripts/build_malicious_package_index.py --refresh
 
+      - name: Auto-discover from OSSF malicious-packages (OSV)
+        # Downloads the OSV npm bulk bundle from GCS, filters to malicious entries
+        # modified since the last refresh, and merges them into the SSOT — bridges
+        # the gap where Datadog hasn't picked up a new OSV entry yet.
+        run: |
+          python3 scripts/supplement_malicious_package_index.py --refresh-osv --write
+
       - name: Supplement SSOT from OSV + KISA-listed
         # Fetches every advisory listed in
         # public/data/supplemental-malicious-package-sources.json#osv_advisories

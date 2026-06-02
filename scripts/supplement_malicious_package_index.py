@@ -21,12 +21,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import io
 import json
+import os
+import re
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+import zipfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -34,10 +38,21 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 INDEX_PATH = ROOT_DIR / "public" / "data" / "malicious-packages.json"
 SUPPLEMENT_PATH = ROOT_DIR / "public" / "data" / "supplemental-malicious-package-sources.json"
 OSV_VULN_URL = "https://api.osv.dev/v1/vulns/{id}"
+OSV_BULK_NPM_URL = "https://osv-vulnerabilities.storage.googleapis.com/npm/all.zip"
+
 
 
 class SupplementError(RuntimeError):
     pass
+
+
+def load_env(path: Path = ROOT_DIR / ".env") -> None:
+    if path.exists():
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -376,6 +391,170 @@ def refresh_from_supplements(
     return 0
 
 
+def _known_osv_advisory_ids(index: dict[str, Any]) -> set[str]:
+    """Return all OSV advisory IDs already recorded in the SSOT."""
+    known: set[str] = set()
+    for pkg in index.get("packages") or []:
+        for aid in pkg.get("osv_advisories") or []:
+            known.add(aid)
+    return known
+
+
+def _infer_category(osv: dict[str, Any]) -> str:
+    """Infer malicious_intent vs compromised_legitimate from OSV advisory text."""
+    text = ((osv.get("summary") or "") + " " + (osv.get("details") or "")).lower()
+    if any(kw in text for kw in ("hijacked", "compromised", "account takeover", "stolen credential")):
+        return "compromised_legitimate"
+    return "malicious_intent"
+
+
+def _parse_ts(ts: str) -> datetime:
+    """Parse an OSV ISO 8601 timestamp into a UTC-aware datetime."""
+    ts = re.sub(r"(\.\d{6})\d+", r"\1", ts)   # truncate sub-microsecond digits
+    ts = ts.replace("Z", "+00:00")
+    return datetime.fromisoformat(ts)
+
+
+def _is_malicious(osv: dict[str, Any]) -> bool:
+    """Return True if this OSV advisory describes malicious/embedded code."""
+    if (osv.get("id") or "").startswith("MAL-"):
+        return True
+    for affected in osv.get("affected") or []:
+        for cwe in (affected.get("database_specific") or {}).get("cwes") or []:
+            if cwe.get("cweId") == "CWE-506":
+                return True
+    return False
+
+
+def fetch_new_ossf_npm_advisories(
+    known_ids: set[str],
+    since: str | None = None,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Download the OSV npm bulk bundle and return new malicious advisories.
+
+    Downloads ``OSV_BULK_NPM_URL`` (GCS zip of all npm OSV entries), then
+    filters to advisories that are:
+      - malicious (MAL- prefix or CWE-506),
+      - modified at or after ``since`` (default: 48 h ago),
+      - not already recorded in ``known_ids``.
+
+    Returns list of (advisory_id, osv_dict).
+    """
+    if since is None:
+        since_dt = datetime.now(timezone.utc) - timedelta(hours=48)
+    else:
+        since_dt = _parse_ts(since)
+
+    print(f"Downloading OSV npm bundle ({OSV_BULK_NPM_URL})...")
+    req = urllib.request.Request(
+        OSV_BULK_NPM_URL,
+        headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            bundle = resp.read()
+    except urllib.error.URLError as exc:
+        raise SupplementError(f"Failed to download OSV npm bundle: {exc}") from exc
+
+    print(f"Downloaded {len(bundle) // 1024:,} KB — scanning for new malicious entries...")
+    new: list[tuple[str, dict[str, Any]]] = []
+    with zipfile.ZipFile(io.BytesIO(bundle)) as zf:
+        for name in zf.namelist():
+            if not name.endswith(".json"):
+                continue
+            try:
+                osv = json.loads(zf.read(name))
+            except (json.JSONDecodeError, KeyError):
+                continue
+            advisory_id = osv.get("id", "")
+            if not advisory_id or advisory_id in known_ids:
+                continue
+            if not _is_malicious(osv):
+                continue
+            modified_str = osv.get("modified") or osv.get("published") or ""
+            if modified_str:
+                try:
+                    if _parse_ts(modified_str) < since_dt:
+                        continue
+                except ValueError:
+                    pass
+            new.append((advisory_id, osv))
+
+    return new
+
+
+def refresh_from_osv_malicious(write: bool = False) -> int:
+    """Auto-discover and merge new npm malicious advisories from ossf/malicious-packages.
+
+    This bridges the gap where Datadog hasn't picked up a new OSV entry yet
+    and the advisory isn't listed in supplemental-malicious-package-sources.json.
+    """
+    index = load_json(INDEX_PATH)
+    known_ids = _known_osv_advisory_ids(index)
+    last_refresh = (index.get("last_refresh") or {}).get("osv_malicious")
+
+    print(f"Known OSV advisory IDs in SSOT: {len(known_ids)}")
+    if last_refresh:
+        print(f"Last OSV refresh: {last_refresh} — scanning for changes since then")
+    else:
+        print("No prior OSV refresh recorded — scanning last 48 h of commits")
+    print("Scanning ossf/malicious-packages for new npm advisories...")
+
+    new_advisories = fetch_new_ossf_npm_advisories(known_ids, since=last_refresh)
+    noun = "advisory" if len(new_advisories) == 1 else "advisories"
+    print(f"Found {len(new_advisories)} new {noun} not yet in SSOT.")
+
+    if not new_advisories:
+        print("SSOT is already up to date with ossf/malicious-packages.")
+        return 0
+
+    index["campaigns"].setdefault("osv_auto", {
+        "name": "OSSF malicious-packages (OSV auto-imported)",
+        "kind": "catalog",
+        "source": "https://github.com/ossf/malicious-packages",
+        "notes": (
+            "Auto-imported daily by .github/workflows/refresh-malicious-packages.yml "
+            "from ossf/malicious-packages. "
+            "Entries with campaign='osv_auto' are auto-refreshed; do not edit by hand."
+        ),
+    })
+
+    total_added = total_updated = total_unchanged = 0
+    for advisory_id, osv in new_advisories:
+        advisory_cfg: dict[str, Any] = {
+            "id": advisory_id,
+            "campaign": "osv_auto",
+            "category": _infer_category(osv),
+        }
+        added, updated, unchanged = merge_osv_advisory(index, advisory_cfg, osv)
+        if added or updated:
+            print(f"  {advisory_id}: +{added} added, {updated} updated")
+        total_added += added
+        total_updated += updated
+        total_unchanged += unchanged
+
+    if total_added == 0 and total_updated == 0:
+        print("No SSOT changes after merging new advisories.")
+        return 0
+
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    index["generated_at"] = timestamp
+    index.setdefault("last_refresh", {})["osv_malicious"] = timestamp
+
+    print(
+        f"OSV auto-discovery summary: +{total_added} added, "
+        f"{total_updated} updated, {total_unchanged} unchanged"
+    )
+
+    if write:
+        write_json(INDEX_PATH, index)
+        print(f"Wrote {INDEX_PATH}")
+    else:
+        print("[dry-run] Re-run with --refresh-osv --write to apply changes.")
+
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -398,6 +577,14 @@ def main() -> int:
         action="store_true",
         help="Skip kisa_listed_packages materialization (advisory-only run).",
     )
+    parser.add_argument(
+        "--refresh-osv",
+        action="store_true",
+        help=(
+            "Auto-discover new npm malicious advisories from ossf/malicious-packages "
+            "and merge them into the SSOT. Requires GITHUB_TOKEN for higher rate limits."
+        ),
+    )
     args = parser.parse_args()
 
     if args.write and args.dry_run:
@@ -405,6 +592,8 @@ def main() -> int:
         return 2
 
     try:
+        if args.refresh_osv:
+            return refresh_from_osv_malicious(write=args.write)
         return refresh_from_supplements(
             advisory_filter=set(args.advisory or []) or None,
             skip_kisa=args.skip_kisa,
