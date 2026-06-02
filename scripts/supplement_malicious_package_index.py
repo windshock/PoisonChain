@@ -267,6 +267,68 @@ def merge_osv_advisory(
     return added, updated, unchanged
 
 
+def merge_manual_packages(
+    index: dict[str, Any],
+    manual_pkgs: list[dict[str, Any]],
+) -> tuple[int, int, int]:
+    """Merge manually-curated packages (e.g. Socket-only, no OSV ID) into the SSOT.
+
+    Each entry must have at minimum: name, ecosystem, category.
+    Returns (added, updated, unchanged).
+    """
+    packages = index.setdefault("packages", [])
+    by_key: dict[tuple[str, str], dict[str, Any]] = {
+        (p.get("ecosystem", ""), p.get("name", "")): p for p in packages
+    }
+
+    added = updated = unchanged = 0
+    for row in manual_pkgs or []:
+        name = row.get("name")
+        ecosystem = row.get("ecosystem")
+        if not name or not ecosystem:
+            continue
+
+        key = (ecosystem, name)
+        existing = by_key.get(key)
+
+        if existing is None:
+            entry: dict[str, Any] = {
+                "name": name,
+                "ecosystem": ecosystem,
+                "category": row.get("category", "malicious_intent"),
+                "campaign": row.get("campaign", "external_advisory_supplement"),
+                "source": "manual_research",
+                "confidence": row.get("confidence", "confirmed"),
+                "malicious_versions": row.get("malicious_versions") or [],
+                "references": row.get("references") or [],
+                "notes": row.get("notes", "Manually curated from external security research."),
+            }
+            packages.append(entry)
+            by_key[key] = entry
+            added += 1
+            continue
+
+        # If already confirmed via OSV, keep that status and just add references.
+        changed = False
+        if row.get("malicious_versions"):
+            merged, version_changed = merge_versions(
+                existing.get("malicious_versions"), row["malicious_versions"]
+            )
+            if version_changed:
+                existing["malicious_versions"] = merged
+                changed = True
+        changed |= add_unique_list_values(existing, "references", row.get("references") or [])
+        if not existing.get("source"):
+            existing["source"] = "manual_research"
+            changed = True
+        if changed:
+            updated += 1
+        else:
+            unchanged += 1
+
+    return added, updated, unchanged
+
+
 def merge_kisa_listed(
     index: dict[str, Any],
     kisa_cfg: dict[str, Any],
@@ -390,6 +452,18 @@ def refresh_from_supplements(
             print(
                 f"KISA-listed packages: +{added} updated={updated} "
                 f"unchanged={unchanged}"
+            )
+            total_added += added
+            total_updated += updated
+            total_unchanged += unchanged
+
+    # Manually-curated packages (Socket-only, no OSV ID, etc.)
+    if not advisory_filter:
+        manual_pkgs = supplements.get("manual_packages") or []
+        if manual_pkgs:
+            added, updated, unchanged = merge_manual_packages(index, manual_pkgs)
+            print(
+                f"Manual packages: +{added} updated={updated} unchanged={unchanged}"
             )
             total_added += added
             total_updated += updated
@@ -598,8 +672,10 @@ def refresh_from_osv_malicious(
 
     If ``ecosystems`` is given, only those ecosystems are scanned (e.g. ['Maven','Go','NuGet']).
     """
+    # Case-insensitive match so users can pass 'pypi', 'nuget', etc.
+    eco_lower = {e.lower(): e for e in OSV_BULK_ECOSYSTEMS}
     target_ecosystems = (
-        [e for e in OSV_BULK_ECOSYSTEMS if e in ecosystems]
+        [eco_lower[e.lower()] for e in ecosystems if e.lower() in eco_lower]
         if ecosystems else list(OSV_BULK_ECOSYSTEMS)
     )
     index = load_json(INDEX_PATH)
