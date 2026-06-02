@@ -76,6 +76,17 @@ SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
+# Maps SSOT ecosystem names → Nexus repository format strings.
+# Only ecosystems listed here are scanned; others are silently skipped.
+ECOSYSTEM_TO_NEXUS_FORMAT: dict[str, str] = {
+    "npm": "npm",
+    "PyPI": "pypi",
+    "Maven": "maven2",
+    "crates.io": "cargo",
+    "Go": "go",
+    "NuGet": "nuget",
+}
+
 
 def _basic_auth_header(user: str, pw: str) -> str:
     return "Basic " + b64encode(f"{user}:{pw}".encode()).decode()
@@ -147,39 +158,42 @@ def load_targets(index: dict, include_compromised: bool,
     """
     out: list[dict] = []
     for p in index.get("packages", []):
-        if p.get("ecosystem") != "npm":
-            continue
+        ecosystem = p.get("ecosystem", "npm")
+        if ecosystem not in ECOSYSTEM_TO_NEXUS_FORMAT:
+            continue  # unsupported ecosystem — skip silently
         category = p.get("category")
         confidence = p.get("confidence", "confirmed")
         name = p["name"]
         versions = p.get("malicious_versions") or []
         known_hashes = p.get("known_hashes") or {}
         campaign = p.get("campaign")
-        npm_status = p.get("npm_status")
+        npm_status = p.get("npm_status") if ecosystem == "npm" else None
 
         if confidence == "suspected":
             if not include_suspected:
                 continue
             out.append(_target(name, None, category, campaign, None,
-                               confidence="suspected", npm_status=npm_status))
+                               confidence="suspected", npm_status=npm_status,
+                               ecosystem=ecosystem))
             continue
 
         if category == "malicious_intent":
             out.append(_target(name, None, category, campaign, None,
-                               confidence="confirmed"))
+                               confidence="confirmed", ecosystem=ecosystem))
         elif category == "compromised_legitimate":
             if not include_compromised:
                 continue
             for ver in versions:
                 out.append(_target(name, ver, category, campaign,
-                                   known_hashes.get(ver), confidence="confirmed"))
+                                   known_hashes.get(ver), confidence="confirmed",
+                                   ecosystem=ecosystem))
         # else: skip 'unknown' category
     return out
 
 
 def _target(name: str, version: str | None, category: str, campaign: str | None,
             known_hashes: dict | None, confidence: str = "confirmed",
-            npm_status: str | None = None) -> dict:
+            npm_status: str | None = None, ecosystem: str = "npm") -> dict:
     sans_sha1 = None
     sans_sha256 = None
     if known_hashes:
@@ -191,6 +205,7 @@ def _target(name: str, version: str | None, category: str, campaign: str | None,
         )
     return {
         "name": name,
+        "ecosystem": ecosystem,
         "version": version,
         "category": category,
         "campaign": campaign,
@@ -218,6 +233,39 @@ def list_npm_repositories(base_url: str, auth: str) -> tuple[list[str], str | No
         if (r.get("format") or "").lower() == "npm":
             names.append(r.get("name", ""))
     return [n for n in names if n], None
+
+
+def list_repositories_by_format(base_url: str, auth: str) -> tuple[dict[str, list[str]], str | None]:
+    """GET /service/rest/v1/repositories. Returns ({format: [repo_names]}, error).
+
+    Only returns formats that appear in ECOSYSTEM_TO_NEXUS_FORMAT values.
+    """
+    url = f"{base_url}/service/rest/v1/repositories"
+    code, body = http_get(url, auth_header=auth)
+    if code != 200:
+        return {}, f"GET {url} → HTTP {code}"
+    try:
+        repos = json.loads(body)
+    except Exception as e:
+        return {}, f"GET {url} → not JSON: {e}"
+    known_formats = set(ECOSYSTEM_TO_NEXUS_FORMAT.values())
+    result: dict[str, list[str]] = {}
+    for r in repos:
+        fmt = (r.get("format") or "").lower()
+        if fmt in {f.lower() for f in known_formats}:
+            result.setdefault(fmt, []).append(r.get("name", ""))
+    return {k: [n for n in v if n] for k, v in result.items()}, None
+
+
+def _parse_maven_coords(name: str) -> tuple[str, str]:
+    """Split 'groupId:artifactId' → (groupId, artifactId).
+
+    OSV Maven advisories use 'groupId:artifactId' as the package name.
+    """
+    if ":" in name:
+        g, a = name.split(":", 1)
+        return g, a
+    return "", name
 
 
 def search_component(base_url: str, repo: str, name: str,
@@ -327,6 +375,64 @@ def search_all_repos(base_url: str, name: str, version: str | None,
     return items, None
 
 
+def search_all_repos_generic(
+    base_url: str, ecosystem: str, name: str, version: str | None, auth: str
+) -> tuple[list[dict], str | None]:
+    """Search Nexus for *name* (and optionally *version*) across all repos for *ecosystem*.
+
+    Routes to the npm-specific logic (with scope/group matching) for npm, and
+    uses a direct format-parameterised search for all other ecosystems.
+    Maven packages use 'groupId:artifactId' in the SSOT; these are split into
+    separate maven.groupId / maven.artifactId query params for Nexus.
+    """
+    if ecosystem == "npm":
+        return search_all_repos(base_url, name, version, auth)
+
+    nexus_fmt = ECOSYSTEM_TO_NEXUS_FORMAT.get(ecosystem, ecosystem.lower())
+
+    if ecosystem == "Maven":
+        group_id, artifact_id = _parse_maven_coords(name)
+        base_params: dict[str, str] = {"format": nexus_fmt}
+        if group_id:
+            base_params["maven.groupId"] = group_id
+        if artifact_id:
+            base_params["maven.artifactId"] = artifact_id
+    else:
+        base_params = {"format": nexus_fmt, "name": name}
+
+    if version:
+        base_params["version"] = version
+
+    items: list[dict] = []
+    next_token: str | None = None
+    for _ in range(20):
+        params = dict(base_params)
+        if next_token:
+            params["continuationToken"] = next_token
+        url = f"{base_url}/service/rest/v1/search?" + urllib.parse.urlencode(params)
+        code, body = http_get(url, auth_header=auth)
+        if code != 200:
+            return items, f"HTTP {code}"
+        try:
+            data = json.loads(body)
+        except Exception as e:
+            return items, f"not JSON: {e}"
+        for it in data.get("items", []):
+            if ecosystem == "Maven":
+                # Nexus returns groupId in 'group', artifactId in 'name'
+                full = f"{it.get('group', '')}:{it.get('name', '')}"
+                if full != name:
+                    continue
+            else:
+                if it.get("name") != name:
+                    continue
+            items.append(it)
+        next_token = data.get("continuationToken")
+        if not next_token:
+            break
+    return items, None
+
+
 # ── Risk model ────────────────────────────────────────────────────────────────
 
 def compute_risk(category: str, found: bool, sha_match: bool | None,
@@ -348,14 +454,15 @@ def compute_risk(category: str, found: bool, sha_match: bool | None,
 # ── Scan ──────────────────────────────────────────────────────────────────────
 
 def scan_target(base_url: str, auth: str, target: dict) -> tuple[list[dict], str | None]:
-    """Run a single (name, version) probe across all npm repos in one shot.
+    """Run a single (name, version) probe across all repos for the target's ecosystem.
 
     Returns (rows, error_or_None). rows is a list of result entries — one per
     (repository, version) hit. Empty rows means 'package not found in any
     repository'. We surface a miss row separately at the caller so summary
     counts stay consistent.
     """
-    items, err = search_all_repos(base_url, target["name"], target["version"], auth)
+    ecosystem = target.get("ecosystem", "npm")
+    items, err = search_all_repos_generic(base_url, ecosystem, target["name"], target["version"], auth)
     if err:
         return [], err
 
@@ -370,6 +477,7 @@ def scan_target(base_url: str, auth: str, target: dict) -> tuple[list[dict], str
         cks = asset.get("checksum") or {}
         entry = {
             "package": target["name"],
+            "ecosystem": ecosystem,
             "version_queried": target["version"],
             "version_found": it.get("version"),
             "category": target["category"],
@@ -620,17 +728,21 @@ def main() -> int:
         filters.append("suspected")
 
     suspected_count = sum(1 for t in targets if t.get("confidence") == "suspected")
+    eco_counts = {}
+    for t in targets:
+        eco_counts[t.get("ecosystem", "npm")] = eco_counts.get(t.get("ecosystem", "npm"), 0) + 1
+    eco_summary = ", ".join(f"{eco}:{cnt}" for eco, cnt in sorted(eco_counts.items()))
     print(f"📦 Nexus: {NEXUS_BASE_URL}")
     print(f"📋 SSOT:  {INDEX_PATH.relative_to(ROOT_DIR)}")
     print(f"🎯 Targets: {len(targets)} "
           f"({len(targets) - suspected_count} confirmed + {suspected_count} suspected) "
-          f"[filter: {' + '.join(filters)}]")
+          f"[filter: {' + '.join(filters)}] [{eco_summary}]")
 
     partial_reasons: list[str] = []
     errors: list[dict] = []
 
     # Resolve repository inventory — for reporting only; actual search runs
-    # without a repository filter (one call covers all npm repos).
+    # without a repository filter (one call covers all format repos).
     if args.repo:
         repos = list(args.repo)
         print(f"📚 Repositories (reported, --repo override): {repos}")
@@ -638,13 +750,15 @@ def main() -> int:
         print("📚 Repositories: (would auto-detect via GET /v1/repositories)")
         repos = []
     else:
-        repos, err = list_npm_repositories(NEXUS_BASE_URL, auth)
+        repos_by_fmt, err = list_repositories_by_format(NEXUS_BASE_URL, auth)
         if err:
             sys.exit(f"ERROR: cannot list repositories: {err}")
-        if not repos:
-            sys.exit("ERROR: no npm-format repositories found")
-        print(f"📚 npm repositories on instance: {len(repos)} "
-              f"({', '.join(repos[:5])}{'...' if len(repos) > 5 else ''})")
+        if not repos_by_fmt:
+            sys.exit("ERROR: no supported-format repositories found")
+        repos = [r for rlist in repos_by_fmt.values() for r in rlist]
+        for fmt, rlist in sorted(repos_by_fmt.items()):
+            print(f"📚 {fmt} repositories: {len(rlist)} "
+                  f"({', '.join(rlist[:3])}{'...' if len(rlist) > 3 else ''})")
 
     if args.limit:
         targets = targets[: args.limit]
