@@ -515,7 +515,13 @@ def _parse_ts(ts: str) -> datetime:
 
 
 def _is_malicious(osv: dict[str, Any]) -> bool:
-    """Return True if this OSV advisory describes malicious/embedded code."""
+    """Return True if this OSV advisory describes active malicious/embedded code.
+
+    Withdrawn advisories are never considered malicious — they represent retracted
+    reports or false positives and must be excluded from the SSOT.
+    """
+    if osv.get("withdrawn"):
+        return False
     if (osv.get("id") or "").startswith("MAL-"):
         return True
     for affected in osv.get("affected") or []:
@@ -658,6 +664,167 @@ def fetch_new_osv_advisories(
     return _fetch_from_modified_csv(ecosystem, known_ids, since)
 
 
+def prune_withdrawn_advisories(write: bool = False, lookback_days: int = 14) -> int:
+    """Remove SSOT entries whose OSV advisories have been withdrawn.
+
+    Efficiently finds candidates by scanning modified_id.csv: any known advisory
+    that OSV has recently modified may have been withdrawn.  Only those candidates
+    are queried, keeping HTTP calls to a minimum.  Uses ThreadPoolExecutor for
+    parallel fetches so even hundreds of candidates complete quickly.
+
+    On daily runs the lookback window is automatically narrowed to the period
+    since the last successful prune (``last_refresh.prune_withdrawn``), so the
+    number of candidates stays small.
+
+    Args:
+        write:         Persist changes to disk when True; dry-run otherwise.
+        lookback_days: Maximum lookback window (days). Overridden by the stored
+                       ``last_refresh.prune_withdrawn`` timestamp when available.
+
+    Returns exit-code integer (0 = success).
+    """
+    import concurrent.futures
+
+    index = load_json(INDEX_PATH)
+    packages: list[dict[str, Any]] = index.get("packages") or []
+    known_ids = _known_osv_advisory_ids(index)
+
+    # Use stored prune timestamp when available (narrower window = fewer checks)
+    stored_prune_ts: str | None = (index.get("last_refresh") or {}).get("prune_withdrawn")
+    if stored_prune_ts:
+        since_dt = _parse_ts(stored_prune_ts)
+    else:
+        since_dt = datetime.now(timezone.utc) - timedelta(days=lookback_days)
+
+    print(
+        f"Checking for withdrawn OSV advisories "
+        f"(modified since {since_dt.date()}, across {len(OSV_BULK_ECOSYSTEMS)} ecosystems)..."
+    )
+
+    # Collect advisory IDs to recheck (appear in modified CSV + already in SSOT)
+    recheck_ids: set[str] = set()
+    for ecosystem in OSV_BULK_ECOSYSTEMS:
+        csv_url = OSV_MODIFIED_CSV_URL.format(ecosystem=ecosystem)
+        req = urllib.request.Request(
+            csv_url,
+            headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                csv_text = resp.read().decode("utf-8")
+        except urllib.error.URLError as exc:
+            print(f"  WARNING: Could not fetch {csv_url}: {exc}")
+            continue
+
+        eco_candidates: list[str] = []
+        for line in csv_text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(",", 1)
+            if len(parts) != 2:
+                continue
+            ts_str, adv_id = parts[0].strip(), parts[1].strip()
+            try:
+                ts = _parse_ts(ts_str)
+            except ValueError:
+                continue
+            if ts < since_dt:
+                break  # CSV is sorted newest-first
+            if adv_id in known_ids and adv_id.startswith("MAL-"):
+                eco_candidates.append(adv_id)
+        if eco_candidates:
+            print(f"  {ecosystem}: {len(eco_candidates)} known advisory ID(s) to recheck")
+            recheck_ids.update(eco_candidates)
+
+    if not recheck_ids:
+        print("No recently-modified known advisories found — SSOT is clean.")
+        _bump_prune_timestamp(index, write)
+        return 0
+
+    print(f"Fetching {len(recheck_ids)} advisory ID(s) in parallel (8 workers)...")
+
+    def _check_one(adv_id: str) -> tuple[str, bool]:
+        """Return (adv_id, is_withdrawn)."""
+        url = f"https://api.osv.dev/v1/vulns/{adv_id}"
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "PoisonChain/supplement_malicious_package_index"}
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                osv = json.loads(resp.read())
+            return adv_id, bool(osv.get("withdrawn"))
+        except Exception:
+            return adv_id, False  # Treat fetch errors as "not withdrawn"
+
+    withdrawn_ids: set[str] = set()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        for adv_id, is_withdrawn in executor.map(_check_one, sorted(recheck_ids)):
+            if is_withdrawn:
+                withdrawn_ids.add(adv_id)
+                print(f"  WITHDRAWN: {adv_id}")
+
+    if not withdrawn_ids:
+        print("No withdrawn advisories found — SSOT is clean.")
+        _bump_prune_timestamp(index, write)
+        return 0
+
+    print(f"\nPruning {len(withdrawn_ids)} withdrawn advisory ID(s) from SSOT...")
+    kept: list[dict[str, Any]] = []
+    removed_count = 0
+    for pkg in packages:
+        pkg_advs = set(pkg.get("osv_advisories") or [])
+        withdrawn_here = pkg_advs & withdrawn_ids
+        if not withdrawn_here:
+            kept.append(pkg)
+            continue
+
+        active_advs = pkg_advs - withdrawn_ids
+        if not active_advs and pkg.get("source") == "osv_advisory":
+            # All advisories withdrawn and entry came solely from OSV → delete
+            print(f"  REMOVE  {pkg['ecosystem']}/{pkg['name']}: {', '.join(sorted(withdrawn_here))}")
+            removed_count += 1
+        else:
+            # Keep package but strip withdrawn advisory refs
+            pkg["osv_advisories"] = [
+                a for a in (pkg.get("osv_advisories") or []) if a not in withdrawn_ids
+            ]
+            pkg["references"] = [
+                r for r in (pkg.get("references") or [])
+                if not any(wid in r for wid in withdrawn_ids)
+            ]
+            print(f"  PRUNE   {pkg['ecosystem']}/{pkg['name']}: removed refs {withdrawn_here}")
+            kept.append(pkg)
+
+    print(f"\nPrune summary: {removed_count} package(s) removed from SSOT")
+
+    eco_counts: dict[str, int] = {}
+    for pkg in kept:
+        e = pkg.get("ecosystem", "unknown")
+        eco_counts[e] = eco_counts.get(e, 0) + 1
+
+    index["packages"] = kept
+    index["total_count"] = len(kept)
+    index["ecosystem_counts"] = eco_counts
+    index["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    _bump_prune_timestamp(index, write)
+
+    if write:
+        write_json(INDEX_PATH, index)
+        print(f"Wrote {INDEX_PATH}")
+    else:
+        print("[dry-run] Re-run with --prune-withdrawn --write to apply changes.")
+
+    return 0
+
+
+def _bump_prune_timestamp(index: dict[str, Any], write: bool) -> None:
+    """Update last_refresh.prune_withdrawn to now (written only when write=True)."""
+    index.setdefault("last_refresh", {})["prune_withdrawn"] = (
+        datetime.now(timezone.utc).isoformat(timespec="seconds")
+    )
+
+
 def refresh_from_osv_malicious(
     write: bool = False, full: bool = False, ecosystems: list[str] | None = None
 ) -> int:
@@ -767,6 +934,10 @@ def refresh_from_osv_malicious(
     else:
         print("[dry-run] Re-run with --refresh-osv --write to apply changes.")
 
+    # After adding new advisories, prune any that OSV has since withdrawn.
+    print("\nRunning withdrawn-advisory prune pass...")
+    prune_withdrawn_advisories(write=write)
+
     return 0
 
 
@@ -818,6 +989,15 @@ def main() -> int:
             "of a single ecosystem without re-scanning all others."
         ),
     )
+    parser.add_argument(
+        "--prune-withdrawn",
+        action="store_true",
+        help=(
+            "Scan OSV modified_id.csv for recently-withdrawn advisories and remove "
+            "them from the SSOT.  Safe to run standalone or after --refresh-osv. "
+            "Requires --write to persist changes."
+        ),
+    )
     args = parser.parse_args()
 
     if args.write and args.dry_run:
@@ -831,6 +1011,8 @@ def main() -> int:
                 full=args.full,
                 ecosystems=args.ecosystems,
             )
+        if args.prune_withdrawn:
+            return prune_withdrawn_advisories(write=args.write)
         return refresh_from_supplements(
             advisory_filter=set(args.advisory or []) or None,
             skip_kisa=args.skip_kisa,
