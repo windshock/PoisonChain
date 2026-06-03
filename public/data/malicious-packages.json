@@ -9,7 +9,7 @@
     "Go": 20,
     "NuGet": 781
   },
-  "generated_at": "2026-06-02T23:47:35+00:00",
+  "generated_at": "2026-06-03T23:45:52+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -20578,7 +20578,8 @@
         "0.130.0-codexed.4",
         "0.132.0-codexed.1",
         "0.133.0-codexed.1",
-        "0.133.0-codexed.2"
+        "0.133.0-codexed.2",
+        "0.135.0-codexed.1"
       ],
       "version_dates": {
         "0.121.0-codexed.1": "2026-04-16",
@@ -20593,7 +20594,8 @@
         "0.130.0-codexed.4": "2026-05-16",
         "0.132.0-codexed.1": "2026-05-20",
         "0.133.0-codexed.1": "2026-05-22",
-        "0.133.0-codexed.2": "2026-05-22"
+        "0.133.0-codexed.2": "2026-05-22",
+        "0.135.0-codexed.1": "2026-05-31"
       },
       "datadog_added": "2026-04-16"
     },
@@ -39829,12 +39831,16 @@
       "malicious_versions": [
         "0.1.0",
         "0.1.1",
-        "0.1.3"
+        "0.1.3",
+        "0.1.4",
+        "0.1.5"
       ],
       "version_dates": {
         "0.1.0": "2026-05-19",
         "0.1.1": "2026-05-19",
-        "0.1.3": "2026-05-24"
+        "0.1.3": "2026-05-24",
+        "0.1.4": "2026-06-02",
+        "0.1.5": "2026-06-02"
       },
       "datadog_added": "2026-05-19"
     },
@@ -78287,10 +78293,12 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "2.3.10",
         "2.3.5",
         "2.3.7"
       ],
       "version_dates": {
+        "2.3.10": "2026-06-01",
         "2.3.5": "2026-04-17",
         "2.3.7": "2026-05-19"
       },
@@ -162431,7 +162439,9 @@
         "1.2.2",
         "1.2.3",
         "1.2.6",
-        "1.3.1"
+        "1.3.1",
+        "1.3.3",
+        "1.3.4"
       ],
       "version_dates": {
         "0.0.0-security": "2026-01-13",
@@ -162449,7 +162459,9 @@
         "1.2.2": "2026-01-25",
         "1.2.3": "2026-01-26",
         "1.2.6": "2026-01-26",
-        "1.3.1": "2026-04-07"
+        "1.3.1": "2026-04-07",
+        "1.3.3": "2026-05-29",
+        "1.3.4": "2026-05-29"
       },
       "datadog_added": "2026-01-13"
     },
@@ -210039,7 +210051,8 @@
         "1.4.2",
         "1.4.3",
         "1.5.0",
-        "1.5.1"
+        "1.5.1",
+        "1.6.2"
       ],
       "version_dates": {
         "1.3.3": "2026-05-17",
@@ -210049,7 +210062,8 @@
         "1.4.2": "2026-05-22",
         "1.4.3": "2026-05-23",
         "1.5.0": "2026-05-24",
-        "1.5.1": "2026-05-25"
+        "1.5.1": "2026-05-25",
+        "1.6.2": "2026-06-01"
       },
       "datadog_added": "2026-05-17"
     },
@@ -220572,12 +220586,14 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "3.2.1",
         "3.2.2",
         "3.2.3",
         "3.2.4",
         "3.2.6"
       ],
       "version_dates": {
+        "3.2.1": "2026-05-23",
         "3.2.2": "2026-05-23",
         "3.2.3": "2026-05-25",
         "3.2.4": "2026-05-25",
@@ -221087,10 +221103,24 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.2.7"
+        "0.2.7",
+        "0.3.0",
+        "0.3.1",
+        "0.4.0",
+        "0.4.1",
+        "0.4.4",
+        "0.4.5",
+        "0.4.6"
       ],
       "version_dates": {
-        "0.2.7": "2026-05-24"
+        "0.2.7": "2026-05-24",
+        "0.3.0": "2026-05-30",
+        "0.3.1": "2026-05-30",
+        "0.4.0": "2026-05-31",
+        "0.4.1": "2026-06-01",
+        "0.4.4": "2026-06-02",
+        "0.4.5": "2026-06-02",
+        "0.4.6": "2026-06-03"
       },
       "datadog_added": "2026-05-24"
     },
@@ -493845,6 +493875,1250 @@
         "https://osv.dev/vulnerability/MAL-2026-5151"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@antoncallahan/aws-user-helper",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.3",
+        "1.0.6",
+        "1.0.7",
+        "1.0.8",
+        "1.12.1",
+        "1.12.3",
+        "1.12.6",
+        "1.12.8",
+        "1.12.9",
+        "2.13.0",
+        "2.14.0",
+        "6767.67.1",
+        "6767.67.2",
+        "6767.67.3",
+        "6767.67.4",
+        "6767.67.5",
+        "6767.67.6",
+        "6767.67.67",
+        "6767.67.69",
+        "6767.67.70",
+        "6767.67.71",
+        "6767.67.72",
+        "6767.67.80",
+        "6767.67.81",
+        "6767.67.82",
+        "6767.67.83",
+        "6767.67.84",
+        "6767.67.85",
+        "6767.67.89",
+        "69.420.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-31",
+        "1.0.3": "2026-05-31",
+        "1.0.6": "2026-05-31",
+        "1.0.7": "2026-05-31",
+        "1.0.8": "2026-05-31",
+        "1.12.1": "2026-05-31",
+        "1.12.3": "2026-05-31",
+        "1.12.6": "2026-05-31",
+        "1.12.8": "2026-05-31",
+        "1.12.9": "2026-05-31",
+        "2.13.0": "2026-05-31",
+        "2.14.0": "2026-05-31",
+        "6767.67.1": "2026-05-31",
+        "6767.67.2": "2026-05-31",
+        "6767.67.3": "2026-05-31",
+        "6767.67.4": "2026-05-31",
+        "6767.67.5": "2026-05-31",
+        "6767.67.6": "2026-05-31",
+        "6767.67.67": "2026-05-31",
+        "6767.67.69": "2026-05-31",
+        "6767.67.70": "2026-05-31",
+        "6767.67.71": "2026-05-31",
+        "6767.67.72": "2026-05-31",
+        "6767.67.80": "2026-05-31",
+        "6767.67.81": "2026-05-31",
+        "6767.67.82": "2026-05-31",
+        "6767.67.83": "2026-05-31",
+        "6767.67.84": "2026-05-31",
+        "6767.67.85": "2026-06-01",
+        "6767.67.89": "2026-06-01",
+        "69.420.0": "2026-05-31"
+      },
+      "datadog_added": "2026-05-31"
+    },
+    {
+      "name": "@app-tray-ui/stencil-component",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "10.1.0"
+      ],
+      "version_dates": {
+        "10.1.0": "2026-05-31"
+      },
+      "datadog_added": "2026-05-31"
+    },
+    {
+      "name": "@capibar.chat/ui-kit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "99.5.7"
+      ],
+      "version_dates": {
+        "99.5.7": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@cloudplatform-single-spa/base-static-page",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/business-solutions",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/cloud-dns",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/cnapp-ui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/cp-api-gw",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/datagrid",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/dataplatform",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/dataplatform-metastore",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/dataplatform-trino",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/employees",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100",
+        "99.99.99"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28",
+        "99.99.99": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@cloudplatform-single-spa/enterprise",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100",
+        "99.99.99"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28",
+        "99.99.99": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@cloudplatform-single-spa/floating-ips",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/logaas",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/marketplace-gigachat",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/ml-ai-agents-agent",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/ml-ai-agents-agent-system",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/monitoring",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/security-groups",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/ssh-keys",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100",
+        "99.99.99"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28",
+        "99.99.99": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@cloudplatform-single-spa/support",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100",
+        "99.99.99"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28",
+        "99.99.99": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@cloudplatform-single-spa/svp-baas",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100",
+        "99.99.99"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28",
+        "99.99.99": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@cloudplatform-single-spa/svp-interfaces",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/svp-s3-storage",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@cloudplatform-single-spa/vpn",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "100.100.100",
+        "99.99.100"
+      ],
+      "version_dates": {
+        "100.100.100": "2026-05-28",
+        "99.99.100": "2026-05-28"
+      },
+      "datadog_added": "2026-05-28"
+    },
+    {
+      "name": "@frefrefre/testhackerrr",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "version_dates": {
+        "2.0.0": "2026-05-21"
+      },
+      "datadog_added": "2026-05-21"
+    },
+    {
+      "name": "@open-banking/cabinet-providers",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "999.9.5"
+      ],
+      "version_dates": {
+        "999.9.5": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@sber-ecom-core/sberpay-widget",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "99.5.8"
+      ],
+      "version_dates": {
+        "99.5.8": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@sentry-sdk/profiler",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.5",
+        "1.0.6"
+      ],
+      "version_dates": {
+        "1.0.5": "2026-05-27",
+        "1.0.6": "2026-05-27"
+      },
+      "datadog_added": "2026-05-27"
+    },
+    {
+      "name": "@t-in-one/add_app_middleware_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/add_application",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/add_application_tid",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/application_id_storage_key_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/form_product_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/get_application_hid",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/only_difference_payload",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/prefill_bundle_data_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/prefill_credit_data_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/prefill_transformers_data_token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@t-in-one/restore_application_hid_from_storage",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.7.1"
+      ],
+      "version_dates": {
+        "5.7.1": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "@tmecontinue/cli",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.9.1",
+        "1.9.2"
+      ],
+      "version_dates": {
+        "1.9.1": "2026-04-09",
+        "1.9.2": "2026-05-12"
+      },
+      "datadog_added": "2026-04-09"
+    },
+    {
+      "name": "byteutilsbox",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-04-16"
+      },
+      "datadog_added": "2026-04-16"
+    },
+    {
+      "name": "cache_mng",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-04-16"
+      },
+      "datadog_added": "2026-04-16"
+    },
+    {
+      "name": "cacheutilskit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-04-15"
+      },
+      "datadog_added": "2026-04-15"
+    },
+    {
+      "name": "captura-linux-arm64-gnu",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "captura-linux-arm64-musl",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "captura-linux-x64-gnu",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "captura-win32-arm64-msvc",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "captura-win32-x64-msvc",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "chai-as-decrypted",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "4.2.8"
+      ],
+      "version_dates": {
+        "4.2.8": "2026-06-01"
+      },
+      "datadog_added": "2026-06-01"
+    },
+    {
+      "name": "chai-as-launched",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "3.51.1"
+      ],
+      "version_dates": {
+        "3.51.1": "2026-06-01"
+      },
+      "datadog_added": "2026-06-01"
+    },
+    {
+      "name": "chai-as-legit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "7.2.3"
+      ],
+      "version_dates": {
+        "7.2.3": "2026-06-01"
+      },
+      "datadog_added": "2026-06-01"
+    },
+    {
+      "name": "chai-as-polished",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "7.0.8"
+      ],
+      "version_dates": {
+        "7.0.8": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "chai-as-tokenized",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "7.2.3"
+      ],
+      "version_dates": {
+        "7.2.3": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "chai-chain-test",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.3.6"
+      ],
+      "version_dates": {
+        "1.3.6": "2026-06-01"
+      },
+      "datadog_added": "2026-06-01"
+    },
+    {
+      "name": "chain-chai-test",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.3.5"
+      ],
+      "version_dates": {
+        "1.3.5": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "fast-staged-win32-arm64",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "fast-staged-win32-x64",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "klaw-playwright-tests",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-05-29"
+      },
+      "datadog_added": "2026-05-29"
+    },
+    {
+      "name": "logger-active",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "3.2.1"
+      ],
+      "version_dates": {
+        "3.2.1": "2026-06-03"
+      },
+      "datadog_added": "2026-06-03"
+    },
+    {
+      "name": "modbus-rs-win32-x64-msvc",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.13.0"
+      ],
+      "version_dates": {
+        "0.13.0": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "motion-lib",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "version_dates": {
+        "2.3.5": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "ndse-tools",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-05-31",
+        "1.0.2": "2026-05-30"
+      },
+      "datadog_added": "2026-05-30"
+    },
+    {
+      "name": "node-denv",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.3.5"
+      ],
+      "version_dates": {
+        "1.3.5": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "shopifyto-cms",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "3.0.2"
+      ],
+      "version_dates": {
+        "3.0.2": "2026-05-17"
+      },
+      "datadog_added": "2026-05-17"
+    },
+    {
+      "name": "streamlyx",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-04-16",
+        "1.0.2": "2026-04-25"
+      },
+      "datadog_added": "2026-04-16"
+    },
+    {
+      "name": "utils-terminal",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "3.2.0",
+        "3.2.2"
+      ],
+      "version_dates": {
+        "3.2.0": "2026-06-03",
+        "3.2.2": "2026-06-03"
+      },
+      "datadog_added": "2026-06-03"
+    },
+    {
+      "name": "web-pool",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "version_dates": {
+        "2.3.5": "2026-06-02"
+      },
+      "datadog_added": "2026-06-02"
+    },
+    {
+      "name": "webpack-json",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.7"
+      ],
+      "version_dates": {
+        "1.1.7": "2026-06-01"
+      },
+      "datadog_added": "2026-06-01"
+    },
+    {
+      "name": "brave-search-mcp-server",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5182"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5182"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fundraiserserv",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5172"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5172"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tronlabpy3",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5181"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5181"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fia-signals",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5177"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5177"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tronlab",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5178"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5178"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "internal-tracker",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.1",
+        "0.0.2",
+        "0.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5176"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5176"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "spadata",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5173"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5173"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -493857,16 +495131,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-06-02T23:47:30+00:00",
-    "supplemental_advisories": "2026-06-02T23:47:35+00:00",
-    "osv_malicious": "2026-06-02T23:47:33+00:00",
+    "datadog": "2026-06-03T23:45:48+00:00",
+    "supplemental_advisories": "2026-06-03T23:45:52+00:00",
+    "osv_malicious": "2026-06-03T23:45:50+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-06-02T23:47:33+00:00",
-      "Go": "2026-06-02T23:47:33+00:00",
-      "NuGet": "2026-06-02T23:47:33+00:00",
-      "npm": "2026-06-02T23:47:33+00:00",
-      "PyPI": "2026-06-02T23:47:33+00:00",
-      "crates.io": "2026-06-02T23:47:33+00:00"
+      "Maven": "2026-06-03T23:45:50+00:00",
+      "Go": "2026-06-03T23:45:50+00:00",
+      "NuGet": "2026-06-03T23:45:50+00:00",
+      "npm": "2026-06-03T23:45:50+00:00",
+      "PyPI": "2026-06-03T23:45:50+00:00",
+      "crates.io": "2026-06-03T23:45:50+00:00"
     },
     "prune_withdrawn": "2026-06-02T04:51:43+00:00"
   }
