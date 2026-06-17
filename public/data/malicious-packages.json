@@ -10,7 +10,7 @@
     "NuGet": 781,
     "crates.io": 4
   },
-  "generated_at": "2026-06-16T23:25:20+00:00",
+  "generated_at": "2026-06-17T23:27:03+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -24232,7 +24232,14 @@
       "version_dates": {
         "18.0.0": "2025-08-16"
       },
-      "datadog_added": "2025-08-16"
+      "datadog_added": "2025-08-16",
+      "osv_advisories": [
+        "MAL-2025-6903"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6903"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@hotels-at-home/hah-fe-core",
@@ -39844,7 +39851,8 @@
         "0.1.3",
         "0.1.4",
         "0.1.5",
-        "0.1.7"
+        "0.1.7",
+        "0.1.8"
       ],
       "version_dates": {
         "0.1.0": "2026-05-19",
@@ -39852,7 +39860,8 @@
         "0.1.3": "2026-05-24",
         "0.1.4": "2026-06-02",
         "0.1.5": "2026-06-02",
-        "0.1.7": "2026-06-11"
+        "0.1.7": "2026-06-11",
+        "0.1.8": "2026-06-17"
       },
       "datadog_added": "2026-05-19"
     },
@@ -153969,7 +153978,8 @@
         "1.1.2",
         "1.2.0",
         "1.2.2",
-        "1.3.0"
+        "1.3.0",
+        "1.4.0"
       ],
       "version_dates": {
         "1.0.2": "2025-10-30",
@@ -153979,7 +153989,8 @@
         "1.1.2": "2025-12-17",
         "1.2.0": "2025-12-17",
         "1.2.2": "2026-01-09",
-        "1.3.0": "2026-03-12"
+        "1.3.0": "2026-03-12",
+        "1.4.0": "2026-06-17"
       },
       "datadog_added": "2025-10-30"
     },
@@ -497985,6 +497996,7 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
         "1.0.1",
         "1.0.3"
       ],
@@ -497992,7 +498004,14 @@
         "1.0.1": "2026-06-06",
         "1.0.3": "2026-06-11"
       },
-      "datadog_added": "2026-06-06"
+      "datadog_added": "2026-06-06",
+      "osv_advisories": [
+        "MAL-2026-5988"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5988"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "unifi-credential-server",
@@ -503754,12 +503773,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.1"
+        "1.0.1",
+        "1.0.2"
       ],
       "version_dates": {
         "1.0.1": "2026-06-08"
       },
-      "datadog_added": "2026-06-08"
+      "datadog_added": "2026-06-08",
+      "osv_advisories": [
+        "MAL-2026-6066"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6066"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "sass-formats",
@@ -507132,8 +507159,7 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.6.1",
-        "1.6.4"
+        "1.6.1"
       ],
       "version_dates": {
         "1.6.1": "2026-06-16"
@@ -507175,7 +507201,14 @@
       "version_dates": {
         "1.0.0": "2026-06-15"
       },
-      "datadog_added": "2026-06-15"
+      "datadog_added": "2026-06-15",
+      "osv_advisories": [
+        "MAL-2026-5987"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5987"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "pampipes",
@@ -507209,7 +507242,14 @@
       "version_dates": {
         "3.0.10": "2026-06-15"
       },
-      "datadog_added": "2026-06-15"
+      "datadog_added": "2026-06-15",
+      "osv_advisories": [
+        "MAL-2026-5989"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5989"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "polyops-win32-x64-msvc",
@@ -507290,7 +507330,14 @@
       "version_dates": {
         "1.0.0": "2026-06-12"
       },
-      "datadog_added": "2026-06-12"
+      "datadog_added": "2026-06-12",
+      "osv_advisories": [
+        "MAL-2026-5852"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5852"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "uidai_reusable_components",
@@ -507299,8 +507346,6 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.4.2",
-        "0.4.3",
         "0.4.4",
         "0.4.5",
         "0.4.6"
@@ -507327,11 +507372,13 @@
       "source": "datadog_dataset",
       "malicious_versions": [
         "1.1.1",
-        "1.1.2"
+        "1.1.2",
+        "1.1.3"
       ],
       "version_dates": {
         "1.1.1": "2026-06-15",
-        "1.1.2": "2026-06-15"
+        "1.1.2": "2026-06-15",
+        "1.1.3": "2026-06-16"
       },
       "datadog_added": "2026-06-15",
       "osv_advisories": [
@@ -508450,6 +508497,3478 @@
         "https://osv.dev/vulnerability/MAL-2026-5875"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/acp",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.2"
+      ],
+      "version_dates": {
+        "0.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/agent-browser",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.3.2"
+      ],
+      "version_dates": {
+        "0.3.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5996"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5996"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/agentcore",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.2"
+      ],
+      "version_dates": {
+        "0.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/agentfs",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/ai-sdk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.4.6"
+      ],
+      "version_dates": {
+        "1.4.6": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5939"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5939"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/arize",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.3"
+      ],
+      "version_dates": {
+        "1.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5998"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5998"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/arthur",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.3.3"
+      ],
+      "version_dates": {
+        "0.3.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/auth",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5940"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5940"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/auth-auth0",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5999"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5999"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/auth-better-auth",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.4"
+      ],
+      "version_dates": {
+        "1.0.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6000"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6000"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/auth-clerk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6001"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6001"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/auth-cloud",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.4"
+      ],
+      "version_dates": {
+        "1.1.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/auth-firebase",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/auth-okta",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.0.5"
+      ],
+      "version_dates": {
+        "0.0.5": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/auth-studio",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.4"
+      ],
+      "version_dates": {
+        "1.2.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/auth-supabase",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6002"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6002"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/auth-workos",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.5.3"
+      ],
+      "version_dates": {
+        "1.5.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6003"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6003"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/azure",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.3"
+      ],
+      "version_dates": {
+        "0.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/braintrust",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.4"
+      ],
+      "version_dates": {
+        "1.1.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5941"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5941"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/brightdata",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.2"
+      ],
+      "version_dates": {
+        "0.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/browser-viewer",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.3"
+      ],
+      "version_dates": {
+        "0.1.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/chroma",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6005"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6005"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/claude",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6006"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6006"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/clickhouse",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.10.1"
+      ],
+      "version_dates": {
+        "1.10.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5942"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5942"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/client-js",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.24.1"
+      ],
+      "version_dates": {
+        "1.24.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6007"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6007"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/cloud",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.24"
+      ],
+      "version_dates": {
+        "0.1.24": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/cloudflare",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.4.2"
+      ],
+      "version_dates": {
+        "1.4.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6008"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6008"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/cloudflare-d1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.7"
+      ],
+      "version_dates": {
+        "1.0.7": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6009"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6009"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/codemod",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.4"
+      ],
+      "version_dates": {
+        "1.0.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/convex",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.2"
+      ],
+      "version_dates": {
+        "1.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6010"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6010"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/core",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.42.1"
+      ],
+      "version_dates": {
+        "1.42.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6011"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6011"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/couchbase",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.4"
+      ],
+      "version_dates": {
+        "1.0.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6012"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6012"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/cursor",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6013"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6013"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/dane",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/daytona",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.4.2"
+      ],
+      "version_dates": {
+        "0.4.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6014"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6014"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/deployer",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.42.1"
+      ],
+      "version_dates": {
+        "1.42.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6015"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6015"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/deployer-cloud",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.42.1"
+      ],
+      "version_dates": {
+        "1.42.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/deployer-cloudflare",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.44"
+      ],
+      "version_dates": {
+        "1.1.44": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6016"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6016"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/deployer-netlify",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.20"
+      ],
+      "version_dates": {
+        "1.1.20": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6017"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6017"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/deployer-vercel",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.38"
+      ],
+      "version_dates": {
+        "1.1.38": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6018"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6018"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/docker",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.3.1"
+      ],
+      "version_dates": {
+        "0.3.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6019"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6019"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/duckdb",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.4.3"
+      ],
+      "version_dates": {
+        "1.4.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5944"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5944"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/dynamodb",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.9"
+      ],
+      "version_dates": {
+        "1.0.9": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5945"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5945"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/e2b",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.3.4"
+      ],
+      "version_dates": {
+        "0.3.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6021"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6021"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/editor",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.11.3"
+      ],
+      "version_dates": {
+        "0.11.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5946"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5946"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/elasticsearch",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.1"
+      ],
+      "version_dates": {
+        "1.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/engine",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/express",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.3.31"
+      ],
+      "version_dates": {
+        "1.3.31": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6022"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6022"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/files-sdk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/gcs",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.3"
+      ],
+      "version_dates": {
+        "0.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6023"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6023"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/github-signals",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.2"
+      ],
+      "version_dates": {
+        "0.1.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6052"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6052"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/google-drive",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/hono",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.4.26"
+      ],
+      "version_dates": {
+        "1.4.26": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5950"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5950"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/inngest",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.5.2"
+      ],
+      "version_dates": {
+        "1.5.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5951"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5951"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/koa",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.5.14"
+      ],
+      "version_dates": {
+        "1.5.14": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6025"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6025"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/laminar",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.3"
+      ],
+      "version_dates": {
+        "1.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/libsql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.13.1"
+      ],
+      "version_dates": {
+        "1.13.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5954"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5954"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/mcp",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.10.1"
+      ],
+      "version_dates": {
+        "1.10.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5955"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5955"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/mcp-docs-server",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.47"
+      ],
+      "version_dates": {
+        "1.1.47": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5956"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5956"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/memory",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.20.4"
+      ],
+      "version_dates": {
+        "1.20.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6028"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6028"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/modal",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.2"
+      ],
+      "version_dates": {
+        "0.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/mongodb",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.9.3"
+      ],
+      "version_dates": {
+        "1.9.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5957"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5957"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/mysql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/nestjs",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.15"
+      ],
+      "version_dates": {
+        "0.1.15": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6030"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6030"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/node-audio",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.8"
+      ],
+      "version_dates": {
+        "0.1.8": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6054"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6054"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/node-speaker",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6055"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6055"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/openai",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/opencode",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.0.47"
+      ],
+      "version_dates": {
+        "0.0.47": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/opensearch",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/otel-bridge",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.3"
+      ],
+      "version_dates": {
+        "1.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5958"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5958"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/otel-exporter",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.3"
+      ],
+      "version_dates": {
+        "1.2.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6031"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6031"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/perplexity",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/pg",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.13.1"
+      ],
+      "version_dates": {
+        "1.13.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5959"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5959"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/pinecone",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6032"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6032"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/playground-ui",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "33.0.1"
+      ],
+      "version_dates": {
+        "33.0.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6033"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6033"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/posthog",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.29"
+      ],
+      "version_dates": {
+        "1.0.29": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5960"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5960"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/qdrant",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6034"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6034"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/rag",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.2.2"
+      ],
+      "version_dates": {
+        "2.2.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5961"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5961"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/railway",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.1"
+      ],
+      "version_dates": {
+        "0.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/react",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6056"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6056"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/redis",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.3"
+      ],
+      "version_dates": {
+        "1.1.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6074"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6074"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/redis-streams",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.0.4"
+      ],
+      "version_dates": {
+        "0.0.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/s3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.5.3"
+      ],
+      "version_dates": {
+        "0.5.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5962"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5962"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/s3vectors",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.7"
+      ],
+      "version_dates": {
+        "1.0.7": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6035"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6035"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/schema-compat",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.2.12"
+      ],
+      "version_dates": {
+        "1.2.12": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5963"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5963"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/sentry",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.4"
+      ],
+      "version_dates": {
+        "1.1.4": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5964"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5964"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/server",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.1.1"
+      ],
+      "version_dates": {
+        "2.1.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6036"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6036"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/slack",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.3.1"
+      ],
+      "version_dates": {
+        "1.3.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/spanner",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.2"
+      ],
+      "version_dates": {
+        "1.1.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/speech-azure",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/speech-elevenlabs",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/speech-google",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/speech-murf",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/speech-replicate",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.1"
+      ],
+      "version_dates": {
+        "0.2.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/stagehand",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.2.5"
+      ],
+      "version_dates": {
+        "0.2.5": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6037"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6037"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/tavily",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6038"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6038"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/temporal",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.14"
+      ],
+      "version_dates": {
+        "0.1.14": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6039"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6039"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/turbopuffer",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6040"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6040"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/twilio",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/upstash",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.1.3"
+      ],
+      "version_dates": {
+        "1.1.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6041"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6041"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/vectorize",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "version_dates": {
+        "1.0.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6042"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6042"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/vercel",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "version_dates": {
+        "1.0.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-cloudflare",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.3"
+      ],
+      "version_dates": {
+        "0.12.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-deepgram",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6044"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6044"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-elevenlabs",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6045"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6045"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-gladia",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-google",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.3"
+      ],
+      "version_dates": {
+        "0.12.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6046"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6046"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-google-gemini-live",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6047"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6047"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-inworld",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.3.1"
+      ],
+      "version_dates": {
+        "0.3.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-modelslab",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.2"
+      ],
+      "version_dates": {
+        "0.1.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-murf",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.3"
+      ],
+      "version_dates": {
+        "0.12.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-openai",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.3"
+      ],
+      "version_dates": {
+        "0.12.3": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6048"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6048"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-openai-realtime",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.6"
+      ],
+      "version_dates": {
+        "0.12.6": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6049"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6049"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-playai",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6057"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6057"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "@mastra/voice-sarvam",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "version_dates": {
+        "1.0.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-speechify",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.12.2"
+      ],
+      "version_dates": {
+        "0.12.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "@mastra/voice-xai-realtime",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "0.1.2"
+      ],
+      "version_dates": {
+        "0.1.2": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "create-mastra",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.13.1"
+      ],
+      "version_dates": {
+        "1.13.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-6050"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6050"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "mastra",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.13.1"
+      ],
+      "version_dates": {
+        "1.13.1": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5965"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5965"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "cryptodao-config",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "version_dates": {
+        "99.99.99": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17",
+      "osv_advisories": [
+        "MAL-2026-5967"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5967"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "easy-day-js",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.11.21",
+        "1.11.22"
+      ],
+      "version_dates": {
+        "1.11.21": "2026-06-16",
+        "1.11.22": "2026-06-17"
+      },
+      "datadog_added": "2026-06-16",
+      "osv_advisories": [
+        "MAL-2026-5979"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5979"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "houdini-core-wasm",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "2.0.0-next.24"
+      ],
+      "version_dates": {
+        "2.0.0-next.24": "2026-06-17"
+      },
+      "datadog_added": "2026-06-17"
+    },
+    {
+      "name": "ioredis-os",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "5.10.2"
+      ],
+      "version_dates": {
+        "5.10.2": "2026-06-03"
+      },
+      "datadog_added": "2026-06-03"
+    },
+    {
+      "name": "middleware-jwt",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "datadog_auto",
+      "source": "datadog_dataset",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "version_dates": {
+        "1.0.0": "2026-06-13"
+      },
+      "datadog_added": "2026-06-13"
+    },
+    {
+      "name": "@hotcappuccino/nodepull",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6085"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6085"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@array-util/nodepull",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.1.0",
+        "1.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6084"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6084"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "vite-common-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.3",
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6088"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6088"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "uol-simple-api-futebol",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.6.3",
+        "4.6.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6087"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6087"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ai-chat-helper",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2",
+        "1.0.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6086"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6086"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ebpf-tracker-action",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6077"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6077"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "set-proto-chain",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6079"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6079"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pino-slite",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.1.12",
+        "4.1.16"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6078"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6078"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@civitatis/bot-ui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "14.12.11",
+        "15.12.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6069"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6069"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "scan-only",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.0",
+        "0.3.0",
+        "0.4.0",
+        "0.4.1",
+        "0.4.2",
+        "0.4.3",
+        "0.4.4",
+        "0.4.5",
+        "0.4.6",
+        "0.4.7",
+        "0.4.8",
+        "0.4.9",
+        "0.5.0",
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6067"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6067"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "opt-archetype-check",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6075"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6075"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/loggers",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6072"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6072"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/langfuse",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.6"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5952"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5952"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/observability",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.14.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6073"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6073"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/fastembed",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5948"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5948"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/fastify",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.31"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5949"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5949"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/evals",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5947"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5947"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/datadog",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.2.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5943"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5943"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "libsc-runtime-telemetry",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6070"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6070"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "n8n-nodes-security-test-poc",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6071"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6071"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "lab-services",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6065"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6065"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "swift-parse-stream",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6068"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6068"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/mem0",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.14"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6053"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6053"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ts-webplug",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5994"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5994"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sheratan_test_p",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5993"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5993"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "runtime-metrics-w7k2",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5992"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5992"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "req-parmas-valid",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5991"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5991"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pkg-telemetry-r4f9",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5990"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5990"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-path-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.23.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5985"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5985"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "npm-sandbox-ping-r9t2",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5986"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5986"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nepublisher",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.4.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5984"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5984"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "metrics-probe-dc85",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5983"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5983"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "metrics-probe-77d4",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5982"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5982"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "metrics-probe-64b2",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5981"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5981"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "gpu-accelerator",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.4.2",
+        "1.4.4",
+        "1.4.5",
+        "1.4.6",
+        "1.4.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5980"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5980"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5978"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5978"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-types",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5970"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5970"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-signer",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5977"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5977"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-sdk",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5969"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5969"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-deploy",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5968"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5968"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-core",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5976"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5976"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-contracts",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5975"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5975"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-bot",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5974"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5974"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cryptodao-backend",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5966"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5966"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "classbreeze-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.7.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5973"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5973"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "canary-ci-test",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5972"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5972"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/hooks",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5971"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5971"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/agent-builder",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.42"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5997"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5997"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/blaxel",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.4.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6004"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6004"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/voice-aws-nova-sonic",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6043"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6043"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/mssql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6029"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6029"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/mcp-registry-registry",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6027"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6027"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/longmemeval",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.50"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6026"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6026"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/google-cloud-pubsub",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.6"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6024"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6024"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/dsql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6020"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6020"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@mastra/langsmith",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.2.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5953"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5953"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speed4",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5938"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5938"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden21",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5937"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5937"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "boardflow",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6080"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6080"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "disksweep",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6081"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6081"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dotenv-sync",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6082"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6082"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "syncagents",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6083"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6083"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pystylish",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6076"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6076"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tobihook",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-5995"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-5995"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "telegram-lite-grabber",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6051"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6051"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -508462,16 +511981,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-06-16T23:25:08+00:00",
-    "supplemental_advisories": "2026-06-16T23:25:20+00:00",
-    "osv_malicious": "2026-06-16T23:25:15+00:00",
+    "datadog": "2026-06-17T23:26:36+00:00",
+    "supplemental_advisories": "2026-06-17T23:27:03+00:00",
+    "osv_malicious": "2026-06-17T23:26:56+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-06-16T23:25:15+00:00",
-      "Go": "2026-06-16T23:25:15+00:00",
-      "NuGet": "2026-06-16T23:25:15+00:00",
-      "npm": "2026-06-16T23:25:15+00:00",
-      "PyPI": "2026-06-16T23:25:15+00:00",
-      "crates.io": "2026-06-16T23:25:15+00:00"
+      "Maven": "2026-06-17T23:26:56+00:00",
+      "Go": "2026-06-17T23:26:56+00:00",
+      "NuGet": "2026-06-17T23:26:56+00:00",
+      "npm": "2026-06-17T23:26:56+00:00",
+      "PyPI": "2026-06-17T23:26:56+00:00",
+      "crates.io": "2026-06-17T23:26:56+00:00"
     },
     "prune_withdrawn": "2026-06-15T23:47:38+00:00"
   }
