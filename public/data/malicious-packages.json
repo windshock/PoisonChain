@@ -10,7 +10,7 @@
     "NuGet": 781,
     "crates.io": 4
   },
-  "generated_at": "2026-07-12T22:52:39+00:00",
+  "generated_at": "2026-07-14T22:58:56+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -2723,12 +2723,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "2.8.6"
+        "2.8.5",
+        "2.8.6",
+        "3.3.1"
       ],
       "version_dates": {
         "2.8.6": "2025-11-24"
       },
-      "datadog_added": "2025-11-24"
+      "datadog_added": "2025-11-24",
+      "osv_advisories": [
+        "MAL-2025-190636"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-190636"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@asyncapi/generator-components",
@@ -2737,12 +2746,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.3.3"
+        "0.3.2",
+        "0.3.3",
+        "0.7.1"
       ],
       "version_dates": {
         "0.3.3": "2025-11-24"
       },
-      "datadog_added": "2025-11-24"
+      "datadog_added": "2025-11-24",
+      "osv_advisories": [
+        "MAL-2025-190656"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-190656"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@asyncapi/generator-helpers",
@@ -2751,12 +2769,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.2.2"
+        "0.2.1",
+        "0.2.2",
+        "1.1.1"
       ],
       "version_dates": {
         "0.2.2": "2025-11-24"
       },
-      "datadog_added": "2025-11-24"
+      "datadog_added": "2025-11-24",
+      "osv_advisories": [
+        "MAL-2025-190657"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-190657"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@asyncapi/generator-react-sdk",
@@ -3038,15 +3065,25 @@
       "source": "datadog_dataset",
       "malicious_versions": [
         "6.10.1",
+        "6.11.2",
+        "6.11.2-alpha.1",
         "6.8.2",
-        "6.8.3"
+        "6.8.3",
+        "6.9.1"
       ],
       "version_dates": {
         "6.10.1": "2025-11-24",
         "6.8.2": "2025-11-24",
         "6.8.3": "2025-11-24"
       },
-      "datadog_added": "2025-11-24"
+      "datadog_added": "2025-11-24",
+      "osv_advisories": [
+        "MAL-2025-190643"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-190643"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@asyncapi/studio",
@@ -42613,12 +42650,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.0"
+        "1.0.0",
+        "11.11.11"
       ],
       "version_dates": {
         "1.0.0": "2025-08-01"
       },
-      "datadog_added": "2025-08-01"
+      "datadog_added": "2025-08-01",
+      "osv_advisories": [
+        "MAL-2025-6695"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6695"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "amournapraia",
@@ -541401,6 +541446,7016 @@
         "https://osv.dev/vulnerability/MAL-2026-10192"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ahooks-3.7.8",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "13.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10620"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10620"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@vite-js/vui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.14.16"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10619"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10619"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "http-ws-listener",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10623"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10623"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-structured",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10622"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10622"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-hardened",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.0.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10621"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10621"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ethereum-lib-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10613"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10613"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chain-sdk-js",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10608"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10608"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@web3-helpers/core",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5",
+        "1.0.6"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10611"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10611"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "assertion-utils-js",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.4.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10612"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10612"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "smb-portal-uikit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "18.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10616"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10616"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "smb-common-uikit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "15.2.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10615"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10615"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "postcss-selector-minify",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10614"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10614"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "permcserver",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.3",
+        "1.0.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10489"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10489"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "utils-style-engine",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "10.2.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10609"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10609"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "eth-dev",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10552"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10552"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "crypto-validate-lib",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2",
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10586"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10586"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "base58-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10606"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10606"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abi-encode",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10549"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10549"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@radivi-ui/react-dialog",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.3",
+        "1.1.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10605"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10605"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/types",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10604"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10604"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-act",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10607"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10607"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/common",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10601"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10601"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/api",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10600"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10600"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/abi",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10599"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10599"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/config",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10602"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10602"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@public-for-cdao/token",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.99.99"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10603"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10603"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-fsmetrics-native",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10480"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10480"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-fsmetrics-data",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10479"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10479"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-fsagent",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.4",
+        "1.0.8",
+        "1.1.1",
+        "1.1.2",
+        "1.1.3",
+        "1.2.0",
+        "1.2.1",
+        "1.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10506"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10506"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "solana-key-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2",
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10591"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10591"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "eth-wallet-helpers",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10572"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10572"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodemon-delog",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10507"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10507"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "motion-pull",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10534"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10534"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dayjscore",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10587"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10587"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cheeriobox",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10585"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10585"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chalkdev",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10583"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10583"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "async-mutex-v2",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10582"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10582"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "yargsplus",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10594"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10594"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chalkdevx",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10584"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10584"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "twiliobox",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10593"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10593"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "stripedev",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10592"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10592"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "openaiwrapper",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10590"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10590"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodeaxois",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10589"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10589"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "momenntjs",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10588"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10588"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@oliviamcdaniel12/safer-buffer",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.2.0",
+        "2.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10442"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10442"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@cw-ui/micro-ui-loader",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10557"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10557"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@cw-ui/asio-neon-themes",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10556"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10556"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@amedit/vercel-builder-probe",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2",
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10548"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10548"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "process-status-widget",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10581"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10581"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "micro-ui-loader",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0",
+        "6.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10564"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10564"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "home-mp-commons",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "999.0.1",
+        "999.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10553"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10553"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ethers-core",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.13.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10580"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10580"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "bimi-maker",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "8.2.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10579"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10579"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "akshajrawat.utils",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10558"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10558"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sqlite-group/sql-creator",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10578"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10578"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sqlite-clone/nodesql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10577"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10577"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sqlite-panel/createsql",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10490"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10490"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sqlite-group/schema-generator",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10448"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10448"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "bomboclatwallahi",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10296"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10296"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "bismillahitidakimas",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10295"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10295"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "acidic",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10282"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10282"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@wrenfield/viem",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.53.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10571"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10571"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@tailwind-ts/eslint-plugin",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10431"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10431"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@jplopezy/connectivity-test-do-not-install",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-test"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10220"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10220"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@gleamkit/socket.io",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.8.6",
+        "4.8.7",
+        "4.8.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10477"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10477"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@gleamkit/engine.io",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.6.3",
+        "6.6.4",
+        "6.6.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10476"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10476"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@flcik/flick.js",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.0.0",
+        "3.0.1",
+        "3.0.2",
+        "3.0.3",
+        "3.0.4",
+        "3.1.1",
+        "3.1.2",
+        "3.1.3",
+        "3.1.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10521"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10521"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@dervix/socket.io",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.8.3",
+        "4.8.4",
+        "4.8.5",
+        "4.8.6",
+        "4.8.7",
+        "4.8.8",
+        "4.8.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10475"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10475"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@dervix/engine.io",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.6.2",
+        "6.6.3",
+        "6.6.5",
+        "6.6.6",
+        "6.6.7",
+        "6.6.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10474"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10474"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@nsub/nitxe",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10429"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10429"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "whatsadmaidk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10396"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10396"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "web-pop",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10575"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10575"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "vite-plugin-config-paths",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.4.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10574"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10574"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tme-xca-react",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10237"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10237"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "timmytuffknuckles9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10390"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10390"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "timmytuffknuckles6",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10389"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10389"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "timmytuffknuckles3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10388"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10388"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "thebigyahu",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10387"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10387"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "testdonotredeemit",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "2.0.0",
+        "2.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10386"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10386"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "prettier-plugin-base",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10430"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10430"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pasirianspirit",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10364"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10364"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "omgyesyesyes",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10362"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10362"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "omglucidesotuff",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10361"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10361"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodemon-async",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10454"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10454"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "midnightrush",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10334"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10334"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "markable-table",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.0",
+        "3.1.1",
+        "3.1.2",
+        "3.1.3",
+        "3.1.4",
+        "3.1.5",
+        "3.1.6",
+        "3.1.7",
+        "3.1.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10444"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10444"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "lowkirkuenly",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10333"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10333"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "lowkeybored",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10332"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10332"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "kuaishou",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.10",
+        "99.9.11",
+        "99.9.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10416"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10416"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ilovefemboys",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10305"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10305"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "harpoon-package",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.1.0",
+        "1.2.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10573"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10573"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "howmanygreatbritain",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10304"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10304"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "flick-test-app",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10522"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10522"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fflc-updated",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10301"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10301"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "crazynut",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10299"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10299"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "captainindia",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10297"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10297"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chain-devkit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10531"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10531"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cbr-internal-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10530"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10530"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@vitets/vite-ts",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.5.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10528"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10528"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@vite-ts/vite-ui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.44.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10527"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10527"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@vite-mcp/vite-type",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.44.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10525"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10525"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@wrenfield/abitype",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.2.6",
+        "1.2.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10529"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10529"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@velkov/isows",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10524"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10524"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@vite-pro/vite-ui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.5.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10526"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10526"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@tabrex/bs58",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10523"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10523"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "vite-plugin-model",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10545"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10545"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "viteplugiin",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.28"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10546"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10546"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "skrill-payments",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10543"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10543"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "skrill",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10542"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10542"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "skrill-sdk",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10544"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10544"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "neteller",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10538"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10538"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "proxy-seller-mcp",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10541"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10541"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "postcss-processor-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10540"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10540"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "postcss-animatecss",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10539"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10539"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fluterjs",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10532"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10532"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "neon-postgres",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.5.0",
+        "3.5.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10537"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10537"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "n8n-nodes-social-facebook",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.96"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10536"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10536"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "my-empty-package",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10535"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10535"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "lusha-iam-widgets",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10533"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10533"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "slds-lsp-client",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2026.7.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10234"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10234"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@flex-ng/header-component",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10223"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10223"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@logdna-web/shared",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "13.19.37"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10225"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10225"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "box-react-uix",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "18.6.91"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10227"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10227"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@logdna-web/styles",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.8.40"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10226"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10226"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@flex-ng/error-component",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10221"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10221"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@flex-ng/filter-pipe",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10222"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10222"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@idms-corp/auth-ui",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0",
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10224"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10224"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tme-xca",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10236"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10236"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tme-error",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.8.42"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10235"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10235"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sams-sr-sdk-h5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10233"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10233"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "salesforce-vscode-slds",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2026.7.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10232"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10232"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "enbd-react-logger",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10231"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10231"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "enbd-react-lib",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "8.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10230"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10230"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "enbd-react-error-boundry",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10229"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10229"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chat-adapter-zoom",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "12.1.31"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10228"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10228"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fastify-bundler",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.4.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10520"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10520"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@tqm-mfe/main",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "5.4.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10517"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10517"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-auth",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10518"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10518"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-sets",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10519"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10519"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodemon-web",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10515"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10515"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "polymarket-bot-logger",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10516"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10516"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "type-swap",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10511"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10511"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "type-astr",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.2.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10510"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10510"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "type-unique",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10512"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10512"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-verified",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.1.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10504"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10504"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "express-ini",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "12.1.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10505"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10505"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "polymarket-stake-kelly-math-check",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10485"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10485"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "test_adminet",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10509"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10509"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodemon-elint",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10508"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10508"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ddok-modal",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10497"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10497"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "bubblestring",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10496"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10496"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@quickcall/krew",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10494"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10494"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "express-bunker",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10500"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10500"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "n8n-nodes-rce-poc",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10503"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10503"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@quukk/opencode-clawmessenger",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10495"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10495"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "gamified-trading-system",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.0",
+        "3.6.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10502"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10502"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "filewisee",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10501"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10501"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "eth-lib-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "5.2.3",
+        "5.2.4",
+        "5.2.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10499"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10499"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "eslint-angular-react",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "110.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10498"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10498"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "font-huge",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.5.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10492"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10492"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "insomnia-plugin-poc-m4gester-run",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10493"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10493"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "assertcoreutils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.2",
+        "2.3.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10491"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10491"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@outsmartly/metaobjects",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.3.3-rc.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10487"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10487"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@omniwatch-wick/cli",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10486"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10486"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "permcarmserver",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10488"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10488"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "route-processor",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10483"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10483"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sectest429/hello-npm-world",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10478"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10478"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "react-icons-svgo",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.5.3",
+        "1.5.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10482"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10482"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "polymarket-mcp-v2",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.6"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10481"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10481"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "polymarket-stake-kelly-math",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.8.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10467"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10467"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@torbeck/priority-queue",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.3.6",
+        "6.3.7",
+        "6.3.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10472"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10472"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "claude-team-tracker",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.2.0",
+        "1.2.1",
+        "1.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10473"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10473"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "loading-sessions",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "6.13.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10471"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10471"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@uw010010/vite-tree",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.4.2",
+        "3.4.3",
+        "3.6.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10470"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10470"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@sheltr_/agent",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10469"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10469"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "markdown-editable-table",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.4.2",
+        "2.4.3",
+        "2.4.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10452"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10452"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "type-context",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.2.11",
+        "3.2.7",
+        "3.2.8",
+        "3.2.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10440"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10440"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "remarkable-table",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.4.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10447"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10447"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "react-markable-table",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.4.10"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10446"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10446"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "datavaultx",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10460"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10460"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "compliancepolicyserv",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9.9.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10458"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10458"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "connectedmerchantsserv",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9.9.11"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10459"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10459"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@spzhongwin/skill-logger-plugin",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.10",
+        "1.0.5",
+        "1.0.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10456"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10456"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "polymarket-math-stake-kelly",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.7.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10466"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10466"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@origindev/ethaccount",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10455"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10455"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cktool-core",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10457"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10457"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-sysmon-native",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10465"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10465"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-procmetrics-data",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10464"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10464"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-path-addon",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10463"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10463"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "hehehee",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10462"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10462"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "gptlite",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.0.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10461"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10461"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-procmetrics",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5",
+        "1.0.6",
+        "1.0.7",
+        "1.0.8",
+        "1.0.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10445"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10445"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "auth-gen-next",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10449"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10449"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "router-processor",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10453"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10453"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "gifuct",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10451"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10451"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "font-hub",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10450"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10450"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "home-sections-web-ui",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.9"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10443"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10443"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "path-addon-extend",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.10",
+        "1.0.7",
+        "1.0.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10420"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10420"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "netspeedutil",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10438"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10438"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "jest-formatter",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10436"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10436"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "env-fast",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10434"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10434"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "fetchcraft",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10435"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10435"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backup4-gasp",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10288"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10288"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backup3-ff",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10287"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10287"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "animated-css-kit",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10432"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10432"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speed3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10384"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10384"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10374"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10374"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chain-guardian",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10433"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10433"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "jsonfb",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.0",
+        "1.1.0-beta.1",
+        "1.1.0-beta.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10437"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10437"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backup5-updated",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10289"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10289"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backup2-asd",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10286"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10286"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speed2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10383"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10383"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backupgenuine-updated",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10290"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10290"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backup1-gg",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10285"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10285"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speed1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10382"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10382"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10381"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10381"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven7",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10379"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10379"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven8",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10380"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10380"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10375"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10375"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven10",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10373"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10373"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10371"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10371"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.5",
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10368"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10368"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks10",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10366"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10366"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven6",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10378"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10378"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.6",
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10369"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10369"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10377"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10377"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10376"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10376"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sixseven1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10372"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10372"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "react-hot-svg",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.4",
+        "1.1.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10439"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10439"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10370"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10370"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.3",
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10365"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10365"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ratelimitsucks2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.4",
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10367"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10367"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff14",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10341"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10341"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff13",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10340"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10340"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff12",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10339"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10339"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff11",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10338"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10338"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff10",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10337"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10337"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10336"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10336"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speed5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10385"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10385"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tipsen-last-pls",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10392"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10392"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tipsen-last",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10391"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10391"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tipsen-poc-again",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10393"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10393"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sysb1",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10428"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10428"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "svg-fetcher",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.4.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10427"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10427"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10360"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10360"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff8",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10359"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10359"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff6",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10358"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10358"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10357"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10357"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff30",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10356"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10356"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10355"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10355"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff29",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10354"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10354"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff28",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10353"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10353"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff27",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10352"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10352"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff26",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10351"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10351"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff24",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10350"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10350"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff22",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10349"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10349"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff21",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10348"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10348"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10346"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10346"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff20",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10347"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10347"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff18",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10344"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10344"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff19",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10345"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10345"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff17",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10343"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10343"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nottuff16",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10342"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10342"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet8",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10329"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10329"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10330"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10330"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet6",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10327"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10327"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet7",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10328"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10328"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10326"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10326"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10325"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10325"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10324"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10324"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet20",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10323"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10323"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10322"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10322"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet19",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10321"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10321"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet18",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10320"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10320"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet16",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10318"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10318"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet17",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10319"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10319"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet15",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10317"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10317"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet14",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10316"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10316"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet13",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10315"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10315"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet12",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10314"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10314"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet11",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10313"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10313"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet10",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10312"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10312"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "ishowfeet1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10311"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10311"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "imillegal5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10310"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10310"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "imillegal4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10309"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10309"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "imillegal3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10308"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10308"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "imillegal2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10307"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10307"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "imillegal1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10306"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10306"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-log",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10426"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10426"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backupsitetuff9",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10294"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10294"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backupsitetuff3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10292"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10292"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backupsitetuff6",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10293"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10293"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "backupsitetuff10",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10291"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10291"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "another-poc-by-tipsen",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10283"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10283"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden5",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10281"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10281"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10280"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10280"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden3",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10279"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10279"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden29",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10278"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10278"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden28",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10277"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10277"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden27",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10276"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10276"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden26",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10275"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10275"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden25",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10274"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10274"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden230",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10272"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10272"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden24",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10273"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10273"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden23",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10271"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10271"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden229",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10270"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10270"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden228",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10269"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10269"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden227",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10268"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10268"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden226",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10267"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10267"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden225",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10266"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10266"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden223",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10264"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10264"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden224",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10265"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10265"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden222",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10263"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10263"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden220",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10262"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10262"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden219",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10261"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10261"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden217",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10260"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10260"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden216",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10259"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10259"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden215",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10258"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10258"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden214",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10257"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10257"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden213",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10256"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10256"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden212",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10255"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10255"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden211",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10254"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10254"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden210",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10253"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10253"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden2",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10252"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10252"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "abuden1",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.7",
+        "1.7.7",
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10251"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10251"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@ica-gaming/slot-engine",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10404"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10404"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@iana-rzms/bff-sdk",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10403"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10403"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@espn-ping/react-dmed-oauth",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "666.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10401"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10401"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@gleamkit/ws",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "8.21.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10402"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10402"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@equansservices/codex",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10399"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10399"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "minigptcore",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.0.8"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10417"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10417"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "express-request-engine",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.6.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10414"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10414"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "trinity-scheme",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "20.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10425"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10425"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@db-tools/main-app",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2026.6.30"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10398"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10398"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@car_loans/dealerships-approval",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.1.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10397"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10397"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@equansservices/tool",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10400"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10400"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "terminal-mascot",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10424"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10424"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sso-users-detection",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10422"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10422"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "supertokens-web",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.16.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10423"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10423"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "portway",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10421"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10421"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "notifications-broadcast",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10419"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10419"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "note-utilities",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10418"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10418"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "nodemon-slint",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "3.1.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10117"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10117"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "frontend-regulations",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "99.9.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10415"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10415"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "eth-base",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10413"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10413"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "execfences",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "5.0.2",
+        "5.0.3",
+        "5.0.4",
+        "5.0.5",
+        "5.0.6",
+        "5.1.0",
+        "5.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10118"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10118"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cookie-sign",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10411"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10411"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "env-stream",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10412"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10412"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cookie-phase",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10410"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10410"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cold-debug-elevator",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1",
+        "1.0.3",
+        "1.0.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10409"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10409"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chain-js-utils",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10408"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10408"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@torbeck/heap",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "4.3.10",
+        "4.3.11",
+        "4.3.14"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10405"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10405"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "awesome-terminal",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10407"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10407"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "async-chain-dom",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.3.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10406"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10406"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@kl-starfish/test-01",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10097"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10097"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pinokio-redis",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.127"
+      ],
+      "osv_advisories": [
+        "MAL-2026-6938"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-6938"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "mdb-vite",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.5.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10144"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10144"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "marked-prettier",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10143"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10143"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "node-sysmetrics",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10216"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10216"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pure-folder-three",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.5.0",
+        "0.6.0",
+        "0.7.0",
+        "0.7.1",
+        "0.7.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10218"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10218"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dotnet-runtime-base",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.4",
+        "1.0.5"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10217"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10217"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "chai-as-precision",
+      "ecosystem": "npm",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "7.0.6"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10219"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10219"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tronwe",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10624"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10624"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cosmos-cuda",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9999.0.0",
+        "9999.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10617"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10617"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cosmos-gradio",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9999.0.0",
+        "9999.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10618"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10618"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "proxy-check-ii",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10610"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10610"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tennacity",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.2.0",
+        "1.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10576"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10576"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pokee-data-utils",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10547"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10547"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "turbocalcng",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10441"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10441"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "browser-use-headless",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-10484"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-10484"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -541413,16 +548468,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-07-12T22:51:57+00:00",
-    "supplemental_advisories": "2026-07-12T22:52:39+00:00",
-    "osv_malicious": "2026-07-12T22:52:02+00:00",
+    "datadog": "2026-07-14T22:57:29+00:00",
+    "supplemental_advisories": "2026-07-14T22:58:56+00:00",
+    "osv_malicious": "2026-07-14T22:58:13+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-07-12T22:52:02+00:00",
-      "Go": "2026-07-12T22:52:02+00:00",
-      "NuGet": "2026-07-12T22:52:02+00:00",
-      "npm": "2026-07-12T22:52:02+00:00",
-      "PyPI": "2026-07-12T22:52:02+00:00",
-      "crates.io": "2026-07-12T22:52:02+00:00"
+      "Maven": "2026-07-14T22:58:13+00:00",
+      "Go": "2026-07-14T22:58:13+00:00",
+      "NuGet": "2026-07-14T22:58:13+00:00",
+      "npm": "2026-07-14T22:58:13+00:00",
+      "PyPI": "2026-07-14T22:58:13+00:00",
+      "crates.io": "2026-07-14T22:58:13+00:00"
     },
     "prune_withdrawn": "2026-06-26T23:08:07+00:00"
   }
