@@ -10,7 +10,7 @@
     "NuGet": 785,
     "crates.io": 5
   },
-  "generated_at": "2026-07-21T22:58:42+00:00",
+  "generated_at": "2026-07-22T23:05:28+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -551215,8 +551215,8 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-07-21T22:58:41+00:00",
-    "supplemental_advisories": "2026-07-21T22:58:42+00:00",
+    "datadog": "2026-07-22T23:05:26+00:00",
+    "supplemental_advisories": "2026-07-22T23:05:28+00:00",
     "osv_malicious": "2026-07-20T23:02:10+00:00",
     "osv_malicious_by_eco": {
       "Maven": "2026-07-20T23:02:10+00:00",
