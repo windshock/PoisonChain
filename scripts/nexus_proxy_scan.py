@@ -662,6 +662,78 @@ def build_summary(results: list[dict]) -> dict:
     }
 
 
+# ── Canary / positive-control self-check ───────────────────────────────────────
+
+# One ubiquitous package per ecosystem that MUST resolve if that ecosystem's
+# proxy cache holds any content and the search query is well-formed. This is
+# how we tell "0 hits because the cache is genuinely clean" apart from "0 hits
+# because the scan is blind" (query broken / auth drift / Nexus API change).
+CANARY_PACKAGES: dict[str, str] = {
+    "npm": "lodash",
+    "PyPI": "requests",
+    "Maven": "com.google.guava:guava",
+    "Go": "github.com/pkg/errors",
+    "NuGet": "Newtonsoft.Json",
+    "crates.io": "serde",
+}
+
+
+def _format_has_any_content(base_url: str, nexus_fmt: str, auth: str) -> bool | None:
+    """True if a name-less format search returns >=1 component, False if the
+    format is empty, None if the request errored."""
+    url = f"{base_url}/service/rest/v1/search?" + urllib.parse.urlencode({"format": nexus_fmt})
+    code, body = http_get(url, auth_header=auth)
+    if code != 200:
+        return None
+    try:
+        data = json.loads(body)
+    except Exception:
+        return None
+    return bool(data.get("items"))
+
+
+def run_canaries(base_url: str, auth: str, ecosystems: list[str]) -> dict:
+    """Positive-control the search path for each ecosystem we're about to scan.
+
+    Per-ecosystem status:
+      - "verified": canary package resolved → search path works end-to-end.
+      - "empty":    canary missing AND the format holds no content at all →
+                    0-hits for this ecosystem is vacuously correct, not a bug.
+      - "blind":    canary missing BUT the format HAS content → the query is
+                    almost certainly broken; any 0-hit result is unreliable.
+      - "error":    canary request errored (transport / HTTP).
+      - "unknown":  no canary defined for the ecosystem.
+    """
+    out: dict[str, dict] = {}
+    for eco in ecosystems:
+        name = CANARY_PACKAGES.get(eco)
+        if not name:
+            out[eco] = {"status": "unknown", "canary": None,
+                        "detail": "no canary defined for ecosystem"}
+            continue
+        items, err = search_all_repos_generic(base_url, eco, name, None, auth)
+        if err:
+            out[eco] = {"status": "error", "canary": name, "detail": err}
+            continue
+        if items:
+            out[eco] = {"status": "verified", "canary": name, "hits": len(items)}
+            continue
+        # Canary not found — is the format empty, or are we blind?
+        nexus_fmt = ECOSYSTEM_TO_NEXUS_FORMAT.get(eco, eco.lower())
+        has_content = _format_has_any_content(base_url, nexus_fmt, auth)
+        if has_content is None:
+            out[eco] = {"status": "error", "canary": name,
+                        "detail": "content-probe request failed"}
+        elif has_content:
+            out[eco] = {"status": "blind", "canary": name,
+                        "detail": "format has content but canary not matched — "
+                                  "query likely broken"}
+        else:
+            out[eco] = {"status": "empty", "canary": name,
+                        "detail": "proxy cache holds no components for this format"}
+    return out
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
@@ -785,6 +857,24 @@ def main() -> int:
         partial_reasons.append(f"/v1/status returned HTTP {code}")
         print(f"⚠️  Nexus status endpoint returned HTTP {code}")
 
+    # Canary self-check: positive-control every ecosystem we're about to scan
+    # so a silent breakage can't masquerade as a clean "0 hits" result.
+    canaries = run_canaries(NEXUS_BASE_URL, auth, sorted(eco_counts))
+    _tag = {"verified": "✅", "empty": "➖", "blind": "❌",
+            "error": "⚠️", "unknown": "❓"}
+    print("🐤 Canary self-check (positive control):")
+    for eco, c in sorted(canaries.items()):
+        extra = f", {eco_counts.get(eco, 0)} target(s)"
+        print(f"   {_tag.get(c['status'], '?')} {eco}: {c['status']} "
+              f"(canary={c['canary']}{extra})")
+        if c["status"] == "blind":
+            partial_reasons.append(
+                f"canary FAILED for {eco} ({c['canary']}): {c['detail']} — "
+                f"{eco} 0-hit result is UNRELIABLE")
+        elif c["status"] in ("error", "unknown"):
+            partial_reasons.append(
+                f"canary {c['status']} for {eco} ({c['canary']}): {c['detail']}")
+
     print(f"\n🔍 Scanning {len(targets)} targets with {args.workers} workers...")
     results, scan_reasons, scan_errors = scan(
         NEXUS_BASE_URL, auth, targets, max_workers=args.workers,
@@ -802,6 +892,7 @@ def main() -> int:
         "include_compromised": args.include_compromised,
         "partial_scan": bool(partial_reasons),
         "partial_scan_reasons": list(dict.fromkeys(partial_reasons)),
+        "canary": canaries,
         "packages_queried": len(targets),
         "hits_total": summary["hits_total"],
         "summary": summary,
