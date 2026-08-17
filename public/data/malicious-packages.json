@@ -10,7 +10,7 @@
     "NuGet": 785,
     "crates.io": 9
   },
-  "generated_at": "2026-08-16T22:26:24+00:00",
+  "generated_at": "2026-08-17T22:30:37+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -34620,12 +34620,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
         "1.0.1"
       ],
       "version_dates": {
         "1.0.1": "2025-05-30"
       },
-      "datadog_added": "2025-05-30"
+      "datadog_added": "2025-05-30",
+      "osv_advisories": [
+        "MAL-2025-5352"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-5352"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@uq-global-ec/navigation",
@@ -34863,13 +34871,21 @@
       "source": "datadog_dataset",
       "malicious_versions": [
         "100.0.0",
+        "100.0.2",
         "99.9.9"
       ],
       "version_dates": {
         "100.0.0": "2026-04-05",
         "99.9.9": "2026-04-05"
       },
-      "datadog_added": "2026-04-05"
+      "datadog_added": "2026-04-05",
+      "osv_advisories": [
+        "MAL-2026-14073"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14073"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@verge-vcl-react/data-grid",
@@ -35199,7 +35215,10 @@
         "0.2.2",
         "0.2.3",
         "0.2.4",
-        "0.3.1"
+        "0.2.5",
+        "0.2.5-B",
+        "0.3.1",
+        "0.3.2"
       ],
       "version_dates": {
         "0.0.1": "2025-12-18",
@@ -35213,7 +35232,14 @@
         "0.2.4": "2026-01-23",
         "0.3.1": "2026-02-15"
       },
-      "datadog_added": "2025-12-18"
+      "datadog_added": "2025-12-18",
+      "osv_advisories": [
+        "MAL-2026-14074"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14074"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@walletwave/backend",
@@ -35678,9 +35704,16 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
         "1.0.10",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5",
         "1.0.6",
         "1.0.7",
+        "1.0.8",
         "1.0.9"
       ],
       "version_dates": {
@@ -35689,7 +35722,14 @@
         "1.0.7": "2024-11-06",
         "1.0.9": "2024-12-12"
       },
-      "datadog_added": "2024-11-06"
+      "datadog_added": "2024-11-06",
+      "osv_advisories": [
+        "MAL-2024-10227"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2024-10227"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@workleap-widgets/client",
@@ -35866,12 +35906,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
         "99.10.90"
       ],
       "version_dates": {
         "99.10.90": "2025-07-29"
       },
-      "datadog_added": "2025-07-29"
+      "datadog_added": "2025-07-29",
+      "osv_advisories": [
+        "MAL-2025-6337"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6337"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@xd37hxassent/copilot-poc-jira",
@@ -35935,7 +35983,14 @@
         "1.0.2": "2025-08-27",
         "1.0.4": "2025-08-28"
       },
-      "datadog_added": "2025-08-15"
+      "datadog_added": "2025-08-15",
+      "osv_advisories": [
+        "MAL-2025-6879"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6879"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "@yazxzpedia/baileys",
@@ -41801,7 +41856,14 @@
       "version_dates": {
         "1.0.3": "2026-04-28"
       },
-      "datadog_added": "2026-04-28"
+      "datadog_added": "2026-04-28",
+      "osv_advisories": [
+        "MAL-2026-14075"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14075"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "akasearch",
@@ -43428,12 +43490,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "99.99.100",
+        "99.99.103",
         "999999999.9999999999.9999999999"
       ],
       "version_dates": {
         "999999999.9999999999.9999999999": "2025-04-28"
       },
-      "datadog_added": "2025-04-28"
+      "datadog_added": "2025-04-28",
+      "osv_advisories": [
+        "MAL-2025-3138"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-3138"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "animation-debug-app",
@@ -71203,12 +71274,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
         "1.0.1"
       ],
       "version_dates": {
         "1.0.1": "2025-03-26"
       },
-      "datadog_added": "2025-03-26"
+      "datadog_added": "2025-03-26",
+      "osv_advisories": [
+        "MAL-2025-4554"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-4554"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "css-blocks-ember",
@@ -77286,6 +77365,8 @@
         "10.0.5",
         "10.0.6",
         "10.0.8",
+        "10.1.0",
+        "10.1.1",
         "99.9.9"
       ],
       "version_dates": {
@@ -77295,7 +77376,14 @@
         "10.0.8": "2026-03-20",
         "99.9.9": "2026-03-20"
       },
-      "datadog_added": "2026-03-20"
+      "datadog_added": "2026-03-20",
+      "osv_advisories": [
+        "MAL-2026-14077"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14077"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "dionisio",
@@ -82865,6 +82953,7 @@
         "1.0.0",
         "1.0.1",
         "1.0.2",
+        "1.0.3",
         "1.0.4"
       ],
       "version_dates": {
@@ -82873,7 +82962,14 @@
         "1.0.2": "2025-12-04",
         "1.0.4": "2025-12-04"
       },
-      "datadog_added": "2025-12-04"
+      "datadog_added": "2025-12-04",
+      "osv_advisories": [
+        "MAL-2026-14078"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14078"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "elf-stats-caroling-wishlist-626",
@@ -83368,7 +83464,14 @@
         "1.0.2": "2025-12-03",
         "2.0.0": "2025-12-03"
       },
-      "datadog_added": "2025-12-03"
+      "datadog_added": "2025-12-03",
+      "osv_advisories": [
+        "MAL-2026-14079"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14079"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "elf-stats-ember-muffin-717",
@@ -90166,12 +90269,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "0.0.1-security",
         "1.0.0"
       ],
       "version_dates": {
         "1.0.0": "2025-03-25"
       },
-      "datadog_added": "2025-03-25"
+      "datadog_added": "2025-03-25",
+      "osv_advisories": [
+        "MAL-2025-49124"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-49124"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "epic-common-node",
@@ -90180,12 +90291,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "0.0.1-security",
         "1.0.0"
       ],
       "version_dates": {
         "1.0.0": "2025-03-25"
       },
-      "datadog_added": "2025-03-25"
+      "datadog_added": "2025-03-25",
+      "osv_advisories": [
+        "MAL-2025-49125"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-49125"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "epic-config",
@@ -91124,12 +91243,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "0.0.1-security",
         "1.0.0"
       ],
       "version_dates": {
         "1.0.0": "2025-03-25"
       },
-      "datadog_added": "2025-03-25"
+      "datadog_added": "2025-03-25",
+      "osv_advisories": [
+        "MAL-2025-49192"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-49192"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "epic-sticky-header",
@@ -95728,12 +95855,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.0.1"
+        "0.0.1",
+        "1.0.0"
       ],
       "version_dates": {
         "0.0.1": "2025-07-25"
       },
-      "datadog_added": "2025-07-25"
+      "datadog_added": "2025-07-25",
+      "osv_advisories": [
+        "MAL-2025-6284"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6284"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "events-web1",
@@ -96610,7 +96745,14 @@
       "version_dates": {
         "6.3.2": "2025-01-25"
       },
-      "datadog_added": "2025-01-25"
+      "datadog_added": "2025-01-25",
+      "osv_advisories": [
+        "MAL-2026-14080"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14080"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "expense-management",
@@ -98755,7 +98897,14 @@
       "version_dates": {
         "1.0.0": "2025-04-10"
       },
-      "datadog_added": "2025-04-10"
+      "datadog_added": "2025-04-10",
+      "osv_advisories": [
+        "MAL-2025-4558"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-4558"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "fatfingers-vroooom",
@@ -98769,7 +98918,14 @@
       "version_dates": {
         "1.0.0": "2025-04-10"
       },
-      "datadog_added": "2025-04-10"
+      "datadog_added": "2025-04-10",
+      "osv_advisories": [
+        "MAL-2025-3964"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-3964"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "fathom-fox",
@@ -100294,6 +100450,8 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "2.0.2",
+        "9.0.0",
         "9.0.1",
         "9.0.2"
       ],
@@ -100301,7 +100459,14 @@
         "9.0.1": "2025-06-03",
         "9.0.2": "2025-06-04"
       },
-      "datadog_added": "2025-06-03"
+      "datadog_added": "2025-06-03",
+      "osv_advisories": [
+        "MAL-2025-4043"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-4043"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "firefly-utilities-js",
@@ -103658,7 +103823,14 @@
       "version_dates": {
         "8.5.8": "2025-01-25"
       },
-      "datadog_added": "2025-01-25"
+      "datadog_added": "2025-01-25",
+      "osv_advisories": [
+        "MAL-2026-14081"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14081"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "gamedl",
@@ -106912,7 +107084,14 @@
         "1.1.4": "2026-04-25",
         "9.9.9": "2026-04-25"
       },
-      "datadog_added": "2026-04-25"
+      "datadog_added": "2026-04-25",
+      "osv_advisories": [
+        "MAL-2026-14082"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14082"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "google-login-flow",
@@ -110576,7 +110755,14 @@
         "1000.0.13": "2026-04-20",
         "1000.0.16": "2026-04-20"
       },
-      "datadog_added": "2026-04-20"
+      "datadog_added": "2026-04-20",
+      "osv_advisories": [
+        "MAL-2026-14083"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14083"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "heft-web-rig-library-tutorial",
@@ -112106,7 +112292,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2025-47118"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-47118"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hrp9871",
@@ -112120,7 +112313,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2026-14084"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14084"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hrp9872",
@@ -112134,7 +112334,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2026-14085"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14085"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hrp9873",
@@ -112148,7 +112355,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2025-47119"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-47119"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hrpdesign",
@@ -112269,7 +112483,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2025-47121"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-47121"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hrprce123",
@@ -112283,7 +112504,14 @@
       "version_dates": {
         "1.0.0": "2025-09-07"
       },
-      "datadog_added": "2025-09-07"
+      "datadog_added": "2025-09-07",
+      "osv_advisories": [
+        "MAL-2025-47122"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-47122"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "hstdemotest",
@@ -116292,12 +116520,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.1"
+        "1.0.0",
+        "1.0.1",
+        "100.0.0"
       ],
       "version_dates": {
         "1.0.1": "2025-04-10"
       },
-      "datadog_added": "2025-04-10"
+      "datadog_added": "2025-04-10",
+      "osv_advisories": [
+        "MAL-2025-3132"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-3132"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "internal-vscode-extension",
@@ -139410,7 +139647,14 @@
       "version_dates": {
         "0.0.32": "2026-05-08"
       },
-      "datadog_added": "2026-05-08"
+      "datadog_added": "2026-05-08",
+      "osv_advisories": [
+        "MAL-2026-14087"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14087"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "mw-frontend-utils",
@@ -147349,7 +147593,14 @@
       "version_dates": {
         "1.0.0": "2026-04-09"
       },
-      "datadog_added": "2026-04-09"
+      "datadog_added": "2026-04-09",
+      "osv_advisories": [
+        "MAL-2026-14088"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14088"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "nomicsfoundations",
@@ -148223,12 +148474,26 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.0.3",
+        "1.0.4",
+        "1.0.5",
+        "1.0.6",
         "1.0.7"
       ],
       "version_dates": {
         "1.0.7": "2025-03-28"
       },
-      "datadog_added": "2025-03-28"
+      "datadog_added": "2025-03-28",
+      "osv_advisories": [
+        "MAL-2026-14089"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14089"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "npm_pkg_1094",
@@ -148242,7 +148507,14 @@
       "version_dates": {
         "1.0.7": "2025-03-28"
       },
-      "datadog_added": "2025-03-28"
+      "datadog_added": "2025-03-28",
+      "osv_advisories": [
+        "MAL-2026-14090"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14090"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "npmamzs",
@@ -157838,12 +158110,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
+        "1.0.0",
         "4.31.0"
       ],
       "version_dates": {
         "4.31.0": "2025-04-25"
       },
-      "datadog_added": "2025-04-25"
+      "datadog_added": "2025-04-25",
+      "osv_advisories": [
+        "MAL-2025-3660"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-3660"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "pie-monorepo",
@@ -159196,7 +159476,14 @@
       "version_dates": {
         "1.0.0": "2026-04-18"
       },
-      "datadog_added": "2026-04-18"
+      "datadog_added": "2026-04-18",
+      "osv_advisories": [
+        "MAL-2026-14091"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14091"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "pocketnet",
@@ -171426,7 +171713,14 @@
       "version_dates": {
         "1.0.0": "2025-07-26"
       },
-      "datadog_added": "2025-07-26"
+      "datadog_added": "2025-07-26",
+      "osv_advisories": [
+        "MAL-2025-6254"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6254"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "redux-motion",
@@ -171489,7 +171783,14 @@
       "version_dates": {
         "1.0.0": "2025-07-26"
       },
-      "datadog_added": "2025-07-26"
+      "datadog_added": "2025-07-26",
+      "osv_advisories": [
+        "MAL-2025-6257"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6257"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "redux-saga-devtool",
@@ -171568,7 +171869,14 @@
       "version_dates": {
         "1.0.0": "2025-07-26"
       },
-      "datadog_added": "2025-07-26"
+      "datadog_added": "2025-07-26",
+      "osv_advisories": [
+        "MAL-2025-6258"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-6258"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "redux-store-immutable",
@@ -173508,12 +173816,20 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.0"
+        "1.0.0",
+        "1.0.1"
       ],
       "version_dates": {
         "1.0.0": "2026-04-09"
       },
-      "datadog_added": "2026-04-09"
+      "datadog_added": "2026-04-09",
+      "osv_advisories": [
+        "MAL-2026-14092"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14092"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "rina-donat48-sukiwir",
@@ -174832,7 +175148,14 @@
         "1.3.0": "2026-04-19",
         "1.4.0": "2026-04-25"
       },
-      "datadog_added": "2026-04-19"
+      "datadog_added": "2026-04-19",
+      "osv_advisories": [
+        "MAL-2026-14093"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14093"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "rtn-centered-text",
@@ -176696,6 +177019,7 @@
         "1.0.1",
         "1.0.2",
         "1.0.3",
+        "1.0.4",
         "1.0.5"
       ],
       "version_dates": {
@@ -176705,7 +177029,14 @@
         "1.0.3": "2026-04-11",
         "1.0.5": "2026-04-11"
       },
-      "datadog_added": "2026-04-11"
+      "datadog_added": "2026-04-11",
+      "osv_advisories": [
+        "MAL-2026-14094"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14094"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "saratov",
@@ -183323,7 +183654,14 @@
       "version_dates": {
         "0.1.0": "2025-04-25"
       },
-      "datadog_added": "2025-04-25"
+      "datadog_added": "2025-04-25",
+      "osv_advisories": [
+        "MAL-2025-4579"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2025-4579"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "skndkjasndkjan",
@@ -184065,9 +184403,7 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.0",
-        "1.0.1",
-        "1.0.2"
+        "1.0.1"
       ],
       "version_dates": {
         "1.0.1": "2026-01-05"
@@ -196518,12 +196854,21 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.0.1"
+        "1.0.0",
+        "1.0.1",
+        "1.0.2"
       ],
       "version_dates": {
         "1.0.1": "2026-04-11"
       },
-      "datadog_added": "2026-04-11"
+      "datadog_added": "2026-04-11",
+      "osv_advisories": [
+        "MAL-2026-14097"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14097"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "theta-sdk",
@@ -205199,7 +205544,14 @@
       "version_dates": {
         "8.1.6": "2025-01-25"
       },
-      "datadog_added": "2025-01-25"
+      "datadog_added": "2025-01-25",
+      "osv_advisories": [
+        "MAL-2026-14098"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14098"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "utomo-bakwan96-sluey",
@@ -220007,7 +220359,14 @@
       "version_dates": {
         "7.3.1": "2025-01-25"
       },
-      "datadog_added": "2025-01-25"
+      "datadog_added": "2025-01-25",
+      "osv_advisories": [
+        "MAL-2026-14099"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14099"
+      ],
+      "confidence": "confirmed"
     },
     {
       "name": "zis-common-lib",
@@ -607247,6 +607606,25 @@
         "https://osv.dev/vulnerability/MAL-2026-14069"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@ai-vertical/ai-agent",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-14070"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-14070"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -607259,16 +607637,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-08-16T22:21:42+00:00",
-    "supplemental_advisories": "2026-08-16T22:26:24+00:00",
-    "osv_malicious": "2026-08-16T22:21:43+00:00",
+    "datadog": "2026-08-17T22:26:02+00:00",
+    "supplemental_advisories": "2026-08-17T22:30:37+00:00",
+    "osv_malicious": "2026-08-17T22:26:06+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-08-16T22:21:43+00:00",
-      "Go": "2026-08-16T22:21:43+00:00",
-      "NuGet": "2026-08-16T22:21:43+00:00",
-      "npm": "2026-08-16T22:21:43+00:00",
-      "PyPI": "2026-08-16T22:21:43+00:00",
-      "crates.io": "2026-08-16T22:21:43+00:00"
+      "Maven": "2026-08-17T22:26:06+00:00",
+      "Go": "2026-08-17T22:26:06+00:00",
+      "NuGet": "2026-08-17T22:26:06+00:00",
+      "npm": "2026-08-17T22:26:06+00:00",
+      "PyPI": "2026-08-17T22:26:06+00:00",
+      "crates.io": "2026-08-17T22:26:06+00:00"
     },
     "prune_withdrawn": "2026-07-23T22:58:23+00:00"
   }
