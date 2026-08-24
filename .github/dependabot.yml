@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # public/lab is an intentional reproduction fixture, not a service runtime.
+  # Keep the vulnerable package manifests intact and stop Dependabot from
+  # opening update PRs for this lab tree.
+  - package-ecosystem: "npm"
+    directories:
+      - "/public/lab"
+      - "/public/lab/caret-021-only"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
