@@ -10,7 +10,7 @@
     "NuGet": 790,
     "crates.io": 20
   },
-  "generated_at": "2026-10-30T01:39:02+00:00",
+  "generated_at": "2026-10-31T01:26:38+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -184167,7 +184167,6 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "0.0.0-stage",
         "2.14.790",
         "2.14.791",
         "2.14.793",
@@ -649335,8 +649334,7 @@
       "campaign": "datadog_auto",
       "source": "datadog_dataset",
       "malicious_versions": [
-        "1.1.11",
-        "1.1.12"
+        "1.1.11"
       ],
       "version_dates": {
         "1.1.11": "2026-10-03"
@@ -657122,6 +657120,460 @@
         "https://osv.dev/vulnerability/MAL-2026-18354"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "claims-acct-unlock",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "25.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18404"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18404"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "tabby-fknat",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18409"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18409"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "m98vip",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18391"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18391"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@jasperquinn/postcss-motion-helpers",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18379"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18379"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-vip-online-login",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18388"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18388"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@chatunitycenter/baileys",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage",
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18392"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18392"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "m98th",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18390"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18390"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dowload_ebok_nur_mal_schnell_das_mammut_retten_by_knut_kruger_eva_schoffmann_davidov_ouz6t",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18400"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18400"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-slot",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18385"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18385"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dowload_ebok_lolita_by_vladimir_nabokov_oy1gy",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18399"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18399"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "cjlowuxbnexkhgpzq",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage",
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18381"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18381"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dowload_ebok_armageddon_by_max_hastings_kv3s4",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18397"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18397"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-entrance",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18383"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18383"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-login-th",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18384"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18384"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-vip-login",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18387"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18387"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet-vip",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18386"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18386"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dowload_ebok_el_piso_mil_el_piso_mil_1_by_katharine_mcgee_h1llc",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18398"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18398"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "bcxhdh1kjlopsde",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage",
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18380"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18380"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "789bet",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18382"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18382"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "m98bet",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18389"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18389"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "dowload_ebok_reiki_sviluppa_e_usa_lenergia_reiki_by_matt_harvey_9q55p",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.0-stage"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18401"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18401"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "log-utils-sdk",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.4.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18405"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18405"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "stdid-nyxprobe",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.0.1",
+        "0.0.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18406"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18406"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "test-01-rafamarrara-learning-dc",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18402"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18402"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "twitter-request-diagnostics",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-18403"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-18403"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -657134,16 +657586,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-10-30T01:38:49+00:00",
-    "supplemental_advisories": "2026-10-30T01:39:02+00:00",
-    "osv_malicious": "2026-10-30T01:38:54+00:00",
+    "datadog": "2026-10-31T01:26:25+00:00",
+    "supplemental_advisories": "2026-10-31T01:26:38+00:00",
+    "osv_malicious": "2026-10-31T01:26:28+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-10-30T01:38:54+00:00",
-      "Go": "2026-10-30T01:38:54+00:00",
-      "NuGet": "2026-10-30T01:38:54+00:00",
-      "npm": "2026-10-30T01:38:54+00:00",
-      "PyPI": "2026-10-30T01:38:54+00:00",
-      "crates.io": "2026-10-30T01:38:54+00:00"
+      "Maven": "2026-10-31T01:26:28+00:00",
+      "Go": "2026-10-31T01:26:28+00:00",
+      "NuGet": "2026-10-31T01:26:28+00:00",
+      "npm": "2026-10-31T01:26:28+00:00",
+      "PyPI": "2026-10-31T01:26:28+00:00",
+      "crates.io": "2026-10-31T01:26:28+00:00"
     },
     "prune_withdrawn": "2026-10-28T01:05:50+00:00"
   }
