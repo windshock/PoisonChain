@@ -10,7 +10,7 @@
     "NuGet": 790,
     "crates.io": 22
   },
-  "generated_at": "2026-11-27T03:58:27+00:00",
+  "generated_at": "2026-11-28T03:45:58+00:00",
   "_comment": "Single source of truth for malicious packages (npm, PyPI, and more) tracked by PoisonChain. campaigns.<id>.kind: 'incident' = single coordinated attack with bounded attack_window and (usually) an attributed actor — valid target for campaign-specific analyzers like scripts/canisterworm_analysis.py. 'catalog' = continuous-import bucket (e.g. datadog_auto) or meta placeholder — NOT a real campaign. Generic SSOT-driven scanners consume both kinds the same way; IOC matchers should skip catalogs because there is no shared attack_window or actor. category: 'compromised_legitimate' = legitimate package whose specific versions were hijacked; 'malicious_intent' = package was malicious from the start (typosquat etc.). confidence (optional): 'confirmed' = machine-readable advisory (OSV/GHSA/Datadog) or authoritative listing combined with npm registry takedown; 'suspected' = secondary source (e.g. KISA) lists the package but upstream postmortem / OSV does not confirm — scanners surface these in a lower-severity section. npm_status (optional): 'exists' | 'not_found' | 'unknown' — registry presence; 'not_found' may indicate post-incident unpublish. datadog_added: earliest date the package appeared in the Datadog dataset (ZIP filename prefix). version_dates: {version: 'YYYY-MM-DD'} maps each version to its Datadog discovery date. For Nexus/lockfile scans, malicious_intent packages are inherently dangerous by name, while compromised_legitimate packages are only dangerous at specific listed versions.",
   "categories": {
     "compromised_legitimate": "Legitimate npm package whose maintainer account was hijacked. Only specific versions are malicious; the package name itself remains in use.",
@@ -687924,6 +687924,488 @@
         "https://osv.dev/vulnerability/MAL-2026-20648"
       ],
       "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@jayhackpro/jayshield",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20744"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20744"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "itsa-jsext",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.0.3"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20734"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20734"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "axp-data-manager-utils",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.0",
+        "1.9.0",
+        "2.0.0",
+        "2.9.1",
+        "3.0.0",
+        "3.9.8",
+        "4.0.0",
+        "4.9.2",
+        "5.0.0",
+        "5.9.6",
+        "6.0.0",
+        "6.9.4"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20704"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20704"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "biatec-avm-gas-station",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.1.1",
+        "1.1.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20714"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20714"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@selorax/app-sdk",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "2.1.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20713"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20713"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@pyraio/cli-win32-x64",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.13"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20696"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20696"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "pdfjs-fontmatrix-fixture-cb8043",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "1.0.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20688"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20688"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "@omnitron-dev/omnitron",
+      "ecosystem": "npm",
+      "category": "compromised_legitimate",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.4.18"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20687"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20687"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "qwen-tts-cpu",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20726"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20726"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "qwentts-gradio",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20728"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20728"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "qwen-tts-runtime",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20727"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20727"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "qwenvox-tts-3",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20729"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20729"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "toneharbor",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.1",
+        "0.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20730"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20730"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "audiorig",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.1",
+        "0.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20724"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20724"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "minecho",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.1",
+        "0.2.2",
+        "0.3.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20725"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20725"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "waveferry",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.2.1",
+        "0.2.2"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20731"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20731"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "toneloop",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20720"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20720"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "decodewhistle",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20717"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20717"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "audiostint",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20715"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20715"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "speechenvoy",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20719"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20719"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "sonicspool",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20718"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20718"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "voxlane",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20721"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20721"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "audiowharf",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20716"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20716"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "wavlathe",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "0.1.0",
+        "0.2.0",
+        "0.2.1"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20722"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20722"
+      ],
+      "notes": "Imported from OSV advisory."
+    },
+    {
+      "name": "vk-mlp-agent",
+      "ecosystem": "PyPI",
+      "category": "malicious_intent",
+      "campaign": "osv_auto",
+      "source": "osv_advisory",
+      "confidence": "confirmed",
+      "malicious_versions": [
+        "9999.0"
+      ],
+      "osv_advisories": [
+        "MAL-2026-20689"
+      ],
+      "references": [
+        "https://osv.dev/vulnerability/MAL-2026-20689"
+      ],
+      "notes": "Imported from OSV advisory."
     }
   ],
   "payloads": {
@@ -687936,16 +688418,16 @@
     }
   },
   "last_refresh": {
-    "datadog": "2026-11-27T03:57:50+00:00",
-    "supplemental_advisories": "2026-11-27T03:58:27+00:00",
-    "osv_malicious": "2026-11-27T03:57:55+00:00",
+    "datadog": "2026-11-28T03:45:22+00:00",
+    "supplemental_advisories": "2026-11-28T03:45:58+00:00",
+    "osv_malicious": "2026-11-28T03:45:28+00:00",
     "osv_malicious_by_eco": {
-      "Maven": "2026-11-27T03:57:55+00:00",
-      "Go": "2026-11-27T03:57:55+00:00",
-      "NuGet": "2026-11-27T03:57:55+00:00",
-      "npm": "2026-11-27T03:57:55+00:00",
-      "PyPI": "2026-11-27T03:57:55+00:00",
-      "crates.io": "2026-11-27T03:57:55+00:00"
+      "Maven": "2026-11-28T03:45:28+00:00",
+      "Go": "2026-11-28T03:45:28+00:00",
+      "NuGet": "2026-11-28T03:45:28+00:00",
+      "npm": "2026-11-28T03:45:28+00:00",
+      "PyPI": "2026-11-28T03:45:28+00:00",
+      "crates.io": "2026-11-28T03:45:28+00:00"
     },
     "prune_withdrawn": "2026-11-11T01:44:23+00:00"
   }
